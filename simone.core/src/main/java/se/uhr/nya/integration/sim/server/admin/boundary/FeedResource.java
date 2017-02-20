@@ -17,6 +17,7 @@ import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.spi.interception.AcceptedByMethod;
 import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 
+import io.swagger.annotations.Api;
 import se.uhr.nya.atom.feed.server.entity.AtomCategory;
 import se.uhr.nya.atom.feed.server.entity.AtomCategory.Label;
 import se.uhr.nya.atom.feed.server.entity.AtomCategory.Term;
@@ -32,6 +33,7 @@ import se.uhr.nya.integration.sim.server.boundary.FeedCatagory;
 import se.uhr.nya.integration.sim.server.feed.entity.SimFeedRepository;
 import se.uhr.nya.util.uuid.UniqueIdentifier;
 
+@Api(tags = {"feed admin"})
 @AdminCatagory
 @Path("admin/feed")
 public class FeedResource {

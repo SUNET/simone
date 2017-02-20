@@ -22,6 +22,8 @@ import javax.ws.rs.core.Response.Status;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.jboss.resteasy.util.GenericType;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import se.uhr.nya.integration.sim.admin.api.file.FileLoadResultRepresentation;
 import se.uhr.nya.integration.sim.extension.api.entity.DatabaseAdmin;
 import se.uhr.nya.integration.sim.extension.api.feed.UniqueIdentifier;
@@ -31,6 +33,7 @@ import se.uhr.nya.integration.sim.extension.api.fileloader.FileLoaderDescriptor;
 import se.uhr.nya.integration.sim.server.boundary.AdminCatagory;
 import se.uhr.nya.integration.sim.server.control.extension.ExtensionManager;
 
+@Api(tags = { "database admin" })
 @Stateless
 @AdminCatagory
 @Path("admin/database")
@@ -42,6 +45,7 @@ public class DatabaseResource {
 	@Inject
 	private ExtensionManager extensionManager;
 
+	@ApiOperation(value = "Loads the database", notes = "This has the same effects as dropping a file in the dropin directory", response = FileLoadResultRepresentation.class)
 	@POST
 	@Consumes("multipart/form-data")
 	public Response updateFromAF26File(MultipartFormDataInput input) throws IOException {
@@ -73,12 +77,11 @@ public class DatabaseResource {
 			}
 		}
 
-		return Response
-				.status(success ? Status.OK : Status.BAD_REQUEST)
-				.entity(FileLoadResultRepresentation.of(idList, errorLog.toString()))
-				.build();
+		return Response.status(success ? Status.OK : Status.BAD_REQUEST)
+				.entity(FileLoadResultRepresentation.of(idList, errorLog.toString())).build();
 	}
 
+	@ApiOperation(value = "Empty the database")
 	@DELETE
 	public Response deleteTables() {
 		for (DatabaseAdmin db : databaseAdmin) {
@@ -91,7 +94,7 @@ public class DatabaseResource {
 	static class RestExtensionContext implements ExtensionContext {
 
 		private final Writer errorWriter = new StringWriter();
-		private final List<String> eventIdList = new ArrayList();
+		private final List<String> eventIdList = new ArrayList<>();
 
 		@Override
 		public Writer getErrorWriter() {

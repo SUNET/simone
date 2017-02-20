@@ -21,8 +21,8 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.interception.AcceptedByMethod;
 import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
-import org.jboss.resteasy.spi.metadata.ResourceMethod;
 
+import io.swagger.annotations.Api;
 import se.uhr.nya.integration.sim.admin.rs.ResponseBodyRepresentation;
 import se.uhr.nya.integration.sim.admin.rs.ResponseRepresentation;
 import se.uhr.nya.integration.sim.server.admin.control.SimulatedFeedResponse;
@@ -31,6 +31,7 @@ import se.uhr.nya.integration.sim.server.admin.control.SimulatedRSResponseBody;
 import se.uhr.nya.integration.sim.server.boundary.AdminCatagory;
 import se.uhr.nya.integration.sim.server.boundary.FeedCatagory;
 
+@Api(tags = {"rest admin"})
 @AdminCatagory
 @Path("admin/rs/response")
 public class RSResource {
