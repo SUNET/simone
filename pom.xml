@@ -20,6 +20,7 @@
 		<module>simone.admin.api</module>
 		<module>simone.atom.feed.server</module>
 		<module>simone.core</module>
+		<module>simone.wildfly</module>		
 	</modules>
 
 	<dependencyManagement>
