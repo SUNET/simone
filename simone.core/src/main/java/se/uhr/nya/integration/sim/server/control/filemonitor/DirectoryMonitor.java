@@ -6,7 +6,6 @@ import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -94,7 +93,11 @@ public class DirectoryMonitor {
 
 				LOG.info("execute job: " + job.getPath());
 
-				FileLoader.Result result = job.getFileJob().execute(new FileExtensionContext(log));
+				FileExtensionContext context = new FileExtensionContext();
+				
+				FileLoader.Result result = job.getFileJob().execute(context);
+				
+				log.append(context.getErrorMessage());
 
 				log.close();
 
@@ -123,6 +126,7 @@ public class DirectoryMonitor {
 				if (OVERFLOW.equals(kind)) {
 					continue;
 				} else if (ENTRY_CREATE.equals(kind)) {
+					@SuppressWarnings("unchecked")
 					WatchEvent<Path> ev = (WatchEvent<Path>) event;
 					Path filename = ev.context();
 
@@ -160,19 +164,24 @@ public class DirectoryMonitor {
 
 	static class FileExtensionContext implements ExtensionContext {
 
-		private final Writer errorWriter;
+		private String errorMessage;
 
-		FileExtensionContext(Writer errorWriter) {
-			this.errorWriter = errorWriter;
-		}
-
-		@Override
-		public Writer getErrorWriter() {
-			return errorWriter;
+		FileExtensionContext() {
 		}
 
 		@Override
 		public void addEventId(UniqueIdentifier uid) {
+		}
+
+
+		@Override
+		public void setErrorMessage(String message) {
+			errorMessage = message;
+			
+		}
+		
+		String getErrorMessage() {
+			return errorMessage;
 		}
 	}
 

@@ -1,18 +1,16 @@
 package se.uhr.nya.integration.sim.extension.api.fileloader;
 
-import java.io.Writer;
-
 import se.uhr.nya.integration.sim.extension.api.feed.UniqueIdentifier;
 
 public interface ExtensionContext {
 
 	/**
-	 * Get a writer to print error information on.
+	 * Set a description of the error
 	 * 
-	 * @return A writer instance.
+	 * @param message The error description.
 	 */
 
-	Writer getErrorWriter();
+	void setErrorMessage(String message);
 
 	/**
 	 * Add event ID, these ID's is returned to the client if the job was submitted by a POST
