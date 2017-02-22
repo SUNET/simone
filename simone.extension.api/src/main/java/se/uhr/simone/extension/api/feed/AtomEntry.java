@@ -5,15 +5,13 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.joda.time.DateTime;
-
 public class AtomEntry {
 
 	private AtomEntryId atomEntryId;
 	private String xml;
 	private Long feedId;
 	private Timestamp submitted;
-	private List<AtomCategory> atomCategories = new ArrayList();
+	private List<AtomCategory> atomCategories = new ArrayList<>();
 
 	private AtomEntry(AtomEntryBuilder builder) {
 		this.atomEntryId = builder.fAtomEntryId;
@@ -60,6 +58,7 @@ public class AtomEntry {
 	}
 
 	public static class AtomEntryId implements Serializable {
+		private static final long serialVersionUID = 1L;
 
 		private UniqueIdentifier entryId;
 		private String contentType;
@@ -90,7 +89,7 @@ public class AtomEntry {
 		private Timestamp fSubmitted;
 		private AtomEntryId fAtomEntryId;
 		private String fXml;
-		private List<AtomCategory> categories = new ArrayList();
+		private List<AtomCategory> categories = new ArrayList<>();
 		private Long feedId;
 
 		@Override
@@ -100,7 +99,7 @@ public class AtomEntry {
 
 		@Override
 		public Build withSubmittedNow() {
-			this.fSubmitted = new Timestamp(DateTime.now().getMillis());
+			this.fSubmitted = new Timestamp(System.currentTimeMillis());
 			return this;
 		}
 

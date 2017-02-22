@@ -9,6 +9,7 @@ import java.util.UUID;
  *
  */
 public class UniqueIdentifier implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	public static final UniqueIdentifier ZERO_UNIQUE_IDENTIFIER = UniqueIdentifier.of(new UUID(0, 0));
 

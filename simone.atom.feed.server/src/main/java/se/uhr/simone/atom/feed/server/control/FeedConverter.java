@@ -96,7 +96,7 @@ public class FeedConverter {
 	}
 
 	private List<Category> getConvertedCategories(AtomEntry entry) {
-		List<Category> convertedCategories = new ArrayList();
+		List<Category> convertedCategories = new ArrayList<>();
 
 		for (AtomCategory atomCategory : entry.getAtomCategories()) {
 			Category category = new Category();

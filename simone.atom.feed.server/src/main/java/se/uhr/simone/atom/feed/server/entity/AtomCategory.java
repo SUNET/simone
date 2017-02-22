@@ -3,6 +3,7 @@ package se.uhr.simone.atom.feed.server.entity;
 import java.io.Serializable;
 
 public class AtomCategory implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	private final Term term;
 	private final Label label;
@@ -25,7 +26,8 @@ public class AtomCategory implements Serializable {
 	}
 
 	public static class Term implements Serializable {
-
+		private static final long serialVersionUID = 1L;
+		
 		private String value;
 
 		private Term(String value) {
@@ -42,6 +44,7 @@ public class AtomCategory implements Serializable {
 	}
 
 	public static class Label implements Serializable {
+		private static final long serialVersionUID = 1L;		
 
 		private String value;
 

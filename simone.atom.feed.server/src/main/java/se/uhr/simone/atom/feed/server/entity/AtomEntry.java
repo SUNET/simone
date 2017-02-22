@@ -5,11 +5,10 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.joda.time.DateTime;
-
 import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
 
 public class AtomEntry implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	private AtomEntryId atomEntryId;
 	private String xml;
@@ -69,6 +68,7 @@ public class AtomEntry implements Serializable {
 	}
 
 	public static class AtomEntryId implements Serializable {
+		private static final long serialVersionUID = 1L;
 
 		private UniqueIdentifier entryId;
 		private String contentType;
@@ -100,7 +100,7 @@ public class AtomEntry implements Serializable {
 		private Timestamp submitted;
 		private AtomEntryId atomEntryId;
 		private String xml;
-		private List<AtomCategory> categories = new ArrayList();
+		private List<AtomCategory> categories = new ArrayList<>();
 		private Long feedId;
 
 		@Override
@@ -110,24 +110,24 @@ public class AtomEntry implements Serializable {
 
 		@Override
 		public Build withSubmittedNow() {
-			this.submitted = new Timestamp(DateTime.now().getMillis());
+			this.submitted = new Timestamp(System.currentTimeMillis());
 			return this;
 		}
 
 		@Override
-		public Build withSubmitted(@SuppressWarnings("hiding") Timestamp submitted) {
+		public Build withSubmitted(Timestamp submitted) {
 			this.submitted = submitted;
 			return this;
 		}
 
 		@Override
-		public AtomEntrySortOrderBuilder withAtomEntryId(@SuppressWarnings("hiding") AtomEntryId atomEntryId) {
+		public AtomEntrySortOrderBuilder withAtomEntryId(AtomEntryId atomEntryId) {
 			this.atomEntryId = atomEntryId;
 			return this;
 		}
 
 		@Override
-		public Build withXml(@SuppressWarnings("hiding") String xml) {
+		public Build withXml(String xml) {
 			this.xml = xml;
 			return this;
 		}

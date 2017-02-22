@@ -25,6 +25,7 @@ public class AtomCategory {
 	}
 
 	public static class Term implements Serializable {
+		private static final long serialVersionUID = 1L;
 
 		private String value;
 
@@ -42,6 +43,7 @@ public class AtomCategory {
 	}
 
 	public static class Label implements Serializable {
+		private static final long serialVersionUID = 1L;		
 
 		private String value;
 

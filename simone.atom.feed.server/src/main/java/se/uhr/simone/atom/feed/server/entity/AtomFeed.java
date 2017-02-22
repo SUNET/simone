@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AtomFeed implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	public static final long MAX_NUMBER_OF_ENTRIES_IN_FEED = 100;
 
@@ -12,7 +13,7 @@ public class AtomFeed implements Serializable {
 	private Long nextFeedId;
 	private Long previousFeedId;
 	private String xml;
-	private List<AtomEntry> entries = new ArrayList();
+	private List<AtomEntry> entries = new ArrayList<>();
 
 	public AtomFeed(long id) {
 		this.id = id;
