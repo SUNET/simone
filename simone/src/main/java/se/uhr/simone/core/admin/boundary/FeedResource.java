@@ -1,15 +1,21 @@
 package se.uhr.simone.core.admin.boundary;
 
+import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
+import javax.annotation.Priority;
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.ReaderInterceptor;
+import javax.ws.rs.ext.ReaderInterceptorContext;
 
 import org.apache.http.HttpStatus;
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
@@ -33,7 +39,7 @@ import se.uhr.simone.core.boundary.AdminCatagory;
 import se.uhr.simone.core.boundary.FeedCatagory;
 import se.uhr.simone.core.feed.entity.SimFeedRepository;
 
-@Api(tags = {"feed admin"})
+@Api(tags = { "feed admin" })
 @AdminCatagory
 @Path("admin/feed")
 public class FeedResource {
@@ -89,11 +95,8 @@ public class FeedResource {
 
 		Long nextSortOrder = feedRepository.getNextSortOrder();
 
-		Build builder = AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(uid, event.getContentType()))
-				.withSortOrder(nextSortOrder)
-				.withSubmittedNow()
-				.withXml(event.getContent());
+		Build builder = AtomEntry.builder().withAtomEntryId(AtomEntryId.of(uid, event.getContentType()))
+				.withSortOrder(nextSortOrder).withSubmittedNow().withXml(event.getContent());
 
 		for (se.uhr.simone.admin.feed.AtomCategoryRepresentation category : event.getCategorys()) {
 			builder.withCategory(AtomCategory.of(Term.of(category.getTerm()), Label.of(category.getLabel())));
@@ -106,7 +109,7 @@ public class FeedResource {
 
 	@Provider
 	@ServerInterceptor
-	public static class FeedServiceEnablerInterceptor implements PostProcessInterceptor, AcceptedByMethod {
+	public static class FeedServiceEnablerInterceptorOld implements PostProcessInterceptor, AcceptedByMethod {
 
 		@Inject
 		SimulatedFeedResponse simulatedResponse;

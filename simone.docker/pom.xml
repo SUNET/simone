@@ -3,10 +3,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>se.uhr.simone</groupId>
-		<artifactId>simone</artifactId>
+		<artifactId>root</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>simone.wildfly</artifactId>
+	<artifactId>simone.docker</artifactId>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -54,16 +54,15 @@
 				<artifactId>docker-maven-plugin</artifactId>
 				<version>0.4.13</version>
 				<configuration>
-					<imageName>simone-wildfly</imageName>
+					<imageName>attiand/simone</imageName>
 					<useConfigFile>true</useConfigFile>
 					<imageTags>
 						<imageTag>${project.version}</imageTag>
-						<imageTag>10</imageTag>
-						<imageTag>10.1.0.Final</imageTag>
 						<imageTag>latest</imageTag>
 					</imageTags>
 					<dockerDirectory>${basedir}/docker</dockerDirectory>
 					<forceTags>true</forceTags>
+					<useGitCommitId>true</useGitCommitId>
 					<resources>
 						<resource>
 							<targetPath>/</targetPath>

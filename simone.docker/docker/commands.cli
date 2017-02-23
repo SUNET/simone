@@ -3,8 +3,7 @@ batch
 
 # Add properties
 
-/system-property=se.uhr.nya.integration.sim.dropin:add(value="/var/simone/dropin")
-/system-property=se.uhr.nya.integration.sim.base.uri:add(value="http://localhost:8080")
+/system-property=se.uhr.simone.dropin:add(value="/var/simone/dropin")
 
 #
 # Add Derby data source
