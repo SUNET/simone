@@ -28,6 +28,20 @@ The administrator API is documented in Swagger. Start the [simone-example](https
 `SIMONE_BASE_URI`
 :  The base URI of SimOne used to reference the SimOne server in the Atom Feed. Default value is `http://localhost:8080`    
 
+## Directories
+
+### Logfiles
+
+All logfiles are stored under `/opt/jboss/wildfly/standalone/log`
+
+### Database
+
+All database files are stored under `/var/simone/db`
+
+### Dropin
+
+dropin is a special directory that is monitored by SimOne. When a new file is discovered extensions are notified and may handle the file in any way they want. The dropin directory is located at `/var/simone/dropin`
+
 ## Debug
 
 ### Remote debug the application
@@ -50,3 +64,11 @@ Username
 
 Password
 : admin
+
+# Known Problems
+
+* It is not possible to load SimOne by selecting a file in Swagger.
+
+# Todo
+
+* Should change Docker registry

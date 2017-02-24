@@ -2,7 +2,6 @@ package se.uhr.simone.core.feed.control;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.ejb.DependsOn;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.Timeout;
@@ -21,7 +20,6 @@ import se.uhr.simone.extension.api.Constants;
 
 @Startup
 @Singleton
-@DependsOn("FeedDatabaseInitializer")
 @TransactionAttribute(TransactionAttributeType.NEVER)
 public class SimFeedXmlCreator {
 

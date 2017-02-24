@@ -12,6 +12,8 @@ import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -43,10 +45,11 @@ public class DatabaseResource {
 	@Inject
 	private ExtensionManager extensionManager;
 
-	@ApiOperation(value = "Loads the database", notes = "This has the same effects as dropping a file in the dropin directory, example curl -X POST --header 'Content-Type: multipart/form-data' --header 'Accept: application/json' -F name=test.txt -F \"content=@orders.txt\" 'http://localhost:8080/sim/api/admin/database", response = FileLoadResultRepresentation.class)
+	@ApiOperation(value = "Loads the database", notes = "This has the same effects as dropping a file in the dropin directory, example", response = FileLoadResultRepresentation.class)
 	@ApiImplicitParams({
 			@ApiImplicitParam(dataType = "string", name = "name", value = "name of file", paramType = "formData"),
 			@ApiImplicitParam(name = "content", value = "file", required = true, dataType = "java.io.File", paramType = "form") })
+	@Produces(MediaType.APPLICATION_JSON)
 	@POST
 	public Response load(@ApiParam(hidden = true) @MultipartForm FileUploadForm fileUpload) throws IOException {
 
