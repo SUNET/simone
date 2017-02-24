@@ -5,10 +5,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import io.swagger.annotations.ApiModelProperty;
+
 @XmlRootElement(name = "responsebody")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ResponseBodyRepresentation extends ResponseRepresentation {
 
+	@ApiModelProperty(required = true, value = "The body to return, JSON quotes must be escaped")
 	@XmlElement(required = true)
 	private String body;
 

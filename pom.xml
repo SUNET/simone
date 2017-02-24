@@ -42,6 +42,11 @@
 				<artifactId>httpcore</artifactId>
 				<version>4.3.2</version>
 			</dependency>
+			<dependency>
+				<groupId>io.swagger</groupId>
+				<artifactId>swagger-annotations</artifactId>
+				<version>1.5.12</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 

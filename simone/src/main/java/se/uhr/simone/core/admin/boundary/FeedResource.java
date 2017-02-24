@@ -1,35 +1,30 @@
 package se.uhr.simone.core.admin.boundary;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 
-import javax.annotation.Priority;
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.Priorities;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.ReaderInterceptor;
-import javax.ws.rs.ext.ReaderInterceptorContext;
 
 import org.apache.http.HttpStatus;
-import org.jboss.resteasy.annotations.interception.ServerInterceptor;
-import org.jboss.resteasy.core.ServerResponse;
-import org.jboss.resteasy.spi.interception.AcceptedByMethod;
-import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import se.uhr.simone.admin.api.HttpConstants;
 import se.uhr.simone.admin.feed.AtomFeedEventRepresentation;
 import se.uhr.simone.atom.feed.server.entity.AtomCategory;
-import se.uhr.simone.atom.feed.server.entity.AtomEntry;
 import se.uhr.simone.atom.feed.server.entity.AtomCategory.Label;
 import se.uhr.simone.atom.feed.server.entity.AtomCategory.Term;
+import se.uhr.simone.atom.feed.server.entity.AtomEntry;
 import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
 import se.uhr.simone.atom.feed.server.entity.AtomEntry.Build;
 import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
@@ -53,13 +48,15 @@ public class FeedResource {
 	@Inject
 	private FeedBlocker feedBlocker;
 
+	@ApiOperation(value = "Answer with specified code for all feed requests", notes = "Enters a state where all feed requests are answered with the specified status code")
 	@PUT
 	@Path("response/code")
-	public Response setGlobalCode(int statusCode) {
+	public Response setGlobalCode(@ApiParam(value = "The HTTP status code", required = true) int statusCode) {
 		simulatedResponse.setGlobalCode(statusCode);
 		return Response.ok().build();
 	}
 
+	@ApiOperation(value = "Answer normally for all feed requests", notes = "Resumes normal state")
 	@DELETE
 	@Path("response/code")
 	public Response resetGlobalCode() {
@@ -67,6 +64,7 @@ public class FeedResource {
 		return Response.ok().build();
 	}
 
+	@ApiOperation(value = "Block feed events", notes = "Enters a state where no feed event are created")
 	@PUT
 	@Path("block")
 	public Response blockFeed() {
@@ -74,6 +72,7 @@ public class FeedResource {
 		return Response.ok().build();
 	}
 
+	@ApiOperation(value = "Unblock feed events", notes = "Resumes normal state")
 	@DELETE
 	@Path("block")
 	public Response unblockFeed() {
@@ -81,13 +80,15 @@ public class FeedResource {
 		return Response.ok().build();
 	}
 
+	@ApiOperation(value = "Delay feed requests", notes = "Delay each feed request with the specified time, set 0 to resume to normal")
 	@PUT
 	@Path("response/delay")
-	public Response setDelay(int timeInSeconds) {
+	public Response setDelay(@ApiParam(value = "Time in seconds") int timeInSeconds) {
 		simulatedResponse.setDelay(timeInSeconds);
 		return Response.ok().build();
 	}
 
+	@ApiOperation(value = "Create a custom feed event")
 	@POST
 	@Path("event")
 	public Response publishEvent(AtomFeedEventRepresentation event) {
@@ -108,24 +109,21 @@ public class FeedResource {
 	}
 
 	@Provider
-	@ServerInterceptor
-	public static class FeedServiceEnablerInterceptorOld implements PostProcessInterceptor, AcceptedByMethod {
+	@FeedCatagory
+	public static class FeedServiceFilter implements ContainerResponseFilter {
 
 		@Inject
 		SimulatedFeedResponse simulatedResponse;
 
 		@Override
-		public void postProcess(ServerResponse response) {
-			if (simulatedResponse.getCode() != SimulatedFeedResponse.NORMAL_STATUS_CODE) {
-				response.setStatus(simulatedResponse.getCode());
-			}
+		public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
+				throws IOException {
 
 			handleDelay();
-		}
-
-		@Override
-		public boolean accept(Class declaring, Method method) {
-			return declaring.isAnnotationPresent(FeedCatagory.class);
+			
+			if (simulatedResponse.getCode() != SimulatedFeedResponse.NORMAL_STATUS_CODE) {
+				responseContext.setStatus(simulatedResponse.getCode());
+			}
 		}
 
 		private void handleDelay() {
