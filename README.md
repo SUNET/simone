@@ -1,9 +1,10 @@
 # SimOne
 
-Base container for SimOne. SimOne is a simple simulator for REST and FEED based services. 
+Base container for SimOne. SimOne is a simple simulator for REST and FEED based services. See [SimOne-Example](https://github.com/SUNET/simone-example) for a simple demonstration of how to build a simulator.
+
 
 ## Build
-First build the .jar
+First build the SimOne core jar.
 
 ```bash
 mvn install
