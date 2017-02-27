@@ -15,6 +15,15 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 
+	<scm>
+		<url>https://github.com/SUNET/simone</url>
+	</scm>
+
+	<organization>
+		<name>SUNET</name>
+		<url>http://www.sunet.se/</url>
+	</organization>
+
 	<modules>
 		<module>simone.extension.api</module>
 		<module>simone.admin.api</module>
@@ -22,6 +31,13 @@
 		<module>simone</module>
 		<module>simone.docker</module>
 	</modules>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<dependencyManagement>
 		<dependencies>
@@ -74,4 +90,46 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>false</autoReleaseAfterClose>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

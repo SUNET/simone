@@ -27,9 +27,8 @@ public abstract class FeedResource {
 	/**
 	 * Returns the recent {@link AtomFeed} as XML if it does exist, otherwise null.
 	 * 
-	 * @param feedRepository
-	 * @param baseUri
-	 * @return
+	 * @param baseUri The feed URI
+	 * @return A HTTP result
 	 */
 	public Response getRecentFeedXml(URI baseUri) {
 		String feedXml = replaceTemplateValues(feedConverter.convertFeedToXml(feedRepository.getRecentFeed(), baseUri));
@@ -39,10 +38,9 @@ public abstract class FeedResource {
 	/**
 	 * Returns the {@link AtomFeed} as XML if it does exist, otherwise null.
 	 * 
-	 * @param id
-	 * @param feedRepository
-	 * @param baseUri
-	 * @return
+	 * @param id The feed to reed.
+	 * @param baseUri The feed URI
+	 * @return A HTTP result
 	 */
 	public Response getFeedXml(long id, URI baseUri) {
 		AtomFeed atomFeed = feedRepository.getFeedById(id);
