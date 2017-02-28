@@ -72,6 +72,6 @@ Password
 
 # Todo
 
-* Currently uses snapshot versions. 
+* Currently uses Maven snapshot versions. 
 
-* Should change Docker registry.
+* Currently use private Docker registry.
