@@ -21,7 +21,7 @@ RUN curl -O https://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-$WILDFLY
     && sha1sum wildfly-$WILDFLY_VERSION.tar.gz | grep $WILDFLY_SHA1 \
     && tar xf wildfly-$WILDFLY_VERSION.tar.gz
 
-RUN ln -s wildfly-$WILDFLY_VERSION wildfly && rm -f $WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz
+RUN ln -s wildfly-$WILDFLY_VERSION wildfly && rm -f wildfly-$WILDFLY_VERSION.tar.gz
 
 # http
 EXPOSE 8080
