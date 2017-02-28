@@ -1,4 +1,4 @@
-# SimOne
+![SimOne Logo](/images/logo.png)
 
 Base container for SimOne. SimOne is a simple simulator for REST and FEED based services. See [SimOne-Example](https://github.com/SUNET/simone-example) for a simple demonstration of how to build a simulator.
 
@@ -12,7 +12,7 @@ mvn install
 Then build the SimOne base Docker container.
 
 ```bash
-mvn --projects simone.docker package docker:build 
+mvn --projects simone.docker package docker:build
 ```
 
 ## Push the Docker container
@@ -66,12 +66,12 @@ Username
 Password
 : admin
 
-# Known Problems
+# Known problems
 
 * It is not possible to load SimOne by selecting a file in Swagger.
 
 # Todo
 
-* Currently uses Maven snapshot versions. 
+* Currently uses Maven snapshot versions.
 
 * Currently use private Docker registry.
