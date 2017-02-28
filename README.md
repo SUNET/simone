@@ -72,4 +72,6 @@ Password
 
 # Todo
 
-* Should change Docker registry
+* Currently uses snapshot versions. 
+
+* Should change Docker registry.
