@@ -4,20 +4,16 @@ Base container for SimOne. SimOne is a simple simulator for REST and FEED based 
 
 
 ## Build
-First build the SimOne core jar.
+
+Build the SimOne core jar and Docker image.
 
 ```bash
-mvn install
+mvn package
 ```
-Then build the SimOne base Docker container.
+Release the SimOne jar and Docker image
 
 ```bash
-mvn --projects simone.docker package docker:build
-```
-
-## Push the Docker container
-```bash
-mvn --projects simone.docker docker:push
+mvn release:prepare release:perform
 ```
 ## Documentation
 
