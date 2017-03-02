@@ -16,7 +16,9 @@
 	</properties>
 
 	<scm>
+		<connection>scm:git:git@github.com:SUNET/simone.git</connection>
 		<url>https://github.com/SUNET/simone</url>
+		<developerConnection>scm:git:git@github.com:SUNET/simone.git</developerConnection>
 	</scm>
 
 	<organization>
