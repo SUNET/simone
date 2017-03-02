@@ -27,13 +27,13 @@ The administrator API is documented in Swagger. Start the [simone-example](https
 
 ## Environment variables
 `SIMONE_BASE_URI`
-:  The base URI of SimOne used to reference the SimOne server in the Atom Feed. Default value is `http://localhost:8080`    
+:  The base URI of SimOne, used to reference the SimOne server in the Atom Feed. Default value is `http://localhost:8080`    
 
-## Directories
+## Files
 
 ### Logfiles
 
-All logfiles are stored under `/opt/jboss/wildfly/standalone/log`
+Logfiles are stored under `/opt/jboss/wildfly/standalone/log`
 
 ### Database
 
@@ -41,7 +41,7 @@ All database files are stored under `/var/simone/db`
 
 ### Dropin
 
-dropin is a special directory that is monitored by SimOne. When a new file is discovered extensions are notified and may handle the file in any way they want. The dropin directory is located at `/var/simone/dropin`
+`dropin` is a special directory that is monitored by SimOne. When a new file is discovered extensions are notified and may handle the file in any way they want. The dropin directory location is `/var/simone/dropin`
 
 ## Debug
 
@@ -55,7 +55,7 @@ jdb -attach 8787
 
 ### Inspect the Feed Database
 
-The Feed dagabase is stored in Apache Derby.  Use driver `org.apache.derby.jdbc.ClientDriver` the jar (derbyclient.jar) is included in the standard Java JRE. Nnote that you also must expose port `1527` in the docker run command.
+Feed information is stored in a Apache Derby database. Use driver `org.apache.derby.jdbc.ClientDriver` the jar (derbyclient.jar) is included in the standard Java JRE installation. Note that you also must expose port `1527` in the docker run command.
 
 URL
 : jdbc:derby://localhost:1527/feed
