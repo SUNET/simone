@@ -4,7 +4,7 @@
 
 	<groupId>se.uhr.simone</groupId>
 	<artifactId>root</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>0.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<url>https://github.com/SUNET/simone</url>
@@ -21,8 +21,24 @@
 
 	<organization>
 		<name>SUNET</name>
-		<url>http://www.sunet.se/</url>
+		<url>http://www.sunet.se</url>
 	</organization>
+
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Mattias Andersson</name>
+			<email>mattias.andersson@umu.se</email>
+			<organization>SUNET</organization>
+			<organizationUrl>http://www.sunet.se</organizationUrl>
+		</developer>
+	</developers>
 
 	<modules>
 		<module>simone.extension.api</module>
@@ -33,6 +49,10 @@
 	</modules>
 
 	<distributionManagement>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
 		<snapshotRepository>
 			<id>ossrh</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
@@ -94,6 +114,25 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
 				<artifactId>nexus-staging-maven-plugin</artifactId>
 				<version>1.6.7</version>
@@ -101,7 +140,6 @@
 				<configuration>
 					<serverId>ossrh</serverId>
 					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-					<autoReleaseAfterClose>false</autoReleaseAfterClose>
 				</configuration>
 			</plugin>
 			<plugin>

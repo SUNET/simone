@@ -72,6 +72,4 @@ Password
 
 # Todo
 
-* Currently uses Maven snapshot versions.
-
-* Currently use private Docker registry.
+* Currently uses a private Docker registry (https://hub.docker.com/r/attiand/simone/).
