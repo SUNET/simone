@@ -17,7 +17,7 @@ Example REST API
 : The REST API to simulate, implemented by the SimOne-example in this case.
 
 Admin REST API
-: API to control the SimOne simulator, see [Admin API](#Admin-API) for more information.
+: API to control the SimOne simulator, see [Admin API](#admin-api) for more information.
 
 Extension API
 : API that notifies the SimOne simulator about actions initiated from the admin API, or create feed entries.
