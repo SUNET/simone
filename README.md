@@ -36,7 +36,7 @@ Base
 SimOne
 : The image created by this project: Wildfly, Derby etc. See the [Dockerfile](simone.docker/docker/Dockerfile) for more information.
 
-SomOne-Example
+SimOne-Example
 : Deploys the SomOne-Example war file to the wildfly.
 
 ## Build
