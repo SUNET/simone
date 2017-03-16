@@ -1,7 +1,10 @@
 ![SimOne Logo](/images/logo.png)
 
-Base container for SimOne. SimOne is a simple simulator for REST and FEED based services. See [SimOne-Example](https://github.com/SUNET/simone-example) for a simple demonstration of how to build a simulator.
+Base container for SimOne. SimOne is a simple simulator for REST and FEED based services.
 
+This projects builds a jar that constitutes core simulator functionality and is meant to be included in a war that is built by the final simulator. The projects also provides a Docker image that is meant to be used as a base for the final simulator Docker image.
+
+See [SimOne-Example](https://github.com/SUNET/simone-example) for a simple demonstration of how to build a simulator.
 
 ## Build
 
