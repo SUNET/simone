@@ -14,10 +14,10 @@ Atom feed API
 : Publish the atom feed.
 
 Example REST API
-: The REST API to simulatate, implmented by the simone-example in this case.
+: The REST API to simulate, implemented by the SimOne-example in this case.
 
 Admin REST API
-: API to control the SimOne simulator, see [Admin API](#Admin API) for more information.
+: API to control the SimOne simulator, see [Admin API](#Admin-API) for more information.
 
 Extension API
 : API that notifies the SimOne simulator about actions initiated from the admin API, or create feed entries.
@@ -31,10 +31,10 @@ void publish(AtomEntry entry);
 ![SimOne Overview](/images/docker.png)
 
 Base
-: The base image, currently alpine-openjdk
+: The base image, currently `alpine-openjdk`
 
 SimOne
-: The image created by this project: Wildfly, Derby etc. See [Dockerfile](simone.docker/docker/Dockerfile)
+: The image created by this project: Wildfly, Derby etc. See the [Dockerfile](simone.docker/docker/Dockerfile) for more information.
 
 SomOne-Example
 : Deploys the SomOne-Example war file to the wildfly.
