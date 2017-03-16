@@ -6,6 +6,39 @@ This projects builds a jar that constitutes core simulator functionality and is 
 
 See [SimOne-Example](https://github.com/SUNET/simone-example) for a simple demonstration of how to build a simulator.
 
+## Overview
+
+![SimOne Overview](/images/overview.png)
+
+Atom feed API
+: Publish the atom feed.
+
+Example REST API
+: The REST API to simulatate, implmented by the simone-example in this case.
+
+Admin REST API
+: API to control the SimOne simulator, see [Admin API](#Admin API) for more information.
+
+Extension API
+: API that notifies the SimOne simulator about actions initiated from the admin API, or create feed entries.
+
+```Java
+void publish(AtomEntry entry);
+```
+
+## Docker view
+
+![SimOne Overview](/images/docker.png)
+
+Base
+: The base image, currently alpine-openjdk
+
+SimOne
+: The image created by this project: Wildfly, Derby etc. See [Dockerfile](simone.docker/docker/Dockerfile)
+
+SomOne-Example
+: Deploys the SomOne-Example war file to the wildfly.
+
 ## Build
 
 Build the SimOne core jar and Docker image.
@@ -22,7 +55,7 @@ mvn release:prepare release:perform
 
 ### Admin API
 
-The administrator API is documented in Swagger. Start the [simone-example](https://github.com/SUNET/simone-example) Docker container and point a Browser to <http://localhost:8080/sim/doc>
+API to control the simulator, for example empty the database, answer all REST requests with a specific HTTP status, delay responses etc. The administrator API is documented in Swagger. Start the [simone-example](https://github.com/SUNET/simone-example) Docker container and point your Browser to <http://localhost:8080/sim/doc>
 
 ## Environment variables
 `SIMONE_BASE_URI`
