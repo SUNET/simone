@@ -69,7 +69,7 @@ public class RSResource {
 	@DELETE
 	@Path("code/path")
 	public Response resetResponseCodeForPath(@ApiParam(value="The REST path, i.e. the path sans web context") String path) {
-		simulatedResponse.resetCodeForPath(path);
+		simulatedResponse.resetCodeForPath(path.length() != 0 ? path : null);
 		return Response.ok().build();
 	}
 	

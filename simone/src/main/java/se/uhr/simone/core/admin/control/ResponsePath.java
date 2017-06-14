@@ -9,7 +9,12 @@ public class ResponsePath {
 	private final ArrayList<String> segments;
 
 	private ResponsePath(String path) {
-		this.segments = new ArrayList<>(Arrays.asList(trimPath(path).split("/")));
+		if(path != null ) {
+			this.segments = new ArrayList<>(Arrays.asList(trimPath(path).split("/")));
+		}
+		else {
+			this.segments = new ArrayList<>();
+		}
 	}
 
 	public static ResponsePath of(String path) {
