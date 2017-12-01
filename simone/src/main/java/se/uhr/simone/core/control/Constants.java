@@ -5,5 +5,5 @@ import java.nio.file.Paths;
 
 public class Constants {
 
-	public static Path DROPIN_DIRECTORY = Paths.get(System.getProperty("se.uhr.simone.dropin", "../dropin"));
+	public static Path DROPIN_DIRECTORY = Paths.get(System.getProperty("se.uhr.simone.dropin", "dropin"));
 }
