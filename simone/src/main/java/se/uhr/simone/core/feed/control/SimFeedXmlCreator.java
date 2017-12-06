@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import se.uhr.simone.atom.feed.server.control.FeedXmlCreator;
 import se.uhr.simone.core.feed.entity.SimFeedRepository;
-import se.uhr.simone.extension.api.Constants;
+import se.uhr.simone.extension.api.SimoneProperties;
 
 @Startup
 @Singleton
@@ -44,7 +44,7 @@ public class SimFeedXmlCreator {
 	@Timeout
 	public void createXmlForFeeds() {
 		try {
-			feedXmlCreator.createXmlForFeeds(feedRepository, Constants.FEED_URI);
+			feedXmlCreator.createXmlForFeeds(feedRepository, SimoneProperties.getFeedBaseURI());
 		} catch (Exception e) {
 			LOG.error("Failed to create xml for feed", e);
 		} finally {

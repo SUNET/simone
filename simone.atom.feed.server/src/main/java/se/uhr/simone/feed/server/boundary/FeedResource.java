@@ -8,8 +8,7 @@ import javax.inject.Inject;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.apache.http.HttpStatus;
+import javax.ws.rs.core.Response.Status;
 
 import se.uhr.simone.atom.feed.server.control.FeedConverter;
 import se.uhr.simone.atom.feed.server.entity.AtomFeed;
@@ -45,7 +44,7 @@ public abstract class FeedResource {
 	public Response getFeedXml(long id, URI baseUri) {
 		AtomFeed atomFeed = feedRepository.getFeedById(id);
 		if (atomFeed == null) {
-			return Response.status(HttpStatus.SC_NOT_FOUND).build();
+			return Response.status(Status.NOT_FOUND).build();
 		}
 
 		String feedXml = atomFeed.getXml();

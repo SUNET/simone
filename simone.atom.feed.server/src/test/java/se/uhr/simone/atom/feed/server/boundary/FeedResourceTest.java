@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
-import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -51,7 +51,7 @@ public class FeedResourceTest {
 
 		given(feedRepository.getFeedById(1)).willReturn(null);
 
-		assertEquals(HttpStatus.SC_NOT_FOUND, feedResource.getFeedXml(1, testURI).getStatus());
+		assertEquals(Status.NOT_FOUND.getStatusCode(), feedResource.getFeedXml(1, testURI).getStatus());
 
 		verify(feedRepository, times(1)).getFeedById(1);
 	}
@@ -67,7 +67,7 @@ public class FeedResourceTest {
 
 		Response response = feedResource.getFeedXml(1, testURI);
 
-		assertEquals(HttpStatus.SC_OK, response.getStatus());
+		assertEquals(Status.OK.getStatusCode(), response.getStatus());
 
 		assertNotNull(response.getEntity());
 		System.out.println(response.getEntity());

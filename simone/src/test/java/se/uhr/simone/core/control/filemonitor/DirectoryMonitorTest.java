@@ -53,7 +53,7 @@ public class DirectoryMonitorTest {
 		Files.createFile(jobfile);
 
 		// We need to give the watch service some time to detected the new file
-		Thread.currentThread().sleep(1000);
+		Thread.sleep(1000);
 
 		mon.runAvailableJobs();
 		assertTrue(Files.exists(dropin.resolve("f1.test.done")));

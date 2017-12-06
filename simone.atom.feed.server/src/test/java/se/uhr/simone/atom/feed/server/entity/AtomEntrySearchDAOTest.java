@@ -28,9 +28,9 @@ public class AtomEntrySearchDAOTest extends DAOTestCase {
 
 	@Before
 	public void setup() {
-		atomEntrySearchDAO = new AtomEntrySearchDAO(new JdbcTemplate(db));
-		atomFeedDAO = new AtomFeedDAO(new JdbcTemplate(db));
-		atomEntryDAO = new AtomEntryDAO(new JdbcTemplate(db));
+		atomEntrySearchDAO = new AtomEntrySearchDAO(new JdbcTemplate(ds));
+		atomFeedDAO = new AtomFeedDAO(new JdbcTemplate(ds));
+		atomEntryDAO = new AtomEntryDAO(new JdbcTemplate(ds));
 		DateTimeUtils.setCurrentMillisSystem();
 	}
 

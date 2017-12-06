@@ -26,7 +26,7 @@ public class AtomFeedDAOTest extends DAOTestCase {
 
 	@Before
 	public void setup() {
-		atomFeedDAO = new AtomFeedDAO(new JdbcTemplate(db));
+		atomFeedDAO = new AtomFeedDAO(new JdbcTemplate(ds));
 	}
 
 	@Test

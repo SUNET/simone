@@ -26,8 +26,8 @@ public class AtomCategoryDAOTest extends DAOTestCase {
 
 	@Before
 	public void setup() {
-		atomCategoryDAO = new AtomCategoryDAO(new JdbcTemplate(db));
-		atomEntryDAO = new AtomEntryDAO(new JdbcTemplate(db));
+		atomCategoryDAO = new AtomCategoryDAO(new JdbcTemplate(ds));
+		atomEntryDAO = new AtomEntryDAO(new JdbcTemplate(ds));
 	}
 
 	@Test

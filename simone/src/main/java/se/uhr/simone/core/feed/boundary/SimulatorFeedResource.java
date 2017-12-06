@@ -8,7 +8,7 @@ import javax.ws.rs.core.Response;
 
 import se.uhr.simone.core.boundary.FeedCatagory;
 import se.uhr.simone.core.control.mbean.Metrics;
-import se.uhr.simone.extension.api.Constants;
+import se.uhr.simone.extension.api.SimoneProperties;
 import se.uhr.simone.feed.server.boundary.FeedResource;
 
 @FeedCatagory
@@ -23,7 +23,7 @@ public class SimulatorFeedResource extends FeedResource {
 	public Response getRecentFeed() {
 		metricts.addRecentRequest();
 
-		return super.getRecentFeedXml(Constants.FEED_URI);
+		return super.getRecentFeedXml(SimoneProperties.getFeedBaseURI());
 	}
 
 	@Path("{id}")
@@ -31,7 +31,7 @@ public class SimulatorFeedResource extends FeedResource {
 	public Response getFeedById(@PathParam("id") long id) {
 		metricts.addFeedRequest(id);
 
-		return super.getFeedXml(id, Constants.FEED_URI);
+		return super.getFeedXml(id, SimoneProperties.getFeedBaseURI());
 	}
 
 	@Override

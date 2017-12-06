@@ -12,9 +12,8 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
-
-import org.apache.http.HttpStatus;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -96,8 +95,11 @@ public class FeedResource {
 
 		Long nextSortOrder = feedRepository.getNextSortOrder();
 
-		Build builder = AtomEntry.builder().withAtomEntryId(AtomEntryId.of(uid, event.getContentType()))
-				.withSortOrder(nextSortOrder).withSubmittedNow().withXml(event.getContent());
+		Build builder = AtomEntry.builder()
+				.withAtomEntryId(AtomEntryId.of(uid, event.getContentType()))
+				.withSortOrder(nextSortOrder)
+				.withSubmittedNow()
+				.withXml(event.getContent());
 
 		for (se.uhr.simone.admin.feed.AtomCategoryRepresentation category : event.getCategorys()) {
 			builder.withCategory(AtomCategory.of(Term.of(category.getTerm()), Label.of(category.getLabel())));
@@ -105,7 +107,7 @@ public class FeedResource {
 
 		feedRepository.saveAtomEntry(builder.build());
 
-		return Response.status(HttpStatus.SC_OK).header(HttpConstants.EVENT_ID_HEADER, uid).build();
+		return Response.status(Status.OK).header(HttpConstants.EVENT_ID_HEADER, uid).build();
 	}
 
 	@Provider
@@ -116,11 +118,10 @@ public class FeedResource {
 		SimulatedFeedResponse simulatedResponse;
 
 		@Override
-		public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
-				throws IOException {
+		public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
 
 			handleDelay();
-			
+
 			if (simulatedResponse.getCode() != SimulatedFeedResponse.NORMAL_STATUS_CODE) {
 				responseContext.setStatus(simulatedResponse.getCode());
 			}

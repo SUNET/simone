@@ -32,8 +32,8 @@ public class AtomEntryDAOTest extends DAOTestCase {
 
 	@Before
 	public void setup() {
-		atomFeedDAO = new AtomFeedDAO(new JdbcTemplate(db));
-		atomEntryDAO = new AtomEntryDAO(new JdbcTemplate(db));
+		atomFeedDAO = new AtomFeedDAO(new JdbcTemplate(ds));
+		atomEntryDAO = new AtomEntryDAO(new JdbcTemplate(ds));
 		DateTimeUtils.setCurrentMillisSystem();
 	}
 
