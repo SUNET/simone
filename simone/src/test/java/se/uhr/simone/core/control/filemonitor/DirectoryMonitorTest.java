@@ -20,7 +20,6 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.uhr.simone.core.control.extension.ExtensionManager;
-import se.uhr.simone.core.control.filemonitor.DirectoryMonitor;
 import se.uhr.simone.extension.api.fileloader.ExtensionContext;
 import se.uhr.simone.extension.api.fileloader.FileLoader;
 import se.uhr.simone.extension.api.fileloader.FileLoaderDescriptor;
@@ -86,9 +85,6 @@ public class DirectoryMonitorTest {
 		verify(fakeJob, times(0)).execute(any(ExtensionContext.class));
 
 		Files.createFile(jobfile);
-
-		// We need to give the watch service some time to detected the new file
-		Thread.currentThread().sleep(1000);
 
 		mon.runAvailableJobs();
 

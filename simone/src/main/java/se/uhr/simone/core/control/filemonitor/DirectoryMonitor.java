@@ -1,19 +1,13 @@
 package se.uhr.simone.core.control.filemonitor;
 
-import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
-import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
-
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.Charset;
-import java.nio.file.FileSystems;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,8 +36,6 @@ public class DirectoryMonitor {
 
 	private final Path dropinDirectory;
 
-	private final WatchService watcher;
-
 	private final ExtensionManager extensionManager;
 
 	@Inject
@@ -64,9 +56,6 @@ public class DirectoryMonitor {
 		}
 
 		LOG.info("monitoring directory " + dropinDirectory);
-
-		watcher = FileSystems.getDefault().newWatchService();
-		dropinDirectory.register(watcher, ENTRY_CREATE);
 	}
 
 	public void runAvailableJobs() {
@@ -94,12 +83,10 @@ public class DirectoryMonitor {
 				LOG.info("execute job: " + job.getPath());
 
 				FileExtensionContext context = new FileExtensionContext();
-				
-				FileLoader.Result result = job.getFileJob().execute(context);
-				
-				log.append(context.getErrorMessage());
 
-				log.close();
+				FileLoader.Result result = job.getFileJob().execute(context);
+
+				log.append(context.getErrorMessage());
 
 				if (result == FileLoader.Result.SUCCESS) {
 					LOG.info("job finished successfully");
@@ -118,35 +105,25 @@ public class DirectoryMonitor {
 	private List<DirectoryFileJob> getAvailableJobs() throws IOException {
 		List<DirectoryFileJob> res = new ArrayList<>();
 
-		WatchKey key = null;
+		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(dropinDirectory)) {
+			for (Path path : directoryStream) {
+				if (!FileUtil.hasSuffix(path.toString(), USED_SUFFIXES)) {
 
-		while ((key = watcher.poll()) != null) {
-			for (WatchEvent<?> event : key.pollEvents()) {
-				WatchEvent.Kind<?> kind = event.kind();
-				if (OVERFLOW.equals(kind)) {
-					continue;
-				} else if (ENTRY_CREATE.equals(kind)) {
-					@SuppressWarnings("unchecked")
-					WatchEvent<Path> ev = (WatchEvent<Path>) event;
-					Path filename = ev.context();
+					FileLoaderDescriptor desc = getJobDescriptor(path.getFileName().toString());
 
-					FileLoaderDescriptor desc = getJobDescriptor(filename.getFileName().toString());
-
-					Path path = dropinDirectory.resolve(filename);
+					Path jobFile = dropinDirectory.resolve(path);
 
 					if (desc != null) {
-						Reader reader = Files.newBufferedReader(path, Charset.defaultCharset());
+						Reader reader = Files.newBufferedReader(jobFile, Charset.defaultCharset());
 
-						res.add(new DirectoryFileJob(desc.createJob(reader), path));
+						res.add(new DirectoryFileJob(desc.createJob(reader), jobFile));
 					} else {
-						LOG.debug("No match for: {}", filename);
+						LOG.debug("No match for: {}", jobFile);
 					}
 				}
 			}
-
-			if (!key.reset()) {
-				LOG.error("Can't monitor dropin directory " + dropinDirectory);
-			}
+		} catch (IOException ex) {
+			LOG.error("Can't read dropin directory " + dropinDirectory);
 		}
 
 		return res;
@@ -173,13 +150,12 @@ public class DirectoryMonitor {
 		public void addEventId(UniqueIdentifier uid) {
 		}
 
-
 		@Override
 		public void setErrorMessage(String message) {
 			errorMessage = message;
-			
+
 		}
-		
+
 		String getErrorMessage() {
 			return errorMessage;
 		}
