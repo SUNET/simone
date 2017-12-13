@@ -24,6 +24,7 @@ class AtomEntryRowMapper implements RowMapper<AtomEntry> {
 				.withSortOrder(rs.getLong("SORT_ORDER"))
 				.withSubmitted(TimestampUtil.getUTCColumn(rs, "SUBMITTED")) // ,
 				.withFeedId(feedId) //
+				.withTitle(rs.getString("TITLE")) //
 				.withXml(rs.getString("ENTRY_XML")) //
 				.build();
 	}

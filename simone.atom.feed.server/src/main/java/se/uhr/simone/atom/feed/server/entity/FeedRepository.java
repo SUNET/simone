@@ -15,7 +15,6 @@ public abstract class FeedRepository {
 	private AtomFeedDAO atomFeedDAO;
 	private AtomEntryDAO atomEntryDAO;
 	private AtomCategoryDAO atomCategoryDAO;
-	private AtomEntrySearchDAO atomEntrySearchDAO;
 
 	public abstract DataSource getDataSource();
 
@@ -25,7 +24,6 @@ public abstract class FeedRepository {
 		atomFeedDAO = createAtomFeedDAO(jdbcTemplate);
 		atomEntryDAO = createAtomEntryDAO(jdbcTemplate);
 		atomCategoryDAO = createAtomCategoryDAO(jdbcTemplate);
-		atomEntrySearchDAO = new AtomEntrySearchDAO(jdbcTemplate);
 	}
 
 	protected AtomFeedDAO createAtomFeedDAO(JdbcTemplate jdbcTemplate) {
@@ -134,13 +132,5 @@ public abstract class FeedRepository {
 			atomEntry.setAtomCategories(atomCategoryDAO.getCategoriesForAtomEntry(atomEntry.getAtomEntryId()));
 		}
 		return atomEntries;
-	}
-
-	public List<AtomEntry> searchAtomEntries(AtomEntrySearchParams query) {
-		return atomEntrySearchDAO.searchAtomEntriesUR(query);
-	}
-
-	public int searchAtomEntriesCount(AtomEntrySearchParams query) {
-		return atomEntrySearchDAO.searchAtomEntriesCountUR(query);
 	}
 }
