@@ -13,7 +13,7 @@ import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
 
 public class AtomEntryDAO {
 
-	final static int MAX_NUM_OF_ENTRIES_TO_RETURN = 10_000;
+	static final int MAX_NUM_OF_ENTRIES_TO_RETURN = 10_000;
 
 	private JdbcTemplate jdbcTemplate;
 
@@ -30,24 +30,26 @@ public class AtomEntryDAO {
 	public void insert(AtomEntry atomEntry) {
 		StringBuilder sql = new StringBuilder();
 		sql.append(
-				"INSERT INTO ATOM_ENTRY (ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SORT_ORDER, SUBMITTED, ENTRY_XML) VALUES (?,?,?,?,?, XMLPARSE( DOCUMENT CAST(? AS CLOB(1M)) PRESERVE WHITESPACE))");
+				"INSERT INTO ATOM_ENTRY (ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SORT_ORDER, SUBMITTED, TITLE, ENTRY_XML) VALUES (?,?,?,?,?,?, XMLPARSE( DOCUMENT CAST(? AS CLOB(1M)) PRESERVE WHITESPACE))");
 		jdbcTemplate.update(sql.toString(), atomEntry.getAtomEntryId().getId().toByteArray(),
 				atomEntry.getAtomEntryId() == null ? null : atomEntry.getAtomEntryId().getContentType(), atomEntry.getFeedId(),
-				atomEntry.getSortOrder(), TimestampUtil.forUTCColumn(atomEntry.getSubmitted()), atomEntry.getXml());
+				atomEntry.getSortOrder(), TimestampUtil.forUTCColumn(atomEntry.getSubmitted()), atomEntry.getTitle(),
+				atomEntry.getXml());
 	}
 
 	public void update(AtomEntry atomEntry) {
 		StringBuilder sql = new StringBuilder();
 		sql.append(
-				"UPDATE ATOM_ENTRY SET FEED_ID=?, SUBMITTED=?, ENTRY_XML=XMLPARSE( DOCUMENT CAST(? AS CLOB(1M)) PRESERVE WHITESPACE) WHERE ENTRY_ID=? AND ENTRY_CONTENT_TYPE=?");
+				"UPDATE ATOM_ENTRY SET FEED_ID=?, SUBMITTED=?, TITLE=?, ENTRY_XML=XMLPARSE( DOCUMENT CAST(? AS CLOB(1M)) PRESERVE WHITESPACE) WHERE ENTRY_ID=? AND ENTRY_CONTENT_TYPE=?");
 		jdbcTemplate.update(sql.toString(), atomEntry.getFeedId(), TimestampUtil.forUTCColumn(atomEntry.getSubmitted()),
-				atomEntry.getXml(), atomEntry.getAtomEntryId().getId().toByteArray(), atomEntry.getAtomEntryId().getContentType());
+				atomEntry.getTitle(), atomEntry.getXml(), atomEntry.getAtomEntryId().getId().toByteArray(),
+				atomEntry.getAtomEntryId().getContentType());
 	}
 
 	public AtomEntry fetchBy(AtomEntryId atomEntryId) {
 		StringBuilder sql = new StringBuilder();
 		sql.append(
-				"SELECT SORT_ORDER, ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SUBMITTED, XMLSERIALIZE(ENTRY_XML AS CLOB(1M)) AS ENTRY_XML FROM ATOM_ENTRY WHERE ENTRY_ID = ? AND ENTRY_CONTENT_TYPE = ?");
+				"SELECT SORT_ORDER, ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SUBMITTED, TITLE, XMLSERIALIZE(ENTRY_XML AS CLOB(1M)) AS ENTRY_XML FROM ATOM_ENTRY WHERE ENTRY_ID = ? AND ENTRY_CONTENT_TYPE = ?");
 		return jdbcTemplate.queryForObject(sql.toString(), new AtomEntryRowMapper(), atomEntryId.getId().toByteArray(),
 				atomEntryId.getContentType());
 	}
@@ -55,7 +57,7 @@ public class AtomEntryDAO {
 	public List<AtomEntry> getAtomEntriesForFeed(long id) {
 		StringBuilder sql = new StringBuilder();
 		sql.append(
-				"SELECT SORT_ORDER, ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SUBMITTED, XMLSERIALIZE(ENTRY_XML AS CLOB(1M)) AS ENTRY_XML FROM ATOM_ENTRY WHERE FEED_ID = ? ORDER BY SORT_ORDER DESC, SUBMITTED DESC");
+				"SELECT SORT_ORDER, ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SUBMITTED, TITLE, XMLSERIALIZE(ENTRY_XML AS CLOB(1M)) AS ENTRY_XML FROM ATOM_ENTRY WHERE FEED_ID = ? ORDER BY SORT_ORDER DESC, SUBMITTED DESC");
 		return jdbcTemplate.query(sql.toString(), new AtomEntryRowMapper(), id);
 	}
 
@@ -74,7 +76,7 @@ public class AtomEntryDAO {
 	public List<AtomEntry> getEntriesNotConnectedToFeed() {
 		StringBuilder sql = new StringBuilder();
 		sql.append(
-				"SELECT SORT_ORDER, ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SUBMITTED, XMLSERIALIZE(ENTRY_XML AS CLOB(1M)) AS ENTRY_XML FROM ATOM_ENTRY WHERE FEED_ID IS NULL ORDER BY SORT_ORDER ASC, SUBMITTED ASC FETCH FIRST "
+				"SELECT SORT_ORDER, ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SUBMITTED, TITLE, XMLSERIALIZE(ENTRY_XML AS CLOB(1M)) AS ENTRY_XML FROM ATOM_ENTRY WHERE FEED_ID IS NULL ORDER BY SORT_ORDER ASC, SUBMITTED ASC FETCH FIRST "
 						+ MAX_NUM_OF_ENTRIES_TO_RETURN + " ROWS ONLY");
 		return jdbcTemplate.query(sql.toString(), new AtomEntryRowMapper());
 	}

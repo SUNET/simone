@@ -88,7 +88,14 @@ public class FeedConverter {
 			convertedEntry.setId(entry.getAtomEntryId().getId().getValue());
 			convertedEntry.setUpdated(entry.getSubmitted());
 			convertedEntry.setCategories(getConvertedCategories(entry));
-			convertedEntry.setContents(Arrays.asList(getContent(entry)));
+			if (entry.getXml() != null) {
+				convertedEntry.setContents(Arrays.asList(getContent(entry)));
+			}
+			if (entry.hasTitle()) {
+				// Title is mandatory according to the atom specification.
+				// This breaks the atom specification, but is needed for backwards compatibility.
+				convertedEntry.setTitle(entry.getTitle());
+			}
 			convertedEntries.add(convertedEntry);
 		}
 

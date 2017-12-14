@@ -10,6 +10,7 @@ public class AtomEntry {
 	private AtomEntryId atomEntryId;
 	private String xml;
 	private Long feedId;
+	private String title;
 	private Timestamp submitted;
 	private List<AtomCategory> atomCategories = new ArrayList<>();
 
@@ -19,6 +20,7 @@ public class AtomEntry {
 		this.submitted = builder.fSubmitted;
 		this.atomCategories = builder.categories;
 		this.feedId = builder.feedId;
+		this.title = builder.title;
 	}
 
 	public static AtomEntryIdBuilder builder() {
@@ -45,6 +47,14 @@ public class AtomEntry {
 		this.feedId = feedId;
 	}
 
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
 	public Timestamp getSubmitted() {
 		return submitted;
 	}
@@ -58,6 +68,7 @@ public class AtomEntry {
 	}
 
 	public static class AtomEntryId implements Serializable {
+
 		private static final long serialVersionUID = 1L;
 
 		private UniqueIdentifier entryId;
@@ -91,6 +102,7 @@ public class AtomEntry {
 		private String fXml;
 		private List<AtomCategory> categories = new ArrayList<>();
 		private Long feedId;
+		private String title;
 
 		@Override
 		public AtomEntry build() {
@@ -138,6 +150,12 @@ public class AtomEntry {
 			this.categories = atomCategories;
 			return this;
 		}
+
+		@Override
+		public Build withTitle(String title) {
+			this.title = title;
+			return this;
+		}
 	}
 
 	public interface AtomEntryIdBuilder {
@@ -161,6 +179,8 @@ public class AtomEntry {
 		public Build withCategory(AtomCategory atomCategory);
 
 		public Build withCategories(List<AtomCategory> atomCategories);
+
+		public Build withTitle(String title);
 
 		public AtomEntry build();
 	}
