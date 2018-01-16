@@ -20,6 +20,7 @@ public class AtomEntry implements Serializable {
 	private Timestamp submitted;
 	private String title;
 	private List<AtomCategory> atomCategories = new ArrayList<>();
+	private List<AtomLink> atomLinks = new ArrayList<>();
 
 	private AtomEntry(AtomEntryBuilder builder) {
 		this.atomEntryId = builder.atomEntryId;
@@ -29,6 +30,7 @@ public class AtomEntry implements Serializable {
 		this.feedId = builder.feedId;
 		this.sortOrder = builder.sortOrder;
 		this.title = builder.title;
+		this.atomLinks = builder.links;
 	}
 
 	public static AtomEntryIdBuilder builder() {
@@ -83,6 +85,14 @@ public class AtomEntry implements Serializable {
 		return Objects.nonNull(title) && !title.trim().isEmpty();
 	}
 
+	public List<AtomLink> getAtomLinks() {
+		return atomLinks;
+	}
+
+	public void setAtomLink(List<AtomLink> atomLink) {
+		this.atomLinks = atomLink;
+	}
+
 	public static class AtomEntryId implements Serializable {
 
 		private static final long serialVersionUID = 1L;
@@ -121,6 +131,7 @@ public class AtomEntry implements Serializable {
 		private List<AtomCategory> categories = new ArrayList<>();
 		private Long feedId;
 		private String title;
+		private List<AtomLink> links = new ArrayList<>();
 
 		@Override
 		public AtomEntry build() {
@@ -180,6 +191,12 @@ public class AtomEntry implements Serializable {
 			this.title = title;
 			return this;
 		}
+
+		@Override
+		public Build withLinks(List<AtomLink> links) {
+			this.links = links;
+			return this;
+		}
 	}
 
 	public interface AtomEntryIdBuilder {
@@ -211,7 +228,10 @@ public class AtomEntry implements Serializable {
 
 		public Build withTitle(String title);
 
+		public Build withLinks(List<AtomLink> links);
+
 		public AtomEntry build();
+
 	}
 
 }

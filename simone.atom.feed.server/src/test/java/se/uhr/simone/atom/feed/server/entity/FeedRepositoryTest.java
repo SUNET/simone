@@ -21,13 +21,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import se.uhr.simone.atom.feed.server.entity.AtomCategory;
-import se.uhr.simone.atom.feed.server.entity.AtomCategoryDAO;
-import se.uhr.simone.atom.feed.server.entity.AtomEntry;
-import se.uhr.simone.atom.feed.server.entity.AtomEntryDAO;
-import se.uhr.simone.atom.feed.server.entity.AtomFeed;
-import se.uhr.simone.atom.feed.server.entity.AtomFeedDAO;
-import se.uhr.simone.atom.feed.server.entity.FeedRepository;
 import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
 import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
 
@@ -41,6 +34,9 @@ public class FeedRepositoryTest {
 
 	@Mock
 	private AtomCategoryDAO atomCategoryDAO;
+
+	@Mock
+	private AtomLinkDAO atomLinkDAO;
 
 	@InjectMocks
 	private FeedRepository feedRepository = new TestableFeedRepository();
@@ -91,6 +87,7 @@ public class FeedRepositoryTest {
 
 		verify(atomEntryDAO, times(1)).exists(atomEntry.getAtomEntryId());
 		verify(atomEntryDAO, times(1)).update(atomEntry);
+		verify(atomLinkDAO, times(1)).delete(atomEntry.getAtomEntryId());
 		//		verify(atomCategoryDAO, never()).exists(any(Long.class));
 		verify(atomCategoryDAO, never()).isConnected(any(AtomCategory.class), eq(atomEntry.getAtomEntryId()));
 	}
