@@ -3,6 +3,8 @@ package se.uhr.simone.extension.api.feed;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class AtomEntry {
@@ -13,6 +15,7 @@ public class AtomEntry {
 	private String title;
 	private Timestamp submitted;
 	private List<AtomCategory> atomCategories = new ArrayList<>();
+	private List<AtomLink> links = new ArrayList<>();
 
 	private AtomEntry(AtomEntryBuilder builder) {
 		this.atomEntryId = builder.fAtomEntryId;
@@ -21,6 +24,7 @@ public class AtomEntry {
 		this.atomCategories = builder.categories;
 		this.feedId = builder.feedId;
 		this.title = builder.title;
+		this.links = builder.links;
 	}
 
 	public static AtomEntryIdBuilder builder() {
@@ -53,6 +57,14 @@ public class AtomEntry {
 
 	public String getTitle() {
 		return title;
+	}
+
+	public List<AtomLink> getLinks() {
+		return Collections.unmodifiableList(links);
+	}
+
+	public void setLinks(List<AtomLink> links) {
+		this.links = new ArrayList<>(links);
 	}
 
 	public Timestamp getSubmitted() {
@@ -95,14 +107,15 @@ public class AtomEntry {
 		}
 	}
 
-	public static class AtomEntryBuilder implements AtomEntryIdBuilder, SubmittedBuilder, Build {
+	public static class AtomEntryBuilder implements AtomEntryIdBuilder, SubmittedBuilder, ContentBuilder, Build {
 
-		private Timestamp fSubmitted;
+		private Long feedId;
 		private AtomEntryId fAtomEntryId;
+		private String title;
+		private Timestamp fSubmitted;
+		private List<AtomLink> links = new ArrayList<>();
 		private String fXml;
 		private List<AtomCategory> categories = new ArrayList<>();
-		private Long feedId;
-		private String title;
 
 		@Override
 		public AtomEntry build() {
@@ -110,13 +123,13 @@ public class AtomEntry {
 		}
 
 		@Override
-		public Build withSubmittedNow() {
+		public ContentBuilder withSubmittedNow() {
 			this.fSubmitted = new Timestamp(System.currentTimeMillis());
 			return this;
 		}
 
 		@Override
-		public Build withSubmitted(Timestamp submitted) {
+		public ContentBuilder withSubmitted(Timestamp submitted) {
 			this.fSubmitted = submitted;
 			return this;
 		}
@@ -156,6 +169,22 @@ public class AtomEntry {
 			this.title = title;
 			return this;
 		}
+
+		@Override
+		public Build withAlternateLinks(AtomLink... links) {
+			List<AtomLink> list = Arrays.asList(links);
+			if (list.stream().map(AtomLink::getType).distinct().count() != list.size()) {
+				throw new IllegalArgumentException("Alternate links must not have same type");
+			}
+			this.links.addAll(list);
+			return this;
+		}
+
+		@Override
+		public Build withLinks(AtomLink... links) {
+			this.links.addAll(Arrays.asList(links));
+			return this;
+		}
 	}
 
 	public interface AtomEntryIdBuilder {
@@ -165,22 +194,29 @@ public class AtomEntry {
 
 	public interface SubmittedBuilder {
 
-		public Build withSubmittedNow();
+		public ContentBuilder withSubmittedNow();
 
-		public Build withSubmitted(Timestamp submitted);
+		public ContentBuilder withSubmitted(Timestamp submitted);
+	}
+
+	public interface ContentBuilder {
+
+		Build withXml(String xml);
+
+		Build withAlternateLinks(AtomLink... link);
 	}
 
 	public interface Build {
 
 		public Build withFeedId(Long id);
 
-		public Build withXml(String xml);
-
 		public Build withCategory(AtomCategory atomCategory);
 
 		public Build withCategories(List<AtomCategory> atomCategories);
 
 		public Build withTitle(String title);
+
+		public Build withLinks(AtomLink... link);
 
 		public AtomEntry build();
 	}

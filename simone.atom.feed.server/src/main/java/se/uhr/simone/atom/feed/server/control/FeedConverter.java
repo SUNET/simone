@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
@@ -24,6 +25,7 @@ import com.sun.syndication.io.impl.Atom10Generator;
 import se.uhr.simone.atom.feed.server.entity.AtomCategory;
 import se.uhr.simone.atom.feed.server.entity.AtomEntry;
 import se.uhr.simone.atom.feed.server.entity.AtomFeed;
+import se.uhr.simone.atom.feed.server.entity.AtomLink;
 
 public class FeedConverter {
 
@@ -96,10 +98,22 @@ public class FeedConverter {
 				// This breaks the atom specification, but is needed for backwards compatibility.
 				convertedEntry.setTitle(entry.getTitle());
 			}
+			convertedEntry.setAlternateLinks(
+					entry.getAtomLinks().stream().filter(AtomLink::isAlternate).map(this::convert).collect(Collectors.toList()));
+			convertedEntry.setOtherLinks(
+					entry.getAtomLinks().stream().filter(link -> !link.isAlternate()).map(this::convert).collect(Collectors.toList()));
 			convertedEntries.add(convertedEntry);
 		}
 
 		return convertedEntries;
+	}
+
+	private Link convert(AtomLink atomLink) {
+		Link link = new Link();
+		link.setRel(atomLink.getRel());
+		link.setHref(atomLink.getHref());
+		link.setType(atomLink.getType());
+		return link;
 	}
 
 	private List<Category> getConvertedCategories(AtomEntry entry) {

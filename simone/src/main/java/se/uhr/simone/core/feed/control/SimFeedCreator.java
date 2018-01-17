@@ -24,7 +24,7 @@ public class SimFeedCreator {
 
 	private static final long DELAY = 2_000L;
 
-	private final static Logger LOG = LoggerFactory.getLogger(SimFeedCreator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SimFeedCreator.class);
 
 	@Inject
 	private FeedCreator feedCreator;
