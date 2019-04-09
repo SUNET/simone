@@ -5,17 +5,17 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import io.swagger.annotations.ApiModelProperty;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @XmlRootElement(name = "response")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ResponseRepresentation {
 
-	@ApiModelProperty(required = true, value = "The REST path, i.e. the path sans web context")
+	@Schema(required = true, description = "The REST path, i.e. the path sans web context")
 	@XmlElement
 	private String path;
 
-	@ApiModelProperty(required = true, value = "The HTTP status code")
+	@Schema(required = true, description = "The HTTP status code")
 	@XmlElement
 	private int code;
 

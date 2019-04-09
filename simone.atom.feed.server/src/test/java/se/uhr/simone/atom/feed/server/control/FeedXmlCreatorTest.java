@@ -1,7 +1,7 @@
 package se.uhr.simone.atom.feed.server.control;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -11,20 +11,19 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import se.uhr.simone.atom.feed.server.control.FeedConverter;
-import se.uhr.simone.atom.feed.server.control.FeedXmlCreator;
 import se.uhr.simone.atom.feed.server.entity.AtomFeed;
 import se.uhr.simone.atom.feed.server.entity.FeedRepository;
 
+@ExtendWith(MockitoExtension.class)
 public class FeedXmlCreatorTest {
 
-	private URI testURI;
+	private static final URI testURI = URI.create("http://localhost/test-uri");
 
 	@Mock
 	private FeedRepository feedRepository;
@@ -35,16 +34,9 @@ public class FeedXmlCreatorTest {
 	@InjectMocks
 	private FeedXmlCreator feedXmlCreator = new TestableFeedXmlCreator();
 
-	@Before
-	public void setupMockito() throws Exception {
-		MockitoAnnotations.initMocks(this);
-		testURI = new URI("http://localhost/test-uri");
-	}
-
 	@Test
 	public void testCreateXmlForFeedsNoEntriesAvailable() {
-
-		given(feedRepository.getFeedsWithoutXml()).willReturn(Collections.EMPTY_LIST);
+		given(feedRepository.getFeedsWithoutXml()).willReturn(Collections.emptyList());
 
 		feedXmlCreator.createXmlForFeeds(feedRepository, testURI);
 

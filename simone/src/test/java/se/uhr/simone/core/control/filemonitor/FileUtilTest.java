@@ -1,18 +1,13 @@
 package se.uhr.simone.core.control.filemonitor;
 
-import static org.hamcrest.Matchers.endsWith;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.junit.Test;
-
-import se.uhr.simone.core.control.filemonitor.FileUtil;
+import org.junit.jupiter.api.Test;
 
 public class FileUtilTest {
 
@@ -20,7 +15,7 @@ public class FileUtilTest {
 	public void testGetPathWithSuffix() throws Exception {
 		Path tmp = File.createTempFile("test", ".txt").toPath();
 		Path suffixed = FileUtil.getPathWithSuffix(tmp, ".txt");
-		assertThat(suffixed.getFileName().toString(), endsWith(".txt.txt"));
+		assertThat(suffixed.getFileName().toString()).endsWith(".txt.txt");
 	}
 
 	@Test
@@ -34,30 +29,30 @@ public class FileUtilTest {
 		Files.createFile(f1);
 		Files.createFile(f2);
 
-		assertTrue(Files.exists(f1));
-		assertTrue(Files.exists(f2));
+		assertThat(Files.exists(f1)).isTrue();
+		assertThat(Files.exists(f2)).isTrue();
 
 		FileUtil.deleteWithSuffix(base, "1", "2");
 
-		assertFalse(Files.exists(f1));
-		assertFalse(Files.exists(f2));
+		assertThat(Files.exists(f1)).isFalse();
+		assertThat(Files.exists(f2)).isFalse();
 	}
 
 	@Test
 	public void testRenameWithSuffix() throws IOException {
 		Path base = File.createTempFile("test", ".txt").toPath();
 
-		assertTrue(Files.exists(base));
+		assertThat(Files.exists(base)).isTrue();
 
 		FileUtil.renameWithSuffix(base, "1");
 
-		assertFalse(Files.exists(base));
-		assertTrue(Files.exists(FileUtil.getPathWithSuffix(base, "1")));
+		assertThat(Files.exists(base)).isFalse();
+		assertThat(Files.exists(FileUtil.getPathWithSuffix(base, "1"))).isTrue();
 	}
 
 	@Test
 	public void testHasSuffix() {
-		assertTrue(FileUtil.hasSuffix("test.txt", ".txt", ".doc"));
-		assertFalse(FileUtil.hasSuffix("test.t", ".txt", ".doc"));
+		assertThat(FileUtil.hasSuffix("test.txt", ".txt", ".doc")).isTrue();
+		assertThat(FileUtil.hasSuffix("test.t", ".txt", ".doc")).isFalse();
 	}
 }

@@ -1,20 +1,12 @@
 package se.uhr.simone.atom.feed.server.entity;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-
-import se.uhr.simone.atom.feed.server.entity.AtomFeed;
-import se.uhr.simone.atom.feed.server.entity.AtomFeedDAO;
 
 public class AtomFeedDAOTest extends DAOTestCase {
 
@@ -24,7 +16,7 @@ public class AtomFeedDAOTest extends DAOTestCase {
 
 	private AtomFeedDAO atomFeedDAO;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		atomFeedDAO = new AtomFeedDAO(new JdbcTemplate(ds));
 	}
@@ -34,12 +26,12 @@ public class AtomFeedDAOTest extends DAOTestCase {
 		AtomFeed atomFeed = new AtomFeed(FIRST_NON_EXISTING_FEED_ID);
 		atomFeedDAO.insert(atomFeed);
 
-		assertTrue(atomFeedDAO.exists(FIRST_NON_EXISTING_FEED_ID));
+		assertThat(atomFeedDAO.exists(FIRST_NON_EXISTING_FEED_ID)).isTrue();
 	}
 
 	@Test
 	public void notExists() {
-		assertFalse(atomFeedDAO.exists(FIRST_NON_EXISTING_FEED_ID));
+		assertThat(atomFeedDAO.exists(FIRST_NON_EXISTING_FEED_ID)).isFalse();
 	}
 
 	@Test
@@ -52,14 +44,14 @@ public class AtomFeedDAOTest extends DAOTestCase {
 		atomFeedDAO.insert(new AtomFeed(FIRST_NON_EXISTING_FEED_ID));
 
 		AtomFeed fetchedAtomFeed = atomFeedDAO.fetchBy(FIRST_NON_EXISTING_FEED_ID);
-		assertNull(fetchedAtomFeed.getNextFeedId());
-		assertNull(fetchedAtomFeed.getPreviousFeedId());
-		assertNull(fetchedAtomFeed.getXml());
+		assertThat(fetchedAtomFeed.getNextFeedId()).isNull();
+		assertThat(fetchedAtomFeed.getPreviousFeedId()).isNull();
+		assertThat(fetchedAtomFeed.getXml()).isNull();
 	}
 
 	@Test
 	public void updateNotExisting() {
-		assertEquals(0, atomFeedDAO.update(createAtomFeed()));
+		assertThat(atomFeedDAO.update(createAtomFeed())).isEqualTo(0);
 	}
 
 	@Test
@@ -76,15 +68,17 @@ public class AtomFeedDAOTest extends DAOTestCase {
 
 		AtomFeed fetchedAtomFeed = atomFeedDAO.fetchBy(FIRST_NON_EXISTING_FEED_ID);
 
-		assertEquals(atomFeed.getId(), fetchedAtomFeed.getId());
-		assertEquals(atomFeed.getNextFeedId(), fetchedAtomFeed.getNextFeedId());
-		assertEquals(atomFeed.getPreviousFeedId(), fetchedAtomFeed.getPreviousFeedId());
-		assertEquals(atomFeed.getXml(), fetchedAtomFeed.getXml());
+		assertThat(fetchedAtomFeed.getId()).isEqualTo(atomFeed.getId());
+		assertThat(fetchedAtomFeed.getNextFeedId()).isEqualTo(atomFeed.getNextFeedId());
+		assertThat(fetchedAtomFeed.getPreviousFeedId()).isEqualTo(atomFeed.getPreviousFeedId());
+		assertThat(fetchedAtomFeed.getXml()).isEqualTo(atomFeed.getXml());
 	}
 
-	@Test(expected = EmptyResultDataAccessException.class)
+	@Test
 	public void fetchByNotExisting() {
-		atomFeedDAO.fetchBy(FIRST_NON_EXISTING_FEED_ID);
+		assertThatExceptionOfType(EmptyResultDataAccessException.class).isThrownBy(() -> {
+			atomFeedDAO.fetchBy(FIRST_NON_EXISTING_FEED_ID);
+		});
 	}
 
 	@Test
@@ -93,14 +87,14 @@ public class AtomFeedDAOTest extends DAOTestCase {
 		atomFeedDAO.insert(atomFeed);
 
 		AtomFeed fetchedAtomFeed = atomFeedDAO.fetchBy(atomFeed.getId());
-		assertEquals(atomFeed.getId(), fetchedAtomFeed.getId());
-		assertEquals(atomFeed.getXml(), fetchedAtomFeed.getXml());
+		assertThat(fetchedAtomFeed.getId()).isEqualTo(atomFeed.getId());
+		assertThat(fetchedAtomFeed.getXml()).isEqualTo(atomFeed.getXml());
 	}
 
 	@Test
 	public void fetchRecentNothingInserted() {
 		AtomFeed feed = atomFeedDAO.fetchRecent();
-		assertThat(feed.getId(), is(1L));
+		assertThat(feed.getId()).isEqualTo(1L);
 	}
 
 	@Test
@@ -108,12 +102,12 @@ public class AtomFeedDAOTest extends DAOTestCase {
 		atomFeedDAO.insert(createAtomFeed());
 
 		AtomFeed recent = atomFeedDAO.fetchRecent();
-		assertEquals(FIRST_NON_EXISTING_FEED_ID, recent.getId());
+		assertThat(recent.getId()).isEqualTo(FIRST_NON_EXISTING_FEED_ID);
 	}
 
 	@Test
 	public void getFeedsWithoutXmlNoFeedsExisting() {
-		assertEquals(0, atomFeedDAO.getFeedsWithoutXml().size());
+		assertThat(atomFeedDAO.getFeedsWithoutXml().size()).isEqualTo(0);
 	}
 
 	@Test
@@ -121,13 +115,13 @@ public class AtomFeedDAOTest extends DAOTestCase {
 		AtomFeed atomFeed = new AtomFeed(2);
 		atomFeedDAO.insert(atomFeed);
 
-		assertEquals(0, atomFeedDAO.getFeedsWithoutXml().size());
+		assertThat(atomFeedDAO.getFeedsWithoutXml().size()).isEqualTo(0);
 	}
 
 	@Test
 	public void getFeedsWithoutXmlAllFeedsHaveXml() {
 		atomFeedDAO.insert(createAtomFeed());
-		assertEquals(0, atomFeedDAO.getFeedsWithoutXml().size());
+		assertThat(atomFeedDAO.getFeedsWithoutXml()).hasSize(0);
 	}
 
 	@Test
@@ -136,19 +130,19 @@ public class AtomFeedDAOTest extends DAOTestCase {
 		atomFeed.setXml(null);
 		atomFeedDAO.insert(atomFeed);
 
-		assertEquals(1, atomFeedDAO.getFeedsWithoutXml().size());
+		assertThat(atomFeedDAO.getFeedsWithoutXml()).hasSize(1);
 	}
 
 	@Test
 	public void testSaveAtomFeedXml() {
 		AtomFeed atomFeed = createAtomFeedWithoutXml();
 		atomFeedDAO.insert(atomFeed);
-		assertThat(atomFeed.getXml(), is(nullValue()));
+		assertThat(atomFeed.getXml()).isNull();
 
-		assertThat(atomFeedDAO.saveAtomFeedXml(atomFeed.getId(), TEST_XML_CONTENT), is(1));
+		assertThat(atomFeedDAO.saveAtomFeedXml(atomFeed.getId(), TEST_XML_CONTENT)).isEqualTo(1);
 
 		AtomFeed atomFeedFromDatabase = atomFeedDAO.fetchBy(atomFeed.getId());
-		assertThat(atomFeedFromDatabase.getXml(), is(TEST_XML_CONTENT));
+		assertThat(atomFeedFromDatabase.getXml()).isEqualTo(TEST_XML_CONTENT);
 	}
 
 	private AtomFeed createAtomFeed() {

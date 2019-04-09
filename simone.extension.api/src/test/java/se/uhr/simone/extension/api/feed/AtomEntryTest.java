@@ -1,15 +1,11 @@
 package se.uhr.simone.extension.api.feed;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import javax.ws.rs.core.MediaType;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import se.uhr.simone.extension.api.feed.AtomEntry.AtomEntryId;
 
@@ -22,14 +18,14 @@ public class AtomEntryTest {
 				.withSubmittedNow()
 				.withAlternateLinks(AtomLink.builder().withRelAlternate().withHref("URL").build())
 				.build();
-		assertThat(entry, is(not(nullValue())));
-		assertThat(entry.getXml(), is(nullValue()));
-		assertThat(entry.getLinks(), hasSize(1));
+		assertThat(entry).isNotNull();
+		assertThat(entry.getXml()).isNull();
+		assertThat(entry.getLinks()).hasSize(1);
 	}
 
 	@Test
-	public void entryMustNotHaveTwoAlternateLink_withSameType() throws Exception {
-		try {
+	public void entryMustNotHaveTwoAlternateLink_withSameType() {
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
 			AtomEntry.builder()
 					.withAtomEntryId(AtomEntryId.of(null, MediaType.APPLICATION_JSON))
 					.withSubmittedNow()
@@ -37,10 +33,7 @@ public class AtomEntryTest {
 							AtomLink.builder().withRelAlternate().withHref("URL").withType(MediaType.APPLICATION_JSON).build(),
 							AtomLink.builder().withRelAlternate().withHref("URL").withType(MediaType.APPLICATION_JSON).build())
 					.build();
-			fail();
-		} catch (IllegalArgumentException e) {
-			assertThat(e.getMessage(), is("Alternate links must not have same type"));
-		}
+		}).withMessage("Alternate links must not have same type");
 	}
 
 	@Test
@@ -53,8 +46,8 @@ public class AtomEntryTest {
 						AtomLink.builder().withRelAlternate().withHref("URL").withType(MediaType.APPLICATION_XML).build())
 				.build();
 
-		assertThat(entry, is(not(nullValue())));
-		assertThat(entry.getXml(), is(nullValue()));
-		assertThat(entry.getLinks(), hasSize(2));
+		assertThat(entry).isNotNull();
+		assertThat(entry.getXml()).isNull();
+		assertThat(entry.getLinks()).hasSize(2);
 	}
 }

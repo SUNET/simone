@@ -1,10 +1,8 @@
 package se.uhr.simone.atom.feed.server.entity;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
 import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
@@ -19,8 +17,8 @@ public class AtomEntryTest {
 				.withSubmittedNow()
 				.withTitle("Title")
 				.build();
-		assertThat(atomEntry.hasTitle(), is(true));
-		assertThat(atomEntry.getTitle(), is("Title"));
+		assertThat(atomEntry.hasTitle()).isTrue();
+		assertThat(atomEntry.getTitle()).isEqualTo("Title");
 	}
 
 	@Test
@@ -30,8 +28,8 @@ public class AtomEntryTest {
 				.withSortOrder(1L)
 				.withSubmittedNow()
 				.build();
-		assertThat(atomEntry.hasTitle(), is(false));
-		assertThat(atomEntry.getTitle(), is(nullValue()));
+		assertThat(atomEntry.hasTitle()).isFalse();
+		assertThat(atomEntry.getTitle()).isNull();
 	}
 
 	@Test
@@ -42,8 +40,8 @@ public class AtomEntryTest {
 				.withSubmittedNow()
 				.withTitle("  ")
 				.build();
-		assertThat(atomEntry.hasTitle(), is(false));
-		assertThat(atomEntry.getTitle(), is("  "));
+		assertThat(atomEntry.hasTitle()).isFalse();
+		assertThat(atomEntry.getTitle()).isEqualTo("  ");
 
 	}
 }

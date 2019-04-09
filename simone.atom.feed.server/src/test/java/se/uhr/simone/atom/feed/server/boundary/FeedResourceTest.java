@@ -1,7 +1,6 @@
 package se.uhr.simone.atom.feed.server.boundary;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -14,8 +13,8 @@ import java.util.Map;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -38,7 +37,7 @@ public class FeedResourceTest {
 	@InjectMocks
 	private TestableFeedResource feedResource = new TestableFeedResource();
 
-	@Before
+	@BeforeEach
 	public void before() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		testURI = new URI("http://localhost/test-uri");
@@ -51,7 +50,7 @@ public class FeedResourceTest {
 
 		given(feedRepository.getFeedById(1)).willReturn(null);
 
-		assertEquals(Status.NOT_FOUND.getStatusCode(), feedResource.getFeedXml(1, testURI).getStatus());
+		assertThat(feedResource.getFeedXml(1, testURI).getStatus()).isEqualTo(Status.NOT_FOUND.getStatusCode());
 
 		verify(feedRepository, times(1)).getFeedById(1);
 	}
@@ -67,9 +66,9 @@ public class FeedResourceTest {
 
 		Response response = feedResource.getFeedXml(1, testURI);
 
-		assertEquals(Status.OK.getStatusCode(), response.getStatus());
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
 
-		assertNotNull(response.getEntity());
+		assertThat(response.getEntity()).isNotNull();
 		System.out.println(response.getEntity());
 
 		verify(feedRepository, times(1)).getFeedById(1);
@@ -86,14 +85,14 @@ public class FeedResourceTest {
 		given(feedConverter.convertFeedToXml(feed, testURI)).willReturn("<xml>_KALLE_</xml>");
 		feedResource.add("_KALLE_", "kallepath");
 		Response response = feedResource.getFeedXml(1, testURI);
-		assertNotNull(response.getEntity());
-		assertEquals("<xml>kallepath</xml>", response.getEntity().toString());
+		assertThat(response.getEntity()).isNotNull();
+		assertThat(response.getEntity().toString()).isEqualTo("<xml>kallepath</xml>");
 
 	}
 
 	private class TestableFeedResource extends FeedResource {
 
-		Map<String, String> testMap = new HashMap();
+		Map<String, String> testMap = new HashMap<>();
 
 		@Override
 		public String replaceTemplateValues(String xml) {

@@ -17,13 +17,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.enums.ParameterStyle;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import se.uhr.simone.admin.api.file.FileLoadResultRepresentation;
 import se.uhr.simone.core.boundary.AdminCatagory;
 import se.uhr.simone.core.control.extension.ExtensionManager;
@@ -33,7 +35,7 @@ import se.uhr.simone.extension.api.fileloader.ExtensionContext;
 import se.uhr.simone.extension.api.fileloader.FileLoader;
 import se.uhr.simone.extension.api.fileloader.FileLoaderDescriptor;
 
-@Api(tags = { "database admin" })
+@Tag(name = "admin")
 @Stateless
 @AdminCatagory
 @Path("admin/database")
@@ -45,13 +47,12 @@ public class DatabaseResource {
 	@Inject
 	private ExtensionManager extensionManager;
 
-	@ApiOperation(value = "Loads the database", notes = "This has the same effects as dropping a file in the dropin directory, example", response = FileLoadResultRepresentation.class)
-	@ApiImplicitParams({
-			@ApiImplicitParam(dataType = "string", name = "name", value = "name of file", paramType = "formData"),
-			@ApiImplicitParam(name = "content", value = "file", required = true, dataType = "java.io.File", paramType = "form") })
+	@Operation(summary = "Loads the database", description = "This has the same effects as dropping a file in the dropin directory")
+	@APIResponse(description = "Status and list of order ids", content = @Content(schema = @Schema(implementation = FileLoadResultRepresentation.class)))
 	@Produces(MediaType.APPLICATION_JSON)
 	@POST
-	public Response load(@ApiParam(hidden = true) @MultipartForm FileUploadForm fileUpload) throws IOException {
+	public Response load(@Parameter(name = "file to upload", style = ParameterStyle.FORM) @MultipartForm FileUploadForm fileUpload)
+		throws IOException {
 
 		List<String> idList = new ArrayList<>();
 		StringBuilder errorLog = new StringBuilder();
@@ -75,10 +76,11 @@ public class DatabaseResource {
 		}
 
 		return Response.status(success ? Status.OK : Status.BAD_REQUEST)
-				.entity(FileLoadResultRepresentation.of(idList, errorLog.toString())).build();
+				.entity(FileLoadResultRepresentation.of(idList, errorLog.toString()))
+				.build();
 	}
 
-	@ApiOperation(value = "Empty the database")
+	@Operation(summary = "Empty the database")
 	@DELETE
 	public Response deleteTables() {
 		for (DatabaseAdmin db : databaseAdmin) {

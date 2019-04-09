@@ -1,17 +1,12 @@
 package se.uhr.simone.atom.feed.server.entity;
 
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.ws.rs.core.MediaType;
 
 import org.joda.time.DateTimeUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
@@ -23,7 +18,7 @@ public class AtomLinkDAOTest extends DAOTestCase {
 
 	private AtomEntryId id = createAtomEntryId();
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		atomLinkDAO = new AtomLinkDAO(new JdbcTemplate(ds));
 		AtomEntryDAO atomEntryDAO = new AtomEntryDAO(new JdbcTemplate(ds));
@@ -33,14 +28,14 @@ public class AtomLinkDAOTest extends DAOTestCase {
 
 	@Test
 	public void notExists() {
-		assertFalse(atomLinkDAO.exists(id));
+		assertThat(atomLinkDAO.exists(id)).isFalse();
 	}
 
 	@Test
 	public void exists() {
 		atomLinkDAO.insert(id, createAtomLink());
 
-		assertTrue(atomLinkDAO.exists(id));
+		assertThat(atomLinkDAO.exists(id)).isTrue();
 	}
 
 	@Test
@@ -50,20 +45,20 @@ public class AtomLinkDAOTest extends DAOTestCase {
 
 	@Test
 	public void emptyListWhenNoResult() {
-		assertThat(atomLinkDAO.findBy(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "non-existing")), is(empty()));
+		assertThat(atomLinkDAO.findBy(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "non-existing"))).isEmpty();
 	}
 
 	@Test
 	public void findsAllLinksForEntryId() {
 		atomLinkDAO.insert(id, createAtomLink());
-		assertThat(atomLinkDAO.findBy(id), is(not(empty())));
+		assertThat(atomLinkDAO.findBy(id)).isNotEmpty();
 	}
 
 	@Test
 	public void deleteAllLinksForEntry() throws Exception {
 		atomLinkDAO.insert(id, createAtomLink());
 		atomLinkDAO.delete(id);
-		assertThat(atomLinkDAO.findBy(id), is(empty()));
+		assertThat(atomLinkDAO.findBy(id)).isEmpty();
 	}
 
 	private AtomEntryId createAtomEntryId() {

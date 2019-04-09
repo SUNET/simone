@@ -1,10 +1,8 @@
 package se.uhr.simone.core.control.filemonitor;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -15,16 +13,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import se.uhr.simone.core.control.extension.ExtensionManager;
 import se.uhr.simone.extension.api.fileloader.ExtensionContext;
 import se.uhr.simone.extension.api.fileloader.FileLoader;
 import se.uhr.simone.extension.api.fileloader.FileLoaderDescriptor;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DirectoryMonitorTest {
 
 	@Test
@@ -40,7 +38,6 @@ public class DirectoryMonitorTest {
 		given(fakeJob.execute(any(ExtensionContext.class))).willReturn(FileLoader.Result.SUCCESS);
 
 		FileLoaderDescriptor fakeJobDesc = mock(FileLoaderDescriptor.class);
-		given(fakeJobDesc.accept(anyString())).willReturn(true);
 		given(fakeJobDesc.createJob(any(Reader.class))).willReturn(fakeJob);
 
 		given(extensionManager.getFileExtensions(any(String.class))).willReturn(Arrays.asList(fakeJobDesc));
@@ -55,8 +52,8 @@ public class DirectoryMonitorTest {
 		Thread.sleep(1000);
 
 		mon.runAvailableJobs();
-		assertTrue(Files.exists(dropin.resolve("f1.test.done")));
-		assertFalse(Files.exists(jobfile));
+		assertThat(Files.exists(dropin.resolve("f1.test.done"))).isTrue();
+		assertThat(Files.exists(jobfile)).isFalse();
 
 		verify(fakeJob, times(1)).execute(any(ExtensionContext.class));
 	}
@@ -75,7 +72,6 @@ public class DirectoryMonitorTest {
 		given(fakeJob.execute(any(ExtensionContext.class))).willReturn(FileLoader.Result.ERROR);
 
 		FileLoaderDescriptor fakeJobDesc = mock(FileLoaderDescriptor.class);
-		given(fakeJobDesc.accept(anyString())).willReturn(true);
 		given(fakeJobDesc.createJob(any(Reader.class))).willReturn(fakeJob);
 
 		given(extensionManager.getFileExtensions(any(String.class))).willReturn(Arrays.asList(fakeJobDesc));
@@ -88,8 +84,8 @@ public class DirectoryMonitorTest {
 
 		mon.runAvailableJobs();
 
-		assertTrue(Files.exists(dropin.resolve("f1.test.error")));
-		assertFalse(Files.exists(jobfile));
+		assertThat(Files.exists(dropin.resolve("f1.test.error"))).isTrue();
+		assertThat(Files.exists(jobfile)).isFalse();
 
 		verify(fakeJob, times(1)).execute(any(ExtensionContext.class));
 	}
