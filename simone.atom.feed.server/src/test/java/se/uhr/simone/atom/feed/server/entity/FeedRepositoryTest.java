@@ -1,11 +1,10 @@
 package se.uhr.simone.atom.feed.server.entity;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -14,16 +13,17 @@ import java.util.Arrays;
 
 import javax.sql.DataSource;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
 import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
 
+@ExtendWith(MockitoExtension.class)
 public class FeedRepositoryTest {
 
 	@Mock
@@ -40,11 +40,6 @@ public class FeedRepositoryTest {
 
 	@InjectMocks
 	private FeedRepository feedRepository = new TestableFeedRepository();
-
-	@Before
-	public void setup() {
-		MockitoAnnotations.initMocks(this);
-	}
 
 	@Test
 	public void saveAtomFeedWithoutEntries() {
@@ -100,10 +95,10 @@ public class FeedRepositoryTest {
 	@Test
 	public void getFeedByIdNotExisting() {
 
-		given(atomFeedDAO.fetchBy(1)).willThrow(EmptyResultDataAccessException.class);
+		given(atomFeedDAO.fetchBy(1)).willThrow(new EmptyResultDataAccessException(3));
 
 		AtomFeed feed = feedRepository.getFeedById(1);
-		assertNull(feed);
+		assertThat(feed).isNull();
 
 		verify(atomFeedDAO, times(1)).fetchBy(1);
 		verify(atomEntryDAO, never()).getAtomEntriesForFeed(1);
@@ -118,17 +113,21 @@ public class FeedRepositoryTest {
 
 		AtomFeed fetchedFeed = feedRepository.getFeedById(1);
 
-		assertNotNull(fetchedFeed);
-		assertEquals(1, fetchedFeed.getEntries().size());
+		assertThat(fetchedFeed).isNotNull();
+		assertThat(fetchedFeed.getEntries()).hasSize(1);
 
 		verify(atomFeedDAO, times(1)).fetchBy(1);
 		verify(atomEntryDAO, times(1)).getAtomEntriesForFeed(1);
 	}
 
-	@Test(expected = EmptyResultDataAccessException.class)
+	@Test
 	public void getRecentFeedMustExistInDatabase() {
-		given(atomFeedDAO.fetchRecent()).willThrow(EmptyResultDataAccessException.class);
-		feedRepository.getRecentFeed();
+		given(atomFeedDAO.fetchRecent()).willThrow(new EmptyResultDataAccessException(3));
+
+		assertThatExceptionOfType(EmptyResultDataAccessException.class).isThrownBy(() -> {
+			feedRepository.getRecentFeed();
+		});
+
 	}
 
 	@Test
@@ -140,8 +139,8 @@ public class FeedRepositoryTest {
 
 		AtomFeed fetchedFeed = feedRepository.getRecentFeed();
 
-		assertNotNull(fetchedFeed);
-		assertEquals(1, fetchedFeed.getEntries().size());
+		assertThat(fetchedFeed).isNotNull();
+		assertThat(fetchedFeed.getEntries()).hasSize(1);
 
 		verify(atomFeedDAO, times(1)).fetchRecent();
 		verify(atomEntryDAO, times(1)).getAtomEntriesForFeed(1);

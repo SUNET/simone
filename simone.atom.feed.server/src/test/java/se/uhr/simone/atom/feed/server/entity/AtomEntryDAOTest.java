@@ -1,25 +1,18 @@
 package se.uhr.simone.atom.feed.server.entity;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.sql.Timestamp;
 import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import se.uhr.simone.atom.feed.server.entity.AtomEntry;
-import se.uhr.simone.atom.feed.server.entity.AtomEntryDAO;
-import se.uhr.simone.atom.feed.server.entity.AtomFeed;
-import se.uhr.simone.atom.feed.server.entity.AtomFeedDAO;
 import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
 import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
 
@@ -30,7 +23,7 @@ public class AtomEntryDAOTest extends DAOTestCase {
 	private AtomFeedDAO atomFeedDAO;
 	private AtomEntryDAO atomEntryDAO;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		atomFeedDAO = new AtomFeedDAO(new JdbcTemplate(ds));
 		atomEntryDAO = new AtomEntryDAO(new JdbcTemplate(ds));
@@ -39,7 +32,7 @@ public class AtomEntryDAOTest extends DAOTestCase {
 
 	@Test
 	public void notExists() {
-		assertFalse(atomEntryDAO.exists(createAtomEntryId()));
+		assertThat(atomEntryDAO.exists(createAtomEntryId())).isFalse();
 	}
 
 	@Test
@@ -47,7 +40,7 @@ public class AtomEntryDAOTest extends DAOTestCase {
 		AtomEntry atomEntry = createAtomEntry();
 		atomEntryDAO.insert(atomEntry);
 
-		assertTrue(atomEntryDAO.exists(atomEntry.getAtomEntryId()));
+		assertThat(atomEntryDAO.exists(atomEntry.getAtomEntryId())).isTrue();
 	}
 
 	@Test
@@ -72,17 +65,19 @@ public class AtomEntryDAOTest extends DAOTestCase {
 
 		AtomEntry fetchedAtomEntry = atomEntryDAO.fetchBy(atomEntry.getAtomEntryId());
 
-		assertEquals(atomEntry.getXml(), fetchedAtomEntry.getXml());
+		assertThat(fetchedAtomEntry.getXml()).isEqualTo(atomEntry.getXml());
 	}
 
-	@Test(expected = EmptyResultDataAccessException.class)
+	@Test
 	public void fetchByShouldThrowExceptionWhenNotExisting() {
-		atomEntryDAO.fetchBy(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "non-existing"));
+		assertThatExceptionOfType(EmptyResultDataAccessException.class).isThrownBy(() -> {
+			atomEntryDAO.fetchBy(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "non-existing"));
+		});
 	}
 
 	@Test
 	public void getAtomEntriesForFeedShouldReturnEmptyList() {
-		assertTrue(atomEntryDAO.getAtomEntriesForFeed(1).isEmpty());
+		assertThat(atomEntryDAO.getAtomEntriesForFeed(1)).isEmpty();
 	}
 
 	@Test
@@ -120,9 +115,9 @@ public class AtomEntryDAOTest extends DAOTestCase {
 		DateTimeUtils.setCurrentMillisOffset(0);
 
 		List<AtomEntry> entriesForFeed = atomEntryDAO.getAtomEntriesForFeed(1);
-		assertEquals(id2, entriesForFeed.get(0).getAtomEntryId().getId());
-		assertEquals(id1, entriesForFeed.get(1).getAtomEntryId().getId());
-		assertEquals(id3, entriesForFeed.get(2).getAtomEntryId().getId());
+		assertThat(entriesForFeed.get(0).getAtomEntryId().getId()).isEqualTo(id2);
+		assertThat(entriesForFeed.get(1).getAtomEntryId().getId()).isEqualTo(id1);
+		assertThat(entriesForFeed.get(2).getAtomEntryId().getId()).isEqualTo(id3);
 	}
 
 	@Test
@@ -157,16 +152,16 @@ public class AtomEntryDAOTest extends DAOTestCase {
 
 		for (int i = 1; i <= 2; i++) {
 			List<AtomEntry> entriesForFeed = atomEntryDAO.getAtomEntriesForFeed(1);
-			assertEquals(id3, entriesForFeed.get(0).getAtomEntryId().getId());
-			assertEquals(id2, entriesForFeed.get(1).getAtomEntryId().getId());
-			assertEquals(id1, entriesForFeed.get(2).getAtomEntryId().getId());
+			assertThat(entriesForFeed.get(0).getAtomEntryId().getId()).isEqualTo(id3);
+			assertThat(entriesForFeed.get(1).getAtomEntryId().getId()).isEqualTo(id2);
+			assertThat(entriesForFeed.get(2).getAtomEntryId().getId()).isEqualTo(id1);
 		}
 
 	}
 
 	@Test
 	public void getEntriesNotConnectedToFeedShouldReturnEmptyList() {
-		assertTrue(atomEntryDAO.getEntriesNotConnectedToFeed().isEmpty());
+		assertThat(atomEntryDAO.getEntriesNotConnectedToFeed()).isEmpty();
 	}
 
 	@Test
@@ -200,9 +195,9 @@ public class AtomEntryDAOTest extends DAOTestCase {
 		DateTimeUtils.setCurrentMillisOffset(0);
 
 		List<AtomEntry> entriesNotConnectedToFeed = atomEntryDAO.getEntriesNotConnectedToFeed();
-		assertEquals(id3, entriesNotConnectedToFeed.get(0).getAtomEntryId().getId());
-		assertEquals(id1, entriesNotConnectedToFeed.get(1).getAtomEntryId().getId());
-		assertEquals(id2, entriesNotConnectedToFeed.get(2).getAtomEntryId().getId());
+		assertThat(entriesNotConnectedToFeed.get(0).getAtomEntryId().getId()).isEqualTo(id3);
+		assertThat(entriesNotConnectedToFeed.get(1).getAtomEntryId().getId()).isEqualTo(id1);
+		assertThat(entriesNotConnectedToFeed.get(2).getAtomEntryId().getId()).isEqualTo(id2);
 	}
 
 	@Test
@@ -217,7 +212,7 @@ public class AtomEntryDAOTest extends DAOTestCase {
 		}
 
 		List<AtomEntry> entriesNotConnectedToFeed = atomEntryDAO.getEntriesNotConnectedToFeed();
-		assertThat(entriesNotConnectedToFeed, hasSize(AtomEntryDAO.MAX_NUM_OF_ENTRIES_TO_RETURN));
+		assertThat(entriesNotConnectedToFeed).hasSize(AtomEntryDAO.MAX_NUM_OF_ENTRIES_TO_RETURN);
 	}
 
 	private AtomEntryId createAtomEntryId() {

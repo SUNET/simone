@@ -56,7 +56,7 @@ public abstract class FeedResource {
 		return Response.ok().entity(xml).build();
 	}
 
-	abstract protected String replaceTemplateValues(String xml);
+	protected abstract String replaceTemplateValues(String xml);
 
 	protected String replaceValues(String xml, Set<Entry<String, String>> templateMapping) {
 		if (templateMapping == null) {

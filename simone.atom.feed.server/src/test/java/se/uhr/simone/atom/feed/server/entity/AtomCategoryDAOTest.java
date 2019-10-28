@@ -1,18 +1,13 @@
 package se.uhr.simone.atom.feed.server.entity;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import se.uhr.simone.atom.feed.server.entity.AtomCategory;
-import se.uhr.simone.atom.feed.server.entity.AtomCategoryDAO;
-import se.uhr.simone.atom.feed.server.entity.AtomEntry;
-import se.uhr.simone.atom.feed.server.entity.AtomEntryDAO;
 import se.uhr.simone.atom.feed.server.entity.AtomCategory.Label;
 import se.uhr.simone.atom.feed.server.entity.AtomCategory.Term;
 import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
@@ -24,7 +19,7 @@ public class AtomCategoryDAOTest extends DAOTestCase {
 
 	private AtomEntryDAO atomEntryDAO;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		atomCategoryDAO = new AtomCategoryDAO(new JdbcTemplate(ds));
 		atomEntryDAO = new AtomEntryDAO(new JdbcTemplate(ds));
@@ -32,8 +27,8 @@ public class AtomCategoryDAOTest extends DAOTestCase {
 
 	@Test
 	public void isConnectedShouldReturnFalse() {
-		assertFalse(atomCategoryDAO.isConnected(createAtomCategory(),
-				AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "content-type")));
+		assertThat(atomCategoryDAO.isConnected(createAtomCategory(),
+				AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "content-type"))).isFalse();
 	}
 
 	@Test
@@ -45,19 +40,21 @@ public class AtomCategoryDAOTest extends DAOTestCase {
 		AtomCategory atomCategory = createAtomCategory();
 		atomCategoryDAO.connectEntryToCategory(atomEntry.getAtomEntryId(), atomCategory);
 
-		assertTrue(atomCategoryDAO.isConnected(atomCategory, atomEntry.getAtomEntryId()));
+		assertThat(atomCategoryDAO.isConnected(atomCategory, atomEntry.getAtomEntryId())).isTrue();
 	}
 
-	@Test(expected = DataIntegrityViolationException.class)
+	@Test
 	public void connectEntryToCategoryShouldThrowExceptionWhenEntryDoesNotExist() {
-		atomCategoryDAO.connectEntryToCategory(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "content-type"),
-				AtomCategory.of(Term.of("term"), Label.of("label")));
+		assertThatExceptionOfType(DataIntegrityViolationException.class).isThrownBy(() -> {
+			atomCategoryDAO.connectEntryToCategory(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "content-type"),
+					AtomCategory.of(Term.of("term"), Label.of("label")));
+		});
 	}
 
 	@Test
 	public void getCategoriesForAtomEntryShouldReturnEmptyList() {
-		assertTrue(atomCategoryDAO.getCategoriesForAtomEntry(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "content-type"))
-				.isEmpty());
+		assertThat(atomCategoryDAO.getCategoriesForAtomEntry(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "content-type")))
+				.isEmpty();
 	}
 
 	@Test
@@ -69,7 +66,7 @@ public class AtomCategoryDAOTest extends DAOTestCase {
 		atomCategoryDAO.connectEntryToCategory(atomEntry.getAtomEntryId(), AtomCategory.of(Term.of("term2"), Label.of("label2")));
 		atomCategoryDAO.connectEntryToCategory(atomEntry.getAtomEntryId(), AtomCategory.of(Term.of("term3"), Label.of("label3")));
 
-		assertEquals(3, atomCategoryDAO.getCategoriesForAtomEntry(atomEntry.getAtomEntryId()).size());
+		assertThat(atomCategoryDAO.getCategoriesForAtomEntry(atomEntry.getAtomEntryId())).hasSize(3);
 	}
 
 	private AtomEntry createAtomEntry() {

@@ -15,9 +15,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 import se.uhr.simone.admin.api.HttpConstants;
 import se.uhr.simone.admin.feed.AtomFeedEventRepresentation;
 import se.uhr.simone.atom.feed.server.entity.AtomCategory;
@@ -33,7 +34,7 @@ import se.uhr.simone.core.boundary.AdminCatagory;
 import se.uhr.simone.core.boundary.FeedCatagory;
 import se.uhr.simone.core.feed.entity.SimFeedRepository;
 
-@Api(tags = { "feed admin" })
+@Tag(name = "admin")
 @AdminCatagory
 @Path("admin/feed")
 public class FeedResource {
@@ -47,15 +48,15 @@ public class FeedResource {
 	@Inject
 	private FeedBlocker feedBlocker;
 
-	@ApiOperation(value = "Answer with specified code for all feed requests", notes = "Enters a state where all feed requests are answered with the specified status code")
+	@Operation(summary = "Answer with specified code for all feed requests", description = "Enters a state where all feed requests are answered with the specified status code")
 	@PUT
 	@Path("response/code")
-	public Response setGlobalCode(@ApiParam(value = "The HTTP status code", required = true) int statusCode) {
+	public Response setGlobalCode(@Parameter(name = "The HTTP status code", required = true) int statusCode) {
 		simulatedResponse.setGlobalCode(statusCode);
 		return Response.ok().build();
 	}
 
-	@ApiOperation(value = "Answer normally for all feed requests", notes = "Resumes normal state")
+	@Operation(summary = "Answer normally for all feed requests", description = "Resumes normal state")
 	@DELETE
 	@Path("response/code")
 	public Response resetGlobalCode() {
@@ -63,7 +64,7 @@ public class FeedResource {
 		return Response.ok().build();
 	}
 
-	@ApiOperation(value = "Block feed events", notes = "Enters a state where no feed event are created")
+	@Operation(summary = "Block feed events", description = "Enters a state where no feed event are created")
 	@PUT
 	@Path("block")
 	public Response blockFeed() {
@@ -71,7 +72,7 @@ public class FeedResource {
 		return Response.ok().build();
 	}
 
-	@ApiOperation(value = "Unblock feed events", notes = "Resumes normal state")
+	@Operation(summary = "Unblock feed events", description = "Resumes normal state")
 	@DELETE
 	@Path("block")
 	public Response unblockFeed() {
@@ -79,15 +80,15 @@ public class FeedResource {
 		return Response.ok().build();
 	}
 
-	@ApiOperation(value = "Delay feed requests", notes = "Delay each feed request with the specified time, set 0 to resume to normal")
+	@Operation(summary = "Delay feed requests", description = "Delay each feed request with the specified time, set 0 to resume to normal")
 	@PUT
 	@Path("response/delay")
-	public Response setDelay(@ApiParam(value = "Time in seconds") int timeInSeconds) {
+	public Response setDelay(@Parameter(name = "Time in seconds") int timeInSeconds) {
 		simulatedResponse.setDelay(timeInSeconds);
 		return Response.ok().build();
 	}
 
-	@ApiOperation(value = "Create a custom feed event")
+	@Operation(summary = "Create a custom feed event")
 	@POST
 	@Path("event")
 	public Response publishEvent(AtomFeedEventRepresentation event) {

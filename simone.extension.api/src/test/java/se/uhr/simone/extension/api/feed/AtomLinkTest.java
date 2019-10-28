@@ -1,14 +1,11 @@
 package se.uhr.simone.extension.api.feed;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import javax.ws.rs.core.MediaType;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AtomLinkTest {
 
@@ -18,10 +15,10 @@ public class AtomLinkTest {
 	public void withRelAlternetive() throws Exception {
 		AtomLink link = AtomLink.builder().withRelAlternate().withHref(URL).withType(MediaType.APPLICATION_JSON).build();
 
-		assertThat(link, is(not(nullValue())));
-		assertThat(link.getRel(), is("alternate"));
-		assertThat(link.getHref(), is(URL));
-		assertThat(link.getType(), is(MediaType.APPLICATION_JSON));
+		assertThat(link).isNotNull();
+		assertThat(link.getRel()).isEqualTo("alternate");
+		assertThat(link.getHref()).isEqualTo(URL);
+		assertThat(link.getType()).isEqualTo(MediaType.APPLICATION_JSON);
 	}
 
 	@Test
@@ -32,41 +29,32 @@ public class AtomLinkTest {
 				.withType(MediaType.APPLICATION_XML)
 				.build();
 
-		assertThat(link, is(not(nullValue())));
-		assertThat(link.getRel(), is("self"));
-		assertThat(link.getHref(), is(URL));
-		assertThat(link.getType(), is(MediaType.APPLICATION_XML));
+		assertThat(link).isNotNull();
+		assertThat(link.getRel()).isEqualTo("self");
+		assertThat(link.getHref()).isEqualTo(URL);
+		assertThat(link.getType()).isEqualTo(MediaType.APPLICATION_XML);
 	}
 
 	@Test
 	public void mustHaveRelValue() throws Exception {
-		try {
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
 			AtomLink.builder().withRel("").withHref("http://example.com/api/resourse/1").build();
-			fail();
-		} catch (IllegalArgumentException e) {
-			assertThat(e.getMessage(), is("Rel must have a value"));
-		}
-		try {
+		}).withMessage("Rel must have a value");
+
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
 			AtomLink.builder().withRel(null).withHref("http://example.com/api/resourse/1").build();
-			fail();
-		} catch (IllegalArgumentException e) {
-			assertThat(e.getMessage(), is("Rel must have a value"));
-		}
+		}).withMessage("Rel must have a value");
 	}
 
 	@Test
 	public void mustHaveHrefValue() throws Exception {
-		try {
+
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
 			AtomLink.builder().withRel("self").withHref("").build();
-			fail();
-		} catch (IllegalArgumentException e) {
-			assertThat(e.getMessage(), is("Href must have a value"));
-		}
-		try {
+		}).withMessage("Href must have a value");
+
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
 			AtomLink.builder().withRel("self").withHref(null).build();
-			fail();
-		} catch (IllegalArgumentException e) {
-			assertThat(e.getMessage(), is("Href must have a value"));
-		}
+		}).withMessage("Href must have a value");
 	}
 }

@@ -1,7 +1,7 @@
 CREATE TABLE ATOM_LINK  (
         ENTRY_ID char(16) for bit data NOT NULL,
         REL VARCHAR(100) NOT NULL,
-        HREF VARCHAR(100) NOT NULL,
+        HREF VARCHAR(200) NOT NULL,
         CONTENT_TYPE VARCHAR(100)
     );
 

@@ -1,6 +1,6 @@
 package se.uhr.simone.atom.feed.server.control;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -10,14 +10,13 @@ import static org.mockito.Mockito.verify;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import se.uhr.simone.atom.feed.server.control.FeedCreator;
 import se.uhr.simone.atom.feed.server.entity.AtomEntry;
 import se.uhr.simone.atom.feed.server.entity.AtomFeed;
 import se.uhr.simone.atom.feed.server.entity.FeedRepository;
@@ -34,7 +33,7 @@ public class FeedCreatorTest {
 	@Captor
 	private ArgumentCaptor<AtomFeed> atomFeedCaptor;
 
-	@Before
+	@BeforeEach
 	public void setupMockito() {
 		MockitoAnnotations.initMocks(this);
 	}
@@ -42,7 +41,7 @@ public class FeedCreatorTest {
 	@Test
 	public void noEntriesToConnect() {
 
-		given(feedRepository.getEntriesNotConnectedToFeed()).willReturn(Collections.EMPTY_LIST);
+		given(feedRepository.getEntriesNotConnectedToFeed()).willReturn(Collections.emptyList());
 
 		feedCreator.connectEntrysToFeeds(feedRepository);
 
@@ -66,7 +65,7 @@ public class FeedCreatorTest {
 
 		verify(feedRepository, times(1)).saveAtomFeed(atomFeedCaptor.capture());
 
-		assertEquals(1, atomFeedCaptor.getValue().getEntries().size());
+		assertThat(atomFeedCaptor.getValue().getEntries()).hasSize(1);
 
 	}
 
@@ -117,9 +116,9 @@ public class FeedCreatorTest {
 
 		verify(feedRepository, times(3)).saveAtomFeed(atomFeedCaptor.capture());
 
-		assertEquals(2, atomFeedCaptor.getValue().getId());
+		assertThat(atomFeedCaptor.getValue().getId()).isEqualTo(2);
 
-		assertEquals(1, atomFeedCaptor.getValue().getEntries().size());
+		assertThat(atomFeedCaptor.getValue().getEntries()).hasSize(1);
 	}
 
 }

@@ -1,14 +1,14 @@
 package se.uhr.simone.atom.feed.server.control;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URI;
 
 import javax.ws.rs.core.MediaType;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.sun.syndication.feed.atom.Link;
 
@@ -18,7 +18,7 @@ public class LinkBuilderTest {
 
 	private static final String baseUrl = "http://baseurl.localhost.com:8080/feeds";
 
-	@BeforeClass
+	@BeforeAll
 	public static void setupProperties() {
 		System.setProperty("feeds.baseurl", baseUrl);
 	}
@@ -26,12 +26,12 @@ public class LinkBuilderTest {
 	@Test
 	public void testRecent() throws Exception {
 		Link recent = LinkBuilder.recent(new URI(System.getProperty("feeds.baseurl") + "/path"));
-		assertEquals(baseUrl + "/path/recent", recent.getHref());
-		assertEquals(MediaType.APPLICATION_ATOM_XML, recent.getType());
-		assertEquals("self", recent.getRel());
+		assertThat(recent.getHref()).isEqualTo(baseUrl + "/path/recent");
+		assertThat(recent.getType()).isEqualTo(MediaType.APPLICATION_ATOM_XML);
+		assertThat(recent.getRel()).isEqualTo("self");
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void removeProperties() {
 		System.getProperties().remove("feeds.baseurl");
 	}

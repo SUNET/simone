@@ -1,11 +1,8 @@
 package se.uhr.simone.core.admin.control;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-
-import se.uhr.simone.core.admin.control.ResponsePath;
+import org.junit.jupiter.api.Test;
 
 public class ResponsePathTest {
 
@@ -14,7 +11,7 @@ public class ResponsePathTest {
 		ResponsePath path1 = ResponsePath.of("///my/path");
 		ResponsePath path2 = ResponsePath.of("my/path//");
 
-		assertTrue(path1.equals(path2));
+		assertThat(path1).isEqualTo(path2);
 	}
 
 	@Test
@@ -22,14 +19,14 @@ public class ResponsePathTest {
 		ResponsePath path1 = ResponsePath.of("///my/path");
 		ResponsePath path2 = ResponsePath.of("my/path//");
 
-		assertThat(path1.hashCode(), is(path2.hashCode()));
+		assertThat(path1.hashCode()).isEqualTo(path2.hashCode());
 	}
-	
+
 	@Test
 	public void shouldHandleNullValue() throws Exception {
 		ResponsePath path1 = ResponsePath.of(null);
 		ResponsePath path2 = ResponsePath.of(null);
 
-		assertTrue(path1.equals(path2));
+		assertThat(path1).isEqualTo(path2);
 	}
 }

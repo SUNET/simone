@@ -7,8 +7,8 @@ import javax.sql.DataSource;
 
 import org.apache.derby.jdbc.EmbeddedDataSource;
 import org.flywaydb.core.Flyway;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 public class DAOTestCase {
 
@@ -23,13 +23,13 @@ public class DAOTestCase {
 		return ds;
 	}
 
-	@Before
+	@BeforeEach
 	public void setupDatabase() {
 		flyway.setDataSource(ds);
 		flyway.migrate();
 	}
 
-	@After
+	@AfterEach
 	public void deleteDataFromDatabase() {
 		try {
 			DriverManager.getConnection("jdbc:derby:memory:test;drop=true");
