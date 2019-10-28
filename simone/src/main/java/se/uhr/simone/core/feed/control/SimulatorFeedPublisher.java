@@ -66,9 +66,13 @@ public class SimulatorFeedPublisher implements FeedPublisher {
 		List<se.uhr.simone.atom.feed.server.entity.AtomCategory> res = new ArrayList<>();
 
 		for (AtomCategory category : atomCategories) {
-			res.add(se.uhr.simone.atom.feed.server.entity.AtomCategory.of(
-					se.uhr.simone.atom.feed.server.entity.AtomCategory.Term.of(category.getTerm().getValue()),
-					se.uhr.simone.atom.feed.server.entity.AtomCategory.Label.of(category.getLabel().getValue())));
+			se.uhr.simone.atom.feed.server.entity.AtomCategory.Build builder =
+					se.uhr.simone.atom.feed.server.entity.AtomCategory.builder()
+							.withTerm(se.uhr.simone.atom.feed.server.entity.AtomCategory.Term.of(category.getTerm().getValue()));
+			category.getLabel()
+					.ifPresent(
+							label -> builder.withLabel(se.uhr.simone.atom.feed.server.entity.AtomCategory.Label.of(label.getValue())));
+			res.add(builder.build());
 		}
 
 		return res;

@@ -47,7 +47,7 @@ public class AtomCategoryDAOTest extends DAOTestCase {
 	public void connectEntryToCategoryShouldThrowExceptionWhenEntryDoesNotExist() {
 		assertThatExceptionOfType(DataIntegrityViolationException.class).isThrownBy(() -> {
 			atomCategoryDAO.connectEntryToCategory(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "content-type"),
-					AtomCategory.of(Term.of("term"), Label.of("label")));
+					AtomCategory.builder().withTerm(Term.of("term")).withLabel(Label.of("label")).build());
 		});
 	}
 
@@ -62,9 +62,12 @@ public class AtomCategoryDAOTest extends DAOTestCase {
 		AtomEntry atomEntry = createAtomEntry();
 		atomEntryDAO.insert(atomEntry);
 
-		atomCategoryDAO.connectEntryToCategory(atomEntry.getAtomEntryId(), AtomCategory.of(Term.of("term1"), Label.of("label1")));
-		atomCategoryDAO.connectEntryToCategory(atomEntry.getAtomEntryId(), AtomCategory.of(Term.of("term2"), Label.of("label2")));
-		atomCategoryDAO.connectEntryToCategory(atomEntry.getAtomEntryId(), AtomCategory.of(Term.of("term3"), Label.of("label3")));
+		atomCategoryDAO.connectEntryToCategory(atomEntry.getAtomEntryId(),
+				AtomCategory.builder().withTerm(Term.of("term1")).withLabel(Label.of("label1")).build());
+		atomCategoryDAO.connectEntryToCategory(atomEntry.getAtomEntryId(),
+				AtomCategory.builder().withTerm(Term.of("term2")).withLabel(Label.of("label2")).build());
+		atomCategoryDAO.connectEntryToCategory(atomEntry.getAtomEntryId(),
+				AtomCategory.builder().withTerm(Term.of("term3")).withLabel(Label.of("label3")).build());
 
 		assertThat(atomCategoryDAO.getCategoriesForAtomEntry(atomEntry.getAtomEntryId())).hasSize(3);
 	}
@@ -78,6 +81,6 @@ public class AtomCategoryDAOTest extends DAOTestCase {
 	}
 
 	private AtomCategory createAtomCategory() {
-		return AtomCategory.of(Term.of("term"), Label.of("label"));
+		return AtomCategory.builder().withTerm(Term.of("term")).withLabel(Label.of("label")).build();
 	}
 }

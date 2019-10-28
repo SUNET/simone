@@ -121,8 +121,8 @@ public class FeedConverter {
 
 		for (AtomCategory atomCategory : entry.getAtomCategories()) {
 			Category category = new Category();
-			category.setLabel(atomCategory.getLabel().getValue());
 			category.setTerm(atomCategory.getTerm().getValue());
+			atomCategory.getLabel().ifPresent(label -> category.setLabel(label.getValue()));
 			convertedCategories.add(category);
 		}
 

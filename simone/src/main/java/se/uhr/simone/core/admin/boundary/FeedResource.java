@@ -1,6 +1,7 @@
 package se.uhr.simone.core.admin.boundary;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
@@ -103,7 +104,11 @@ public class FeedResource {
 				.withXml(event.getContent());
 
 		for (se.uhr.simone.admin.feed.AtomCategoryRepresentation category : event.getCategorys()) {
-			builder.withCategory(AtomCategory.of(Term.of(category.getTerm()), Label.of(category.getLabel())));
+			AtomCategory.Build categoryBuilder = AtomCategory.builder().withTerm(Term.of(category.getTerm()));
+			if (Objects.nonNull(category.getLabel())) {
+				categoryBuilder.withLabel(Label.of(category.getLabel()));
+			}
+			builder.withCategory(categoryBuilder.build());
 		}
 
 		feedRepository.saveAtomEntry(builder.build());
