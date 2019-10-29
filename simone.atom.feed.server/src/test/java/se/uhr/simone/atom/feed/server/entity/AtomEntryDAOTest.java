@@ -6,17 +6,21 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
 import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
 
-public class AtomEntryDAOTest extends DAOTestCase {
+@ExtendWith(DataSourceParameterResolver.class)
+public class AtomEntryDAOTest {
 
 	private static final long FIRST_NON_EXISTING_FEED_ID = 2L;
 
@@ -24,7 +28,7 @@ public class AtomEntryDAOTest extends DAOTestCase {
 	private AtomEntryDAO atomEntryDAO;
 
 	@BeforeEach
-	public void setup() {
+	public void setup(DataSource ds) {
 		atomFeedDAO = new AtomFeedDAO(new JdbcTemplate(ds));
 		atomEntryDAO = new AtomEntryDAO(new JdbcTemplate(ds));
 		DateTimeUtils.setCurrentMillisSystem();

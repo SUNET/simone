@@ -3,8 +3,11 @@ package se.uhr.simone.atom.feed.server.entity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import javax.sql.DataSource;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -13,14 +16,15 @@ import se.uhr.simone.atom.feed.server.entity.AtomCategory.Term;
 import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
 import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
 
-public class AtomCategoryDAOTest extends DAOTestCase {
+@ExtendWith(DataSourceParameterResolver.class)
+public class AtomCategoryDAOTest {
 
 	private AtomCategoryDAO atomCategoryDAO;
 
 	private AtomEntryDAO atomEntryDAO;
 
 	@BeforeEach
-	public void setup() {
+	public void setup(DataSource ds) {
 		atomCategoryDAO = new AtomCategoryDAO(new JdbcTemplate(ds));
 		atomEntryDAO = new AtomEntryDAO(new JdbcTemplate(ds));
 	}

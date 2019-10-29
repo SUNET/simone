@@ -3,12 +3,16 @@ package se.uhr.simone.atom.feed.server.entity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import javax.sql.DataSource;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class AtomFeedDAOTest extends DAOTestCase {
+@ExtendWith(DataSourceParameterResolver.class)
+public class AtomFeedDAOTest {
 
 	private static final String TEST_XML_CONTENT = "<xml><value>1</value></xml>";
 
@@ -17,7 +21,7 @@ public class AtomFeedDAOTest extends DAOTestCase {
 	private AtomFeedDAO atomFeedDAO;
 
 	@BeforeEach
-	public void setup() {
+	public void setup(DataSource ds) {
 		atomFeedDAO = new AtomFeedDAO(new JdbcTemplate(ds));
 	}
 

@@ -2,24 +2,27 @@ package se.uhr.simone.atom.feed.server.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import javax.sql.DataSource;
 import javax.ws.rs.core.MediaType;
 
 import org.joda.time.DateTimeUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
 import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
 
-public class AtomLinkDAOTest extends DAOTestCase {
+@ExtendWith(DataSourceParameterResolver.class)
+public class AtomLinkDAOTest {
 
 	private AtomLinkDAO atomLinkDAO;
 
 	private AtomEntryId id = createAtomEntryId();
 
 	@BeforeEach
-	public void setup() {
+	public void setup(DataSource ds) {
 		atomLinkDAO = new AtomLinkDAO(new JdbcTemplate(ds));
 		AtomEntryDAO atomEntryDAO = new AtomEntryDAO(new JdbcTemplate(ds));
 		atomEntryDAO.insert(AtomEntry.builder().withAtomEntryId(id).withSortOrder(1L).withSubmittedNow().build());
