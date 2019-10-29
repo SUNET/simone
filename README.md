@@ -2,7 +2,7 @@
 
 Base container for SimOne. SimOne is a simple simulator for REST and FEED based services.
 
-This projects builds a jar that constitutes core simulator functionality and is meant to be included in a Java EE 7 server that is built by the final simulator.
+This projects builds a jar that constitutes core simulator functionality and is meant to be included in a Java EE 8 server that is built by the final simulator.
 
 See [SimOne-Example](https://github.com/SUNET/simone-example) for a starting point to build a simulator.
 
