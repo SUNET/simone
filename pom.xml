@@ -14,8 +14,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <version.jupiter>5.4.1</version.jupiter>
-        <version.mockito>2.26.0</version.mockito>
+        <version.jupiter>5.5.2</version.jupiter>
+        <version.mockito>3.1.0</version.mockito>
     </properties>
 
     <scm>
@@ -69,7 +69,7 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.26</version>
+                <version>1.7.28</version>
             </dependency>
             
             <dependency>
@@ -82,7 +82,7 @@
             <dependency>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
-                <version>4.2.0</version>
+                <version>6.0.7</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -114,7 +114,7 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.11.1</version>
+            <version>3.13.2</version>
             <scope>test</scope>
         </dependency>
 

@@ -14,7 +14,7 @@ public class DAOTestCase {
 
 	protected DataSource ds = createDataSource();
 
-	private Flyway flyway = new Flyway();
+	Flyway flyway = Flyway.configure().dataSource(ds).load();
 
 	private static EmbeddedDataSource createDataSource() {
 		EmbeddedDataSource ds = new EmbeddedDataSource();
@@ -25,7 +25,6 @@ public class DAOTestCase {
 
 	@BeforeEach
 	public void setupDatabase() {
-		flyway.setDataSource(ds);
 		flyway.migrate();
 	}
 

@@ -16,17 +16,16 @@ import se.uhr.simone.extension.api.entity.DatabaseAdmin;
 @ApplicationScoped
 public class DatabaseAdministrator implements DatabaseAdmin {
 
-	private final static Logger LOG = LoggerFactory.getLogger(DatabaseAdministrator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DatabaseAdministrator.class);
 
 	@Inject
 	@FeedDS
 	private DataSource ds;
 
-	private Flyway flyway = new Flyway();
+	private final Flyway flyway = Flyway.configure().dataSource(ds).load();
 
 	@Transactional(TxType.NOT_SUPPORTED)
 	public void initialize() {
-		flyway.setDataSource(ds);
 		flyway.migrate();
 	}
 
