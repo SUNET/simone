@@ -22,10 +22,9 @@ public class DatabaseAdministrator implements DatabaseAdmin {
 	@FeedDS
 	private DataSource ds;
 
-	private final Flyway flyway = Flyway.configure().dataSource(ds).load();
-
 	@Transactional(TxType.NOT_SUPPORTED)
 	public void initialize() {
+		Flyway flyway = Flyway.configure().dataSource(ds).load();
 		flyway.migrate();
 	}
 
