@@ -3,10 +3,12 @@ package se.uhr.simone.atom.feed.server.entity;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import se.uhr.simone.atom.feed.server.entity.AtomCategory.Build;
 import se.uhr.simone.atom.feed.server.entity.AtomCategory.Label;
 import se.uhr.simone.atom.feed.server.entity.AtomCategory.Term;
 import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
@@ -21,21 +23,20 @@ public class AtomCategoryDAO {
 
 	public boolean isConnected(AtomCategory atomCategory, AtomEntryId atomEntryId) {
 		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT 1 FROM ATOM_CATEGORY WHERE TERM=? AND LABEL=? AND ENTRY_ID=?");
-		return jdbcTemplate.queryForRowSet(sql.toString(), atomCategory.getTerm().getValue(), atomCategory.getLabel().getValue(),
-				atomEntryId.getId().toByteArray()).next();
+		sql.append("SELECT 1 FROM ATOM_CATEGORY WHERE TERM=? AND ENTRY_ID=?");
+		return jdbcTemplate.queryForRowSet(sql.toString(), atomCategory.getTerm().getValue(), atomEntryId.getId().toByteArray()).next();
 	}
 
 	public void connectEntryToCategory(AtomEntryId atomEntryId, AtomCategory atomCategory) {
 		StringBuilder sql = new StringBuilder();
-		sql.append("INSERT INTO ATOM_CATEGORY (ENTRY_ID, LABEL, TERM) VALUES (?,?,?)");
-		jdbcTemplate.update(sql.toString(), atomEntryId.getId().toByteArray(), atomCategory.getLabel().getValue(),
-				atomCategory.getTerm().getValue());
+		sql.append("INSERT INTO ATOM_CATEGORY (ENTRY_ID, TERM, LABEL) VALUES (?,?,?)");
+		jdbcTemplate.update(sql.toString(), atomEntryId.getId().toByteArray(), atomCategory.getTerm().getValue(),
+				atomCategory.getLabel().map(Label::getValue).orElse(null));
 	}
 
 	public List<AtomCategory> getCategoriesForAtomEntry(AtomEntryId atomEntryId) {
 		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT LABEL, TERM FROM ATOM_CATEGORY WHERE ENTRY_ID=? ");
+		sql.append("SELECT TERM, LABEL FROM ATOM_CATEGORY WHERE ENTRY_ID=? ");
 		return jdbcTemplate.query(sql.toString(), new AtomCategoryRowMapper(), atomEntryId.getId().toByteArray());
 	}
 
@@ -43,7 +44,12 @@ public class AtomCategoryDAO {
 
 		@Override
 		public AtomCategory mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return AtomCategory.of(Term.of(rs.getString("TERM")), Label.of(rs.getString("LABEL")));
+			String labelValue = rs.getString("LABEL");
+			Build builder = AtomCategory.builder().withTerm(Term.of(rs.getString("TERM")));
+			if (Objects.nonNull(labelValue)) {
+				builder.withLabel(Label.of(labelValue));
+			}
+			return builder.build();
 		}
 	}
 }

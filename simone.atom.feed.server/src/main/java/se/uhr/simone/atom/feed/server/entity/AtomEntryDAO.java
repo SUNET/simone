@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import se.uhr.simone.atom.feed.server.entity.AtomCategory.Label;
 import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
 import se.uhr.simone.atom.feed.utils.TimestampUtil;
 import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
@@ -70,7 +71,8 @@ public class AtomEntryDAO {
 		sql.append("WHERE AC.TERM = ? and AC.LABEL = ? ");
 		sql.append("ORDER BY SORT_ORDER DESC, SUBMITTED DESC FETCH FIRST 1 ROWS ONLY ");
 		return jdbcTemplate.queryForObject(sql.toString(),
-				new Object[] { category.getTerm().getValue(), category.getLabel().getValue() }, new UuidRowmapper());
+				new Object[] { category.getTerm().getValue(), category.getLabel().map(Label::getValue).orElse(null) },
+				new UuidRowmapper());
 	}
 
 	public List<AtomEntry> getEntriesNotConnectedToFeed() {
