@@ -75,7 +75,7 @@ public class AtomEntryDAOTest {
 	@Test
 	public void fetchByShouldThrowExceptionWhenNotExisting() {
 		assertThatExceptionOfType(EmptyResultDataAccessException.class).isThrownBy(() -> {
-			atomEntryDAO.fetchBy(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "non-existing"));
+			atomEntryDAO.fetchBy(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "non-existing"));
 		});
 	}
 
@@ -88,9 +88,9 @@ public class AtomEntryDAOTest {
 	public void getAtomEntriesForFeedShouldReturnOrderedList() {
 		atomFeedDAO.insert(new AtomFeed(FIRST_NON_EXISTING_FEED_ID));
 
-		UniqueIdentifier id1 = UniqueIdentifier.randomUniqueIdentifier();
-		UniqueIdentifier id2 = UniqueIdentifier.randomUniqueIdentifier();
-		UniqueIdentifier id3 = UniqueIdentifier.randomUniqueIdentifier();
+		String id1 = UniqueIdentifier.randomUniqueIdentifier().getValue();
+		String id2 = UniqueIdentifier.randomUniqueIdentifier().getValue();
+		String id3 = UniqueIdentifier.randomUniqueIdentifier().getValue();
 		atomEntryDAO.insert(AtomEntry.builder()
 				.withAtomEntryId(AtomEntryId.of(id1, "content-type"))
 				.withSortOrder(Long.valueOf(2))
@@ -130,9 +130,9 @@ public class AtomEntryDAOTest {
 
 		Timestamp now = new Timestamp(DateTime.now().getMillis());
 
-		UniqueIdentifier id1 = UniqueIdentifier.randomUniqueIdentifier();
-		UniqueIdentifier id2 = UniqueIdentifier.randomUniqueIdentifier();
-		UniqueIdentifier id3 = UniqueIdentifier.randomUniqueIdentifier();
+		String id1 = UniqueIdentifier.randomUniqueIdentifier().getValue();
+		String id2 = UniqueIdentifier.randomUniqueIdentifier().getValue();
+		String id3 = UniqueIdentifier.randomUniqueIdentifier().getValue();
 		atomEntryDAO.insert(AtomEntry.builder()
 				.withAtomEntryId(AtomEntryId.of(id1, "content-type"))
 				.withSortOrder(Long.valueOf(1))
@@ -171,9 +171,9 @@ public class AtomEntryDAOTest {
 	@Test
 	public void getEntriesNotConnectedToFeedShouldReturnOrderedList() {
 
-		UniqueIdentifier id1 = UniqueIdentifier.randomUniqueIdentifier();
-		UniqueIdentifier id2 = UniqueIdentifier.randomUniqueIdentifier();
-		UniqueIdentifier id3 = UniqueIdentifier.randomUniqueIdentifier();
+		String id1 = UniqueIdentifier.randomUniqueIdentifier().getValue();
+		String id2 = UniqueIdentifier.randomUniqueIdentifier().getValue();
+		String id3 = UniqueIdentifier.randomUniqueIdentifier().getValue();
 		atomEntryDAO.insert(AtomEntry.builder()
 				.withAtomEntryId(AtomEntryId.of(id1, "content-type"))
 				.withSortOrder(Long.valueOf(2))
@@ -209,7 +209,7 @@ public class AtomEntryDAOTest {
 		for (int i = 0; i < AtomEntryDAO.MAX_NUM_OF_ENTRIES_TO_RETURN + 1; i++) {
 			UniqueIdentifier id = UniqueIdentifier.randomUniqueIdentifier();
 			atomEntryDAO.insert(AtomEntry.builder()
-					.withAtomEntryId(AtomEntryId.of(id, "content-type"))
+					.withAtomEntryId(AtomEntryId.of(id.getValue(), "content-type"))
 					.withSortOrder(Long.valueOf(1))
 					.withSubmittedNow()
 					.build());
@@ -220,7 +220,7 @@ public class AtomEntryDAOTest {
 	}
 
 	private AtomEntryId createAtomEntryId() {
-		return AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "content-type");
+		return AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "content-type");
 	}
 
 	private AtomEntry createAtomEntry() {

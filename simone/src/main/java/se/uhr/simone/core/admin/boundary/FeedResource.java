@@ -98,7 +98,7 @@ public class FeedResource {
 		Long nextSortOrder = feedRepository.getNextSortOrder();
 
 		Build builder = AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(uid, event.getContentType()))
+				.withAtomEntryId(AtomEntryId.of(uid.getValue(), event.getContentType()))
 				.withSortOrder(nextSortOrder)
 				.withSubmittedNow()
 				.withXml(event.getContent());

@@ -24,20 +24,20 @@ public class AtomCategoryDAO {
 	public boolean isConnected(AtomCategory atomCategory, AtomEntryId atomEntryId) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT 1 FROM ATOM_CATEGORY WHERE TERM=? AND ENTRY_ID=?");
-		return jdbcTemplate.queryForRowSet(sql.toString(), atomCategory.getTerm().getValue(), atomEntryId.getId().toByteArray()).next();
+		return jdbcTemplate.queryForRowSet(sql.toString(), atomCategory.getTerm().getValue(), atomEntryId.getId()).next();
 	}
 
 	public void connectEntryToCategory(AtomEntryId atomEntryId, AtomCategory atomCategory) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("INSERT INTO ATOM_CATEGORY (ENTRY_ID, TERM, LABEL) VALUES (?,?,?)");
-		jdbcTemplate.update(sql.toString(), atomEntryId.getId().toByteArray(), atomCategory.getTerm().getValue(),
+		jdbcTemplate.update(sql.toString(), atomEntryId.getId(), atomCategory.getTerm().getValue(),
 				atomCategory.getLabel().map(Label::getValue).orElse(null));
 	}
 
 	public List<AtomCategory> getCategoriesForAtomEntry(AtomEntryId atomEntryId) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT TERM, LABEL FROM ATOM_CATEGORY WHERE ENTRY_ID=? ");
-		return jdbcTemplate.query(sql.toString(), new AtomCategoryRowMapper(), atomEntryId.getId().toByteArray());
+		return jdbcTemplate.query(sql.toString(), new AtomCategoryRowMapper(), atomEntryId.getId());
 	}
 
 	private static class AtomCategoryRowMapper implements RowMapper<AtomCategory> {

@@ -38,6 +38,9 @@ public class FeedRepositoryTest {
 	@Mock
 	private AtomLinkDAO atomLinkDAO;
 
+	@Mock
+	private AtomAuthorDAO atomAuthorDAO;
+
 	@InjectMocks
 	private FeedRepository feedRepository = new TestableFeedRepository();
 
@@ -83,6 +86,7 @@ public class FeedRepositoryTest {
 		verify(atomEntryDAO, times(1)).exists(atomEntry.getAtomEntryId());
 		verify(atomEntryDAO, times(1)).update(atomEntry);
 		verify(atomLinkDAO, times(1)).delete(atomEntry.getAtomEntryId());
+		verify(atomAuthorDAO, times(1)).delete(atomEntry.getAtomEntryId());
 		//		verify(atomCategoryDAO, never()).exists(any(Long.class));
 		verify(atomCategoryDAO, never()).isConnected(any(AtomCategory.class), eq(atomEntry.getAtomEntryId()));
 	}
@@ -148,7 +152,7 @@ public class FeedRepositoryTest {
 
 	private AtomEntry createAtomEntry() {
 		return AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "content-type"))
+				.withAtomEntryId(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "content-type"))
 				.withSortOrder(Long.valueOf(1))
 				.withSubmittedNow()
 				.withXml("<xml></xml>")

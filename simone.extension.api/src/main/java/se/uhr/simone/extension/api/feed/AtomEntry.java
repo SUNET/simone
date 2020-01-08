@@ -16,6 +16,8 @@ public class AtomEntry {
 	private Timestamp submitted;
 	private List<AtomCategory> atomCategories = new ArrayList<>();
 	private List<AtomLink> links = new ArrayList<>();
+	private List<Person> author = new ArrayList<>();
+	private Content summary;
 
 	private AtomEntry(AtomEntryBuilder builder) {
 		this.atomEntryId = builder.fAtomEntryId;
@@ -25,6 +27,8 @@ public class AtomEntry {
 		this.feedId = builder.feedId;
 		this.title = builder.title;
 		this.links = builder.links;
+		this.author = builder.author;
+		this.summary = builder.summary;
 	}
 
 	public static AtomEntryIdBuilder builder() {
@@ -79,26 +83,42 @@ public class AtomEntry {
 		this.atomCategories = atomCategories;
 	}
 
+	public List<Person> getAuthors() {
+		return author;
+	}
+
+	public void setAuthors(List<Person> author) {
+		this.author = author;
+	}
+
+	public Content getSummary() {
+		return summary;
+	}
+
+	public void setSummary(Content content) {
+		this.summary = content;
+	}
+
 	public static class AtomEntryId implements Serializable {
 
 		private static final long serialVersionUID = 1L;
 
-		private UniqueIdentifier entryId;
+		private String entryId;
 		private String contentType;
 
-		private AtomEntryId(UniqueIdentifier id, String contentType) {
+		private AtomEntryId(String id, String contentType) {
 			this.entryId = id;
 			this.contentType = contentType;
 		}
 
-		public static AtomEntryId of(UniqueIdentifier id, String contentType) {
+		public static AtomEntryId of(String id, String contentType) {
 			if (contentType == null) {
 				throw new IllegalArgumentException("Content type cannot be null");
 			}
 			return new AtomEntryId(id, contentType);
 		}
 
-		public UniqueIdentifier getId() {
+		public String getId() {
 			return entryId;
 		}
 
@@ -116,6 +136,8 @@ public class AtomEntry {
 		private List<AtomLink> links = new ArrayList<>();
 		private String fXml;
 		private List<AtomCategory> categories = new ArrayList<>();
+		private List<Person> author = new ArrayList<>();
+		private Content summary;
 
 		@Override
 		public AtomEntry build() {
@@ -185,6 +207,19 @@ public class AtomEntry {
 			this.links.addAll(Arrays.asList(links));
 			return this;
 		}
+
+		@Override
+		public Build withAuthor(List<Person> author) {
+			this.author = author;
+			return this;
+		}
+
+		@Override
+		public Build withSummary(Content summary) {
+			this.summary = summary;
+			return this;
+		}
+
 	}
 
 	public interface AtomEntryIdBuilder {
@@ -217,6 +252,10 @@ public class AtomEntry {
 		public Build withTitle(String title);
 
 		public Build withLinks(AtomLink... link);
+
+		public Build withAuthor(List<Person> authors);
+
+		public Build withSummary(Content summary);
 
 		public AtomEntry build();
 	}

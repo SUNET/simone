@@ -18,6 +18,7 @@ import com.sun.syndication.feed.atom.Content;
 import com.sun.syndication.feed.atom.Entry;
 import com.sun.syndication.feed.atom.Feed;
 import com.sun.syndication.feed.atom.Link;
+import com.sun.syndication.feed.atom.Person;
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.WireFeedGenerator;
 import com.sun.syndication.io.impl.Atom10Generator;
@@ -87,7 +88,7 @@ public class FeedConverter {
 
 		for (AtomEntry entry : entries) {
 			Entry convertedEntry = new Entry();
-			convertedEntry.setId(entry.getAtomEntryId().getId().getValue());
+			convertedEntry.setId(entry.getAtomEntryId().getId());
 			convertedEntry.setUpdated(entry.getSubmitted());
 			convertedEntry.setCategories(getConvertedCategories(entry));
 			if (entry.getXml() != null) {
@@ -98,6 +99,13 @@ public class FeedConverter {
 				// This breaks the atom specification, but is needed for backwards compatibility.
 				convertedEntry.setTitle(entry.getTitle());
 			}
+
+			convertedEntry.setAuthors(entry.getAuthors().stream().map(this::convert).collect(Collectors.toList()));
+
+			if (entry.getContent().getSummary() != null) {
+				convertedEntry.setSummary(convertSummary(entry.getContent().getSummary()));
+			}
+
 			convertedEntry.setAlternateLinks(
 					entry.getAtomLinks().stream().filter(AtomLink::isAlternate).map(this::convert).collect(Collectors.toList()));
 			convertedEntry.setOtherLinks(
@@ -106,6 +114,18 @@ public class FeedConverter {
 		}
 
 		return convertedEntries;
+	}
+
+	private Content convertSummary(String summary) {
+		Content content = new Content();
+		content.setValue(summary);
+		return content;
+	}
+
+	private Person convert(se.uhr.simone.atom.feed.server.entity.Person author) {
+		Person person = new Person();
+		person.setName(author.getName());
+		return person;
 	}
 
 	private Link convert(AtomLink atomLink) {

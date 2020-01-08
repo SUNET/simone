@@ -48,7 +48,7 @@ public class AtomLinkDAOTest {
 
 	@Test
 	public void emptyListWhenNoResult() {
-		assertThat(atomLinkDAO.findBy(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "non-existing"))).isEmpty();
+		assertThat(atomLinkDAO.findBy(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "non-existing"))).isEmpty();
 	}
 
 	@Test
@@ -65,7 +65,7 @@ public class AtomLinkDAOTest {
 	}
 
 	private AtomEntryId createAtomEntryId() {
-		return AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "content-type");
+		return AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "content-type");
 	}
 
 	private AtomLink createAtomLink() {

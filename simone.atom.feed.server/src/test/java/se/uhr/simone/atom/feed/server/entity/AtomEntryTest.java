@@ -12,7 +12,7 @@ public class AtomEntryTest {
 	@Test
 	public void titleIsPresent() {
 		AtomEntry atomEntry = AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "application/xml"))
+				.withAtomEntryId(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "application/xml"))
 				.withSortOrder(1L)
 				.withSubmittedNow()
 				.withTitle("Title")
@@ -24,7 +24,7 @@ public class AtomEntryTest {
 	@Test
 	public void titleIsNotPresentIfUnset() {
 		AtomEntry atomEntry = AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "application/xml"))
+				.withAtomEntryId(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "application/xml"))
 				.withSortOrder(1L)
 				.withSubmittedNow()
 				.build();
@@ -35,7 +35,7 @@ public class AtomEntryTest {
 	@Test
 	public void titleIsNotPresentIfEmptyString() {
 		AtomEntry atomEntry = AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "application/xml"))
+				.withAtomEntryId(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "application/xml"))
 				.withSortOrder(1L)
 				.withSubmittedNow()
 				.withTitle("  ")

@@ -16,6 +16,7 @@ public abstract class FeedRepository {
 	private AtomEntryDAO atomEntryDAO;
 	private AtomCategoryDAO atomCategoryDAO;
 	private AtomLinkDAO atomLinkDAO;
+	private AtomAuthorDAO atomAuthorDAO;
 
 	public abstract DataSource getDataSource();
 
@@ -26,6 +27,7 @@ public abstract class FeedRepository {
 		atomEntryDAO = createAtomEntryDAO(jdbcTemplate);
 		atomCategoryDAO = createAtomCategoryDAO(jdbcTemplate);
 		atomLinkDAO = createAtomLinkDAO(jdbcTemplate);
+		atomAuthorDAO = createAtomAuthorDAO(jdbcTemplate);
 	}
 
 	protected AtomFeedDAO createAtomFeedDAO(JdbcTemplate jdbcTemplate) {
@@ -42,6 +44,10 @@ public abstract class FeedRepository {
 
 	protected AtomLinkDAO createAtomLinkDAO(JdbcTemplate jdbcTemplate) {
 		return new AtomLinkDAO(jdbcTemplate);
+	}
+
+	protected AtomAuthorDAO createAtomAuthorDAO(JdbcTemplate jdbcTemplate) {
+		return new AtomAuthorDAO(jdbcTemplate);
 	}
 
 	public void saveAtomFeed(AtomFeed atomFeed) {
@@ -61,6 +67,7 @@ public abstract class FeedRepository {
 		if (atomEntryDAO.exists(atomEntry.getAtomEntryId())) {
 			atomEntryDAO.update(atomEntry);
 			atomLinkDAO.delete(atomEntry.getAtomEntryId());
+			atomAuthorDAO.delete(atomEntry.getAtomEntryId());
 		} else {
 			atomEntryDAO.insert(atomEntry);
 		}
@@ -74,6 +81,11 @@ public abstract class FeedRepository {
 		for (AtomLink atomLink : atomEntry.getAtomLinks()) {
 			atomLinkDAO.insert(atomEntry.getAtomEntryId(), atomLink);
 		}
+
+		for (Person author : atomEntry.getAuthors()) {
+			atomAuthorDAO.insert(atomEntry.getAtomEntryId(), author);
+		}
+
 	}
 
 	public void saveAtomFeedXml(long feedId, String xml) {
@@ -112,6 +124,7 @@ public abstract class FeedRepository {
 		for (AtomEntry atomEntry : entriesNotConnectedToFeed) {
 			atomEntry.setAtomCategories(atomCategoryDAO.getCategoriesForAtomEntry(atomEntry.getAtomEntryId()));
 			atomEntry.setAtomLink(atomLinkDAO.findBy(atomEntry.getAtomEntryId()));
+			atomEntry.setAuthors(atomAuthorDAO.findBy(atomEntry.getAtomEntryId()));
 		}
 		return entriesNotConnectedToFeed;
 	}
@@ -142,6 +155,7 @@ public abstract class FeedRepository {
 		for (AtomEntry atomEntry : atomEntries) {
 			atomEntry.setAtomCategories(atomCategoryDAO.getCategoriesForAtomEntry(atomEntry.getAtomEntryId()));
 			atomEntry.setAtomLink(atomLinkDAO.findBy(atomEntry.getAtomEntryId()));
+			atomEntry.setAuthors(atomAuthorDAO.findBy(atomEntry.getAtomEntryId()));
 		}
 		return atomEntries;
 	}

@@ -32,7 +32,7 @@ public class AtomCategoryDAOTest {
 	@Test
 	public void isConnectedShouldReturnFalse() {
 		assertThat(atomCategoryDAO.isConnected(createAtomCategory(),
-				AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "content-type"))).isFalse();
+				AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "content-type"))).isFalse();
 	}
 
 	@Test
@@ -50,15 +50,16 @@ public class AtomCategoryDAOTest {
 	@Test
 	public void connectEntryToCategoryShouldThrowExceptionWhenEntryDoesNotExist() {
 		assertThatExceptionOfType(DataIntegrityViolationException.class).isThrownBy(() -> {
-			atomCategoryDAO.connectEntryToCategory(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "content-type"),
+			atomCategoryDAO.connectEntryToCategory(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "content-type"),
 					AtomCategory.builder().withTerm(Term.of("term")).withLabel(Label.of("label")).build());
 		});
 	}
 
 	@Test
 	public void getCategoriesForAtomEntryShouldReturnEmptyList() {
-		assertThat(atomCategoryDAO.getCategoriesForAtomEntry(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "content-type")))
-				.isEmpty();
+		assertThat(atomCategoryDAO
+				.getCategoriesForAtomEntry(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "content-type")))
+						.isEmpty();
 	}
 
 	@Test
@@ -78,7 +79,7 @@ public class AtomCategoryDAOTest {
 
 	private AtomEntry createAtomEntry() {
 		return AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "content-type"))
+				.withAtomEntryId(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "content-type"))
 				.withSortOrder(Long.valueOf(1))
 				.withSubmittedNow()
 				.build();

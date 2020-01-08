@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
-
 public class AtomEntry implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -21,6 +19,8 @@ public class AtomEntry implements Serializable {
 	private String title;
 	private List<AtomCategory> atomCategories = new ArrayList<>();
 	private List<AtomLink> atomLinks = new ArrayList<>();
+	private List<Person> authors = new ArrayList<>();
+	private Content summary;
 
 	private AtomEntry(AtomEntryBuilder builder) {
 		this.atomEntryId = builder.atomEntryId;
@@ -31,6 +31,8 @@ public class AtomEntry implements Serializable {
 		this.sortOrder = builder.sortOrder;
 		this.title = builder.title;
 		this.atomLinks = builder.links;
+		this.authors = builder.authors;
+		this.summary = builder.summary;
 	}
 
 	public static AtomEntryIdBuilder builder() {
@@ -93,26 +95,42 @@ public class AtomEntry implements Serializable {
 		this.atomLinks = atomLink;
 	}
 
+	public List<Person> getAuthors() {
+		return authors;
+	}
+
+	public void setAuthors(List<Person> authors) {
+		this.authors = authors;
+	}
+
+	public Content getContent() {
+		return summary;
+	}
+
+	public void setContent(Content summary) {
+		this.summary = summary;
+	}
+
 	public static class AtomEntryId implements Serializable {
 
 		private static final long serialVersionUID = 1L;
 
-		private UniqueIdentifier entryId;
+		private String entryId;
 		private String contentType;
 
-		private AtomEntryId(UniqueIdentifier id, String contentType) {
+		private AtomEntryId(String id, String contentType) {
 			this.entryId = id;
 			this.contentType = contentType;
 		}
 
-		public static AtomEntryId of(UniqueIdentifier id, String contentType) {
+		public static AtomEntryId of(String id, String contentType) {
 			if (contentType == null) {
 				throw new IllegalArgumentException("Content type cannot be null");
 			}
 			return new AtomEntryId(id, contentType);
 		}
 
-		public UniqueIdentifier getId() {
+		public String getId() {
 			return entryId;
 		}
 
@@ -132,6 +150,8 @@ public class AtomEntry implements Serializable {
 		private Long feedId;
 		private String title;
 		private List<AtomLink> links = new ArrayList<>();
+		private List<Person> authors = new ArrayList<>();
+		private Content summary;
 
 		@Override
 		public AtomEntry build() {
@@ -197,6 +217,19 @@ public class AtomEntry implements Serializable {
 			this.links = links;
 			return this;
 		}
+
+		@Override
+		public Build withAuthor(List<Person> authors) {
+			this.authors = authors;
+			return this;
+		}
+
+		@Override
+		public Build withSummary(Content summary) {
+			this.summary = summary;
+			return this;
+		}
+
 	}
 
 	public interface AtomEntryIdBuilder {
@@ -229,6 +262,10 @@ public class AtomEntry implements Serializable {
 		public Build withTitle(String title);
 
 		public Build withLinks(List<AtomLink> links);
+
+		public Build withAuthor(List<Person> authors);
+
+		public Build withSummary(Content summary);
 
 		public AtomEntry build();
 

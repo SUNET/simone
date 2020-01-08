@@ -22,25 +22,25 @@ public class AtomLinkDAO {
 	public boolean exists(AtomEntryId atomEntryId) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT 1 FROM ATOM_LINK WHERE ENTRY_ID = ?");
-		return jdbcTemplate.queryForRowSet(sql.toString(), atomEntryId.getId().toByteArray()).next();
+		return jdbcTemplate.queryForRowSet(sql.toString(), atomEntryId.getId()).next();
 	}
 
 	public void insert(AtomEntryId id, AtomLink atomLink) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("INSERT INTO ATOM_LINK (ENTRY_ID, REL, HREF, CONTENT_TYPE) VALUES (?,?,?,?)");
-		jdbcTemplate.update(sql.toString(), id.getId().toByteArray(), atomLink.getRel(), atomLink.getHref(), atomLink.getType());
+		jdbcTemplate.update(sql.toString(), id.getId(), atomLink.getRel(), atomLink.getHref(), atomLink.getType());
 	}
 
 	public void delete(AtomEntryId atomEntryId) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("DELETE FROM ATOM_LINK WHERE ENTRY_ID = ? ");
-		jdbcTemplate.update(sql.toString(), atomEntryId.getId().toByteArray());
+		jdbcTemplate.update(sql.toString(), atomEntryId.getId());
 	}
 
 	public List<AtomLink> findBy(AtomEntryId atomEntryId) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT REL, HREF, CONTENT_TYPE FROM ATOM_LINK WHERE ENTRY_ID = ? ");
-		return jdbcTemplate.query(sql.toString(), new AtomLinkRowMapper(), atomEntryId.getId().toByteArray());
+		return jdbcTemplate.query(sql.toString(), new AtomLinkRowMapper(), atomEntryId.getId());
 	}
 
 	private static class AtomLinkRowMapper implements RowMapper<AtomLink> {
