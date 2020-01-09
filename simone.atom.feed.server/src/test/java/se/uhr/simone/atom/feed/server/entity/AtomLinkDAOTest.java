@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import javax.sql.DataSource;
 import javax.ws.rs.core.MediaType;
 
-import org.joda.time.DateTimeUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +25,6 @@ public class AtomLinkDAOTest {
 		atomLinkDAO = new AtomLinkDAO(new JdbcTemplate(ds));
 		AtomEntryDAO atomEntryDAO = new AtomEntryDAO(new JdbcTemplate(ds));
 		atomEntryDAO.insert(AtomEntry.builder().withAtomEntryId(id).withSortOrder(1L).withSubmittedNow().build());
-		DateTimeUtils.setCurrentMillisSystem();
 	}
 
 	@Test

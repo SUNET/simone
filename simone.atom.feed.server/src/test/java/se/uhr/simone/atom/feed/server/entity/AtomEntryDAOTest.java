@@ -8,8 +8,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +29,6 @@ public class AtomEntryDAOTest {
 	public void setup(DataSource ds) {
 		atomFeedDAO = new AtomFeedDAO(new JdbcTemplate(ds));
 		atomEntryDAO = new AtomEntryDAO(new JdbcTemplate(ds));
-		DateTimeUtils.setCurrentMillisSystem();
 	}
 
 	@Test
@@ -98,8 +95,6 @@ public class AtomEntryDAOTest {
 				.withFeedId(Long.valueOf(1))
 				.build());
 
-		DateTimeUtils.setCurrentMillisOffset(1000 * 60 * 2);
-
 		atomEntryDAO.insert(AtomEntry.builder()
 				.withAtomEntryId(AtomEntryId.of(id2, "content-type"))
 				.withSortOrder(Long.valueOf(3))
@@ -107,16 +102,12 @@ public class AtomEntryDAOTest {
 				.withFeedId(Long.valueOf(1))
 				.build());
 
-		DateTimeUtils.setCurrentMillisOffset(-(1000 * 60 * 20));
-
 		atomEntryDAO.insert(AtomEntry.builder()
 				.withAtomEntryId(AtomEntryId.of(id3, "content-type"))
 				.withSortOrder(Long.valueOf(1))
 				.withSubmittedNow()
 				.withFeedId(Long.valueOf(1))
 				.build());
-
-		DateTimeUtils.setCurrentMillisOffset(0);
 
 		List<AtomEntry> entriesForFeed = atomEntryDAO.getAtomEntriesForFeed(1);
 		assertThat(entriesForFeed.get(0).getAtomEntryId().getId()).isEqualTo(id2);
@@ -128,7 +119,7 @@ public class AtomEntryDAOTest {
 	public void getAtomEntriesForFeedShouldReturnOrderedListWithSameSubmitTime() {
 		atomFeedDAO.insert(new AtomFeed(FIRST_NON_EXISTING_FEED_ID));
 
-		Timestamp now = new Timestamp(DateTime.now().getMillis());
+		Timestamp now = new Timestamp(System.currentTimeMillis());
 
 		UniqueIdentifier id1 = UniqueIdentifier.randomUniqueIdentifier();
 		UniqueIdentifier id2 = UniqueIdentifier.randomUniqueIdentifier();
@@ -180,23 +171,17 @@ public class AtomEntryDAOTest {
 				.withSubmittedNow()
 				.build());
 
-		DateTimeUtils.setCurrentMillisOffset(1000 * 60 * 2);
-
 		atomEntryDAO.insert(AtomEntry.builder()
 				.withAtomEntryId(AtomEntryId.of(id2, "content-type"))
 				.withSortOrder(Long.valueOf(3))
 				.withSubmittedNow()
 				.build());
 
-		DateTimeUtils.setCurrentMillisOffset(-(1000 * 60 * 20));
-
 		atomEntryDAO.insert(AtomEntry.builder()
 				.withAtomEntryId(AtomEntryId.of(id3, "content-type"))
 				.withSortOrder(Long.valueOf(1))
 				.withSubmittedNow()
 				.build());
-
-		DateTimeUtils.setCurrentMillisOffset(0);
 
 		List<AtomEntry> entriesNotConnectedToFeed = atomEntryDAO.getEntriesNotConnectedToFeed();
 		assertThat(entriesNotConnectedToFeed.get(0).getAtomEntryId().getId()).isEqualTo(id3);
