@@ -23,14 +23,16 @@ Extension API
 : API that notifies the SimOne simulator about actions initiated from the admin API, or create feed entries.
 
 ```Java
-void publish(AtomEntry entry);
+void se.uhr.simone.extension.api.feed.FeedPublisher#publish(AtomEntry entry);
 ```
 
 ## Requirements
 
-### Datasource
+* Java 11
 
-The simulator need a data source to be setup with the JNDI name `/jdbc/FEED`
+* Java EE 8 server 
+
+* Datasource, the simulator need a data source to be setup with the JNDI name `/jdbc/FEED`
 
 ## Build
 
