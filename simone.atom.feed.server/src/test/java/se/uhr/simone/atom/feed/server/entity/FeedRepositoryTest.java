@@ -10,8 +10,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 import javax.sql.DataSource;
+import javax.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,9 +21,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.EmptyResultDataAccessException;
-
-import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
-import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
 
 @ExtendWith(MockitoExtension.class)
 public class FeedRepositoryTest {
@@ -54,7 +53,7 @@ public class FeedRepositoryTest {
 
 		verify(atomFeedDAO, times(1)).exists(1);
 		verify(atomFeedDAO, times(1)).update(atomFeed);
-		verify(atomEntryDAO, never()).exists(any(AtomEntryId.class));
+		verify(atomEntryDAO, never()).exists(any(String.class));
 	}
 
 	@Test
@@ -152,10 +151,10 @@ public class FeedRepositoryTest {
 
 	private AtomEntry createAtomEntry() {
 		return AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "content-type"))
+				.withAtomEntryId(UUID.randomUUID().toString())
 				.withSortOrder(Long.valueOf(1))
 				.withSubmittedNow()
-				.withXml("<xml></xml>")
+				.withXml(Content.builder().withValue("<xml></xml>").withContentType(MediaType.APPLICATION_XML).build())
 				.build();
 	}
 

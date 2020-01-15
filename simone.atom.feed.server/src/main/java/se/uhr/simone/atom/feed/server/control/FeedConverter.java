@@ -88,12 +88,14 @@ public class FeedConverter {
 
 		for (AtomEntry entry : entries) {
 			Entry convertedEntry = new Entry();
-			convertedEntry.setId(entry.getAtomEntryId().getId());
+			convertedEntry.setId(entry.getAtomEntryId());
 			convertedEntry.setUpdated(entry.getSubmitted());
 			convertedEntry.setCategories(getConvertedCategories(entry));
-			if (entry.getXml() != null) {
-				convertedEntry.setContents(Arrays.asList(getContent(entry)));
+
+			if (entry.getXml().getValue() != null) {
+				convertedEntry.setContents(Arrays.asList(getContent(entry.getXml())));
 			}
+
 			if (entry.hasTitle()) {
 				// Title is mandatory according to the atom specification.
 				// This breaks the atom specification, but is needed for backwards compatibility.
@@ -102,8 +104,8 @@ public class FeedConverter {
 
 			convertedEntry.setAuthors(entry.getAuthors().stream().map(this::convert).collect(Collectors.toList()));
 
-			if (entry.getContent().getSummary() != null) {
-				convertedEntry.setSummary(convertSummary(entry.getContent().getSummary()));
+			if (entry.getSummary().getValue() != null) {
+				convertedEntry.setSummary(getContent(entry.getSummary()));
 			}
 
 			convertedEntry.setAlternateLinks(
@@ -114,12 +116,6 @@ public class FeedConverter {
 		}
 
 		return convertedEntries;
-	}
-
-	private Content convertSummary(String summary) {
-		Content content = new Content();
-		content.setValue(summary);
-		return content;
 	}
 
 	private Person convert(se.uhr.simone.atom.feed.server.entity.Person author) {
@@ -149,10 +145,10 @@ public class FeedConverter {
 		return convertedCategories;
 	}
 
-	public Content getContent(AtomEntry entry) {
+	public Content getContent(se.uhr.simone.atom.feed.server.entity.Content entryContent) {
 		Content content = new Content();
-		content.setType(entry.getAtomEntryId().getContentType());
-		content.setValue(entry.getXml());
+		content.setValue(entryContent.getValue());
+		entryContent.getContentType().ifPresent(content::setType);
 		return content;
 	}
 

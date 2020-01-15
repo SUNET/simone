@@ -1,6 +1,5 @@
 package se.uhr.simone.extension.api.feed;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,15 +8,15 @@ import java.util.List;
 
 public class AtomEntry {
 
-	private AtomEntryId atomEntryId;
-	private String xml;
+	private String atomEntryId;
+	private Content xml = new Content();
 	private Long feedId;
 	private String title;
 	private Timestamp submitted;
 	private List<AtomCategory> atomCategories = new ArrayList<>();
 	private List<AtomLink> links = new ArrayList<>();
 	private List<Person> author = new ArrayList<>();
-	private Content summary;
+	private Content summary = new Content();
 
 	private AtomEntry(AtomEntryBuilder builder) {
 		this.atomEntryId = builder.fAtomEntryId;
@@ -35,16 +34,12 @@ public class AtomEntry {
 		return new AtomEntryBuilder();
 	}
 
-	public AtomEntryId getAtomEntryId() {
+	public String getAtomEntryId() {
 		return atomEntryId;
 	}
 
-	public String getXml() {
+	public Content getXml() {
 		return xml;
-	}
-
-	public void setXml(String xml) {
-		this.xml = xml;
 	}
 
 	public Long getFeedId() {
@@ -95,49 +90,17 @@ public class AtomEntry {
 		return summary;
 	}
 
-	public void setSummary(Content content) {
-		this.summary = content;
-	}
-
-	public static class AtomEntryId implements Serializable {
-
-		private static final long serialVersionUID = 1L;
-
-		private String entryId;
-		private String contentType;
-
-		private AtomEntryId(String id, String contentType) {
-			this.entryId = id;
-			this.contentType = contentType;
-		}
-
-		public static AtomEntryId of(String id, String contentType) {
-			if (contentType == null) {
-				throw new IllegalArgumentException("Content type cannot be null");
-			}
-			return new AtomEntryId(id, contentType);
-		}
-
-		public String getId() {
-			return entryId;
-		}
-
-		public String getContentType() {
-			return contentType;
-		}
-	}
-
 	public static class AtomEntryBuilder implements AtomEntryIdBuilder, SubmittedBuilder, ContentBuilder, Build {
 
 		private Long feedId;
-		private AtomEntryId fAtomEntryId;
+		private String fAtomEntryId;
 		private String title;
 		private Timestamp fSubmitted;
 		private List<AtomLink> links = new ArrayList<>();
-		private String fXml;
+		private Content fXml = new Content();
 		private List<AtomCategory> categories = new ArrayList<>();
 		private List<Person> author = new ArrayList<>();
-		private Content summary;
+		private Content summary = new Content();
 
 		@Override
 		public AtomEntry build() {
@@ -157,13 +120,13 @@ public class AtomEntry {
 		}
 
 		@Override
-		public SubmittedBuilder withAtomEntryId(AtomEntryId atomEntryId) {
+		public SubmittedBuilder withAtomEntryId(String atomEntryId) {
 			this.fAtomEntryId = atomEntryId;
 			return this;
 		}
 
 		@Override
-		public Build withXml(String xml) {
+		public Build withXml(Content xml) {
 			this.fXml = xml;
 			return this;
 		}
@@ -224,7 +187,7 @@ public class AtomEntry {
 
 	public interface AtomEntryIdBuilder {
 
-		public SubmittedBuilder withAtomEntryId(AtomEntryId atomEntryId);
+		public SubmittedBuilder withAtomEntryId(String atomEntryId);
 	}
 
 	public interface SubmittedBuilder {
@@ -236,7 +199,7 @@ public class AtomEntry {
 
 	public interface ContentBuilder {
 
-		Build withXml(String xml);
+		Build withXml(Content xml);
 
 		Build withAlternateLinks(AtomLink... link);
 	}

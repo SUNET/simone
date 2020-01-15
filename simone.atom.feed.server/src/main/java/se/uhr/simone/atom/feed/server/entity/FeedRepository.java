@@ -8,8 +8,6 @@ import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
-
 public abstract class FeedRepository {
 
 	private AtomFeedDAO atomFeedDAO;
@@ -142,7 +140,7 @@ public abstract class FeedRepository {
 		return feedsWithoutXml;
 	}
 
-	public UniqueIdentifier getLatestEntryIdForCategory(AtomCategory category) {
+	public String getLatestEntryIdForCategory(AtomCategory category) {
 		try {
 			return atomEntryDAO.getLatestEntryIdForCategory(category);
 		} catch (EmptyResultDataAccessException e) {

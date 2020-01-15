@@ -3,6 +3,8 @@ package se.uhr.simone.atom.feed.server.entity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import java.util.UUID;
+
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +15,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import se.uhr.simone.atom.feed.server.entity.AtomCategory.Label;
 import se.uhr.simone.atom.feed.server.entity.AtomCategory.Term;
-import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
-import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
 
 @ExtendWith(DataSourceParameterResolver.class)
 public class AtomCategoryDAOTest {
@@ -31,8 +31,7 @@ public class AtomCategoryDAOTest {
 
 	@Test
 	public void isConnectedShouldReturnFalse() {
-		assertThat(atomCategoryDAO.isConnected(createAtomCategory(),
-				AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "content-type"))).isFalse();
+		assertThat(atomCategoryDAO.isConnected(createAtomCategory(), UUID.randomUUID().toString())).isFalse();
 	}
 
 	@Test
@@ -50,16 +49,14 @@ public class AtomCategoryDAOTest {
 	@Test
 	public void connectEntryToCategoryShouldThrowExceptionWhenEntryDoesNotExist() {
 		assertThatExceptionOfType(DataIntegrityViolationException.class).isThrownBy(() -> {
-			atomCategoryDAO.connectEntryToCategory(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "content-type"),
+			atomCategoryDAO.connectEntryToCategory(UUID.randomUUID().toString(),
 					AtomCategory.builder().withTerm(Term.of("term")).withLabel(Label.of("label")).build());
 		});
 	}
 
 	@Test
 	public void getCategoriesForAtomEntryShouldReturnEmptyList() {
-		assertThat(atomCategoryDAO
-				.getCategoriesForAtomEntry(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "content-type")))
-						.isEmpty();
+		assertThat(atomCategoryDAO.getCategoriesForAtomEntry(UUID.randomUUID().toString())).isEmpty();
 	}
 
 	@Test
@@ -79,7 +76,7 @@ public class AtomCategoryDAOTest {
 
 	private AtomEntry createAtomEntry() {
 		return AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "content-type"))
+				.withAtomEntryId(UUID.randomUUID().toString())
 				.withSortOrder(Long.valueOf(1))
 				.withSubmittedNow()
 				.build();

@@ -9,9 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import se.uhr.simone.atom.feed.server.entity.AtomCategory.Label;
-import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
 import se.uhr.simone.atom.feed.utils.TimestampUtil;
-import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
 
 public class AtomEntryDAO {
 
@@ -23,47 +21,47 @@ public class AtomEntryDAO {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
-	public boolean exists(AtomEntryId atomEntryId) {
+	public boolean exists(String atomEntryId) {
 		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT 1 FROM ATOM_ENTRY WHERE ENTRY_ID=? AND ENTRY_CONTENT_TYPE=?");
-		return jdbcTemplate.queryForRowSet(sql.toString(), atomEntryId.getId(), atomEntryId.getContentType()).next();
+		sql.append("SELECT 1 FROM ATOM_ENTRY WHERE ENTRY_ID=? ");
+		return jdbcTemplate.queryForRowSet(sql.toString(), atomEntryId).next();
 	}
 
 	public void insert(AtomEntry atomEntry) {
 		StringBuilder sql = new StringBuilder();
 
 		sql.append(
-				"INSERT INTO ATOM_ENTRY (ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SORT_ORDER, SUBMITTED, TITLE, ENTRY_XML, SUMMARY) VALUES (?,?,?,?,?,?, XMLPARSE( DOCUMENT CAST(? AS CLOB(1M)) PRESERVE WHITESPACE), ?)");
-		jdbcTemplate.update(sql.toString(), atomEntry.getAtomEntryId().getId(),
-				atomEntry.getAtomEntryId() == null ? null : atomEntry.getAtomEntryId().getContentType(), atomEntry.getFeedId(),
-				atomEntry.getSortOrder(), TimestampUtil.forUTCColumn(atomEntry.getSubmitted()), atomEntry.getTitle(),
-				atomEntry.getXml(), atomEntry.getContent() == null ? null : atomEntry.getContent().getSummary());
+				"INSERT INTO ATOM_ENTRY (ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SORT_ORDER, SUBMITTED, TITLE, ENTRY_XML, SUMMARY, SUMMARY_CONTENT_TYPE) VALUES (?,?,?,?,?,?, XMLPARSE( DOCUMENT CAST(? AS CLOB(1M)) PRESERVE WHITESPACE), ?, ?)");
+		jdbcTemplate.update(sql.toString(), atomEntry.getAtomEntryId(), atomEntry.getXml().getContentType().orElse(null),
+				atomEntry.getFeedId(), atomEntry.getSortOrder(), TimestampUtil.forUTCColumn(atomEntry.getSubmitted()),
+				atomEntry.getTitle(), atomEntry.getXml().getValue(), atomEntry.getSummary().getValue(),
+				atomEntry.getSummary().getContentType().orElse(null));
 	}
 
 	public void update(AtomEntry atomEntry) {
 		StringBuilder sql = new StringBuilder();
 		sql.append(
-				"UPDATE ATOM_ENTRY SET FEED_ID=?, SUBMITTED=?, TITLE=?, ENTRY_XML=XMLPARSE( DOCUMENT CAST(? AS CLOB(1M)) PRESERVE WHITESPACE) WHERE ENTRY_ID=? AND ENTRY_CONTENT_TYPE=?");
+				"UPDATE ATOM_ENTRY SET FEED_ID=?, SUBMITTED=?, TITLE=?, ENTRY_XML=XMLPARSE( DOCUMENT CAST(? AS CLOB(1M)) PRESERVE WHITESPACE), ENTRY_CONTENT_TYPE=? WHERE ENTRY_ID=? ");
 		jdbcTemplate.update(sql.toString(), atomEntry.getFeedId(), TimestampUtil.forUTCColumn(atomEntry.getSubmitted()),
-				atomEntry.getTitle(), atomEntry.getXml(), atomEntry.getAtomEntryId().getId(),
-				atomEntry.getAtomEntryId().getContentType());
+				atomEntry.getTitle(), atomEntry.getXml().getValue(), atomEntry.getXml().getContentType().orElse(null),
+				atomEntry.getAtomEntryId());
 	}
 
-	public AtomEntry fetchBy(AtomEntryId atomEntryId) {
+	public AtomEntry fetchBy(String atomEntryId) {
 		StringBuilder sql = new StringBuilder();
 		sql.append(
-				"SELECT SORT_ORDER, ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SUBMITTED, TITLE, XMLSERIALIZE(ENTRY_XML AS CLOB(1M)) AS ENTRY_XML, SUMMARY FROM ATOM_ENTRY WHERE ENTRY_ID = ? AND ENTRY_CONTENT_TYPE = ?");
-		return jdbcTemplate.queryForObject(sql.toString(), new AtomEntryRowMapper(), atomEntryId.getId(), atomEntryId.getContentType());
+				"SELECT SORT_ORDER, ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SUBMITTED, TITLE, XMLSERIALIZE(ENTRY_XML AS CLOB(1M)) AS ENTRY_XML, SUMMARY, SUMMARY_CONTENT_TYPE FROM ATOM_ENTRY WHERE ENTRY_ID = ? ");
+		return jdbcTemplate.queryForObject(sql.toString(), new AtomEntryRowMapper(), atomEntryId);
 	}
 
 	public List<AtomEntry> getAtomEntriesForFeed(long id) {
 		StringBuilder sql = new StringBuilder();
 		sql.append(
-				"SELECT SORT_ORDER, ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SUBMITTED, TITLE, XMLSERIALIZE(ENTRY_XML AS CLOB(1M)) AS ENTRY_XML, SUMMARY FROM ATOM_ENTRY WHERE FEED_ID = ? ORDER BY SORT_ORDER DESC, SUBMITTED DESC");
+				"SELECT SORT_ORDER, ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SUBMITTED, TITLE, XMLSERIALIZE(ENTRY_XML AS CLOB(1M)) AS ENTRY_XML, SUMMARY, SUMMARY_CONTENT_TYPE FROM ATOM_ENTRY WHERE FEED_ID = ? ORDER BY SORT_ORDER DESC, SUBMITTED DESC");
 		return jdbcTemplate.query(sql.toString(), new AtomEntryRowMapper(), id);
 	}
 
-	public UniqueIdentifier getLatestEntryIdForCategory(AtomCategory category) {
+	public String getLatestEntryIdForCategory(AtomCategory category) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT ");
 		sql.append("AE.ENTRY_ID ");
@@ -71,24 +69,25 @@ public class AtomEntryDAO {
 		sql.append("inner join ATOM_CATEGORY AC on AE.ENTRY_ID = AC.ENTRY_ID ");
 		sql.append("WHERE AC.TERM = ? and AC.LABEL = ? ");
 		sql.append("ORDER BY SORT_ORDER DESC, SUBMITTED DESC FETCH FIRST 1 ROWS ONLY ");
+
 		return jdbcTemplate.queryForObject(sql.toString(),
 				new Object[] { category.getTerm().getValue(), category.getLabel().map(Label::getValue).orElse(null) },
-				new UuidRowmapper());
+				new EntryIdRowmapper());
 	}
 
 	public List<AtomEntry> getEntriesNotConnectedToFeed() {
 		StringBuilder sql = new StringBuilder();
 		sql.append(
-				"SELECT SORT_ORDER, ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SUBMITTED, TITLE, XMLSERIALIZE(ENTRY_XML AS CLOB(1M)) AS ENTRY_XML, SUMMARY FROM ATOM_ENTRY WHERE FEED_ID IS NULL ORDER BY SORT_ORDER ASC, SUBMITTED ASC FETCH FIRST "
+				"SELECT SORT_ORDER, ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SUBMITTED, TITLE, XMLSERIALIZE(ENTRY_XML AS CLOB(1M)) AS ENTRY_XML, SUMMARY, SUMMARY_CONTENT_TYPE FROM ATOM_ENTRY WHERE FEED_ID IS NULL ORDER BY SORT_ORDER ASC, SUBMITTED ASC FETCH FIRST "
 						+ MAX_NUM_OF_ENTRIES_TO_RETURN + " ROWS ONLY");
 		return jdbcTemplate.query(sql.toString(), new AtomEntryRowMapper());
 	}
 
-	private static class UuidRowmapper implements RowMapper<UniqueIdentifier> {
+	private static class EntryIdRowmapper implements RowMapper<String> {
 
 		@Override
-		public UniqueIdentifier mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return UniqueIdentifier.of(rs.getBytes("ENTRY_ID"));
+		public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return rs.getString("ENTRY_ID");
 
 		}
 	}

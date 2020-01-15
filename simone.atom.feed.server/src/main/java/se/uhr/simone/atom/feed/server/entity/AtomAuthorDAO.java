@@ -7,8 +7,6 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
-import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
-
 public class AtomAuthorDAO {
 
 	private JdbcTemplate jdbcTemplate;
@@ -17,28 +15,28 @@ public class AtomAuthorDAO {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
-	public boolean exists(AtomEntryId atomEntryId) {
+	public boolean exists(String atomEntryId) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT 1 FROM ATOM_AUTHOR WHERE ENTRY_ID = ?");
-		return jdbcTemplate.queryForRowSet(sql.toString(), atomEntryId.getId()).next();
+		return jdbcTemplate.queryForRowSet(sql.toString(), atomEntryId).next();
 	}
 
-	public void insert(AtomEntryId id, Person person) {
+	public void insert(String id, Person person) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("INSERT INTO ATOM_AUTHOR (ENTRY_ID, AUTHOR) VALUES (?,?)");
-		jdbcTemplate.update(sql.toString(), id.getId(), person.getName());
+		jdbcTemplate.update(sql.toString(), id, person.getName());
 	}
 
-	public void delete(AtomEntryId atomEntryId) {
+	public void delete(String atomEntryId) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("DELETE FROM ATOM_AUTHOR WHERE ENTRY_ID = ? ");
-		jdbcTemplate.update(sql.toString(), atomEntryId.getId());
+		jdbcTemplate.update(sql.toString(), atomEntryId);
 	}
 
-	public List<Person> findBy(AtomEntryId atomEntryId) {
+	public List<Person> findBy(String atomEntryId) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT AUTHOR FROM ATOM_AUTHOR WHERE ENTRY_ID = ? ");
-		return jdbcTemplate.query(sql.toString(), new AtomAuthorRowMapper(), atomEntryId.getId());
+		return jdbcTemplate.query(sql.toString(), new AtomAuthorRowMapper(), atomEntryId);
 	}
 
 	private static class AtomAuthorRowMapper implements RowMapper<Person> {

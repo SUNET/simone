@@ -2,6 +2,8 @@ package se.uhr.simone.atom.feed.server.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.UUID;
+
 import javax.sql.DataSource;
 
 import org.joda.time.DateTimeUtils;
@@ -10,9 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
-import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
-
 @ExtendWith(DataSourceParameterResolver.class)
 public class AtomAuthorDAOTest {
 
@@ -20,7 +19,7 @@ public class AtomAuthorDAOTest {
 
 	private AtomAuthorDAO atomAuthorDAO;
 
-	private AtomEntryId atomEntryId = createNewAtomEntryId();
+	private String atomEntryId = createNewAtomEntryId();
 
 	@BeforeEach
 	public void setup(DataSource ds) {
@@ -48,8 +47,7 @@ public class AtomAuthorDAOTest {
 
 	@Test
 	public void emptyListWhenNoResult() {
-		assertThat(atomAuthorDAO.findBy(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "non-existing")))
-				.isEmpty();
+		assertThat(atomAuthorDAO.findBy(UUID.randomUUID().toString())).isEmpty();
 	}
 
 	@Test
@@ -67,7 +65,7 @@ public class AtomAuthorDAOTest {
 		assertThat(atomAuthorDAO.findBy(atomEntryId)).isEmpty();
 	}
 
-	private AtomEntryId createNewAtomEntryId() {
-		return AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "application/xml");
+	private String createNewAtomEntryId() {
+		return UUID.randomUUID().toString();
 	}
 }

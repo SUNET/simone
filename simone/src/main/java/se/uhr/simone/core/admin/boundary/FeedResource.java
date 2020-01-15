@@ -2,6 +2,7 @@ package se.uhr.simone.core.admin.boundary;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
@@ -26,9 +27,8 @@ import se.uhr.simone.atom.feed.server.entity.AtomCategory;
 import se.uhr.simone.atom.feed.server.entity.AtomCategory.Label;
 import se.uhr.simone.atom.feed.server.entity.AtomCategory.Term;
 import se.uhr.simone.atom.feed.server.entity.AtomEntry;
-import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
 import se.uhr.simone.atom.feed.server.entity.AtomEntry.Build;
-import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
+import se.uhr.simone.atom.feed.server.entity.Content;
 import se.uhr.simone.core.admin.control.FeedBlocker;
 import se.uhr.simone.core.admin.control.SimulatedFeedResponse;
 import se.uhr.simone.core.boundary.AdminCatagory;
@@ -93,15 +93,15 @@ public class FeedResource {
 	@POST
 	@Path("event")
 	public Response publishEvent(AtomFeedEventRepresentation event) {
-		UniqueIdentifier uid = UniqueIdentifier.randomUniqueIdentifier();
+		String uid = UUID.randomUUID().toString();
 
 		Long nextSortOrder = feedRepository.getNextSortOrder();
 
 		Build builder = AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(uid.getValue(), event.getContentType()))
+				.withAtomEntryId(uid)
 				.withSortOrder(nextSortOrder)
 				.withSubmittedNow()
-				.withXml(event.getContent());
+				.withXml(Content.builder().withValue(event.getContent()).withContentType(event.getContentType()).build());
 
 		for (se.uhr.simone.admin.feed.AtomCategoryRepresentation category : event.getCategorys()) {
 			AtomCategory.Build categoryBuilder = AtomCategory.builder().withTerm(Term.of(category.getTerm()));

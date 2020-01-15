@@ -7,19 +7,17 @@ import javax.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.Test;
 
-import se.uhr.simone.extension.api.feed.AtomEntry.AtomEntryId;
-
 public class AtomEntryTest {
 
 	@Test
 	public void entryMustHaveAlternateLink_whenNoContentIsAdded() throws Exception {
 		AtomEntry entry = AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(null, MediaType.APPLICATION_JSON))
+				.withAtomEntryId(null)
 				.withSubmittedNow()
 				.withAlternateLinks(AtomLink.builder().withRelAlternate().withHref("URL").build())
 				.build();
 		assertThat(entry).isNotNull();
-		assertThat(entry.getXml()).isNull();
+		assertThat(entry.getXml().getValue()).isNull();
 		assertThat(entry.getLinks()).hasSize(1);
 	}
 
@@ -27,7 +25,7 @@ public class AtomEntryTest {
 	public void entryMustNotHaveTwoAlternateLink_withSameType() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
 			AtomEntry.builder()
-					.withAtomEntryId(AtomEntryId.of(null, MediaType.APPLICATION_JSON))
+					.withAtomEntryId(null)
 					.withSubmittedNow()
 					.withAlternateLinks( //
 							AtomLink.builder().withRelAlternate().withHref("URL").withType(MediaType.APPLICATION_JSON).build(),
@@ -39,7 +37,7 @@ public class AtomEntryTest {
 	@Test
 	public void entryMustAlternateLinks_withDiffernetTypes() throws Exception {
 		AtomEntry entry = AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(null, MediaType.APPLICATION_JSON))
+				.withAtomEntryId(null)
 				.withSubmittedNow()
 				.withAlternateLinks( //
 						AtomLink.builder().withRelAlternate().withHref("URL").withType(MediaType.APPLICATION_JSON).build(),
@@ -47,7 +45,7 @@ public class AtomEntryTest {
 				.build();
 
 		assertThat(entry).isNotNull();
-		assertThat(entry.getXml()).isNull();
+		assertThat(entry.getXml().getValue()).isNull();
 		assertThat(entry.getLinks()).hasSize(2);
 	}
 }

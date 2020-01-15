@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.RowMapper;
 import se.uhr.simone.atom.feed.server.entity.AtomCategory.Build;
 import se.uhr.simone.atom.feed.server.entity.AtomCategory.Label;
 import se.uhr.simone.atom.feed.server.entity.AtomCategory.Term;
-import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
 
 public class AtomCategoryDAO {
 
@@ -21,23 +20,23 @@ public class AtomCategoryDAO {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
-	public boolean isConnected(AtomCategory atomCategory, AtomEntryId atomEntryId) {
+	public boolean isConnected(AtomCategory atomCategory, String atomEntryId) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT 1 FROM ATOM_CATEGORY WHERE TERM=? AND ENTRY_ID=?");
-		return jdbcTemplate.queryForRowSet(sql.toString(), atomCategory.getTerm().getValue(), atomEntryId.getId()).next();
+		return jdbcTemplate.queryForRowSet(sql.toString(), atomCategory.getTerm().getValue(), atomEntryId).next();
 	}
 
-	public void connectEntryToCategory(AtomEntryId atomEntryId, AtomCategory atomCategory) {
+	public void connectEntryToCategory(String atomEntryId, AtomCategory atomCategory) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("INSERT INTO ATOM_CATEGORY (ENTRY_ID, TERM, LABEL) VALUES (?,?,?)");
-		jdbcTemplate.update(sql.toString(), atomEntryId.getId(), atomCategory.getTerm().getValue(),
+		jdbcTemplate.update(sql.toString(), atomEntryId, atomCategory.getTerm().getValue(),
 				atomCategory.getLabel().map(Label::getValue).orElse(null));
 	}
 
-	public List<AtomCategory> getCategoriesForAtomEntry(AtomEntryId atomEntryId) {
+	public List<AtomCategory> getCategoriesForAtomEntry(String atomEntryId) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT TERM, LABEL FROM ATOM_CATEGORY WHERE ENTRY_ID=? ");
-		return jdbcTemplate.query(sql.toString(), new AtomCategoryRowMapper(), atomEntryId.getId());
+		return jdbcTemplate.query(sql.toString(), new AtomCategoryRowMapper(), atomEntryId);
 	}
 
 	private static class AtomCategoryRowMapper implements RowMapper<AtomCategory> {

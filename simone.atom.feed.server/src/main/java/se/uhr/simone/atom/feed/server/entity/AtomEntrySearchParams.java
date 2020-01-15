@@ -4,12 +4,10 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
-
 public class AtomEntrySearchParams {
 
 	private String personNumber;
-	private UniqueIdentifier beforeId;
+	private String beforeId;
 	private String educationOrgId;
 	private String courseId;
 	private String programId;
@@ -19,7 +17,7 @@ public class AtomEntrySearchParams {
 	private Set<String> studentIds;
 
 	public AtomEntrySearchParams(String personNumber, String educationOrgId, String courseId, String programId, Date fromDate,
-			Date toDate, UniqueIdentifier beforeId, int maxResults) {
+			Date toDate, String beforeId, int maxResults) {
 		super();
 		this.personNumber = personNumber;
 		this.educationOrgId = educationOrgId;
@@ -64,7 +62,7 @@ public class AtomEntrySearchParams {
 		return studentIds;
 	}
 
-	public UniqueIdentifier getBeforeId() {
+	public String getBeforeId() {
 		return beforeId;
 	}
 

@@ -2,6 +2,8 @@ package se.uhr.simone.atom.feed.server.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.UUID;
+
 import javax.sql.DataSource;
 import javax.ws.rs.core.MediaType;
 
@@ -11,15 +13,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
-import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
-
 @ExtendWith(DataSourceParameterResolver.class)
 public class AtomLinkDAOTest {
 
 	private AtomLinkDAO atomLinkDAO;
 
-	private AtomEntryId id = createAtomEntryId();
+	private String id = createAtomEntryId();
 
 	@BeforeEach
 	public void setup(DataSource ds) {
@@ -48,7 +47,7 @@ public class AtomLinkDAOTest {
 
 	@Test
 	public void emptyListWhenNoResult() {
-		assertThat(atomLinkDAO.findBy(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "non-existing"))).isEmpty();
+		assertThat(atomLinkDAO.findBy(UUID.randomUUID().toString())).isEmpty();
 	}
 
 	@Test
@@ -64,8 +63,8 @@ public class AtomLinkDAOTest {
 		assertThat(atomLinkDAO.findBy(id)).isEmpty();
 	}
 
-	private AtomEntryId createAtomEntryId() {
-		return AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier().getValue(), "content-type");
+	private String createAtomEntryId() {
+		return UUID.randomUUID().toString();
 	}
 
 	private AtomLink createAtomLink() {
