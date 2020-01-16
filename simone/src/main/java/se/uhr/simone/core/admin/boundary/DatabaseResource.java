@@ -2,13 +2,15 @@ package se.uhr.simone.core.admin.boundary;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -22,9 +24,9 @@ import org.eclipse.microprofile.openapi.annotations.enums.ParameterStyle;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameters;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
 import se.uhr.simone.admin.api.file.FileLoadResultRepresentation;
 import se.uhr.simone.core.boundary.AdminCatagory;
@@ -49,35 +51,41 @@ public class DatabaseResource {
 
 	@Operation(summary = "Loads the database", description = "This has the same effects as dropping a file in the dropin directory")
 	@APIResponse(description = "Status and list of order ids", content = @Content(schema = @Schema(implementation = FileLoadResultRepresentation.class)))
+	@Parameters(value = { @Parameter(name = "name", description = "the name of the file", style = ParameterStyle.FORM),
+			@Parameter(name = "content", description = "the content of the file", style = ParameterStyle.FORM) })
 	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@POST
-	public Response load(@Parameter(name = "file to upload", style = ParameterStyle.FORM) @MultipartForm FileUploadForm fileUpload)
-		throws IOException {
-
+	public Response load(Map<String, String> parts) throws IOException {
 		List<String> idList = new ArrayList<>();
 		StringBuilder errorLog = new StringBuilder();
 		boolean success = true;
 
-		for (FileLoaderDescriptor ext : extensionManager.getFileExtensions(fileUpload.getName())) {
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(fileUpload.getContent()))) {
-				FileLoader fileLoader = ext.createJob(reader);
+		if (parts.containsKey("name") && parts.containsKey("content")) {
 
-				RestExtensionContext context = new RestExtensionContext();
+			for (FileLoaderDescriptor ext : extensionManager.getFileExtensions(parts.get("name"))) {
+				try (BufferedReader reader = new BufferedReader(new StringReader(parts.get("content")))) {
+					FileLoader fileLoader = ext.createJob(reader);
 
-				FileLoader.Result loadResult = fileLoader.execute(context);
+					RestExtensionContext context = new RestExtensionContext();
 
-				idList.addAll(context.getEventIdList());
-				errorLog.append(context.getErrorLog());
+					FileLoader.Result loadResult = fileLoader.execute(context);
 
-				if (loadResult != FileLoader.Result.SUCCESS) {
-					success = false;
+					idList.addAll(context.getEventIdList());
+					errorLog.append(context.getErrorLog());
+
+					if (loadResult != FileLoader.Result.SUCCESS) {
+						success = false;
+					}
 				}
 			}
-		}
 
-		return Response.status(success ? Status.OK : Status.BAD_REQUEST)
-				.entity(FileLoadResultRepresentation.of(idList, errorLog.toString()))
-				.build();
+			return Response.status(success ? Status.OK : Status.BAD_REQUEST)
+					.entity(FileLoadResultRepresentation.of(idList, errorLog.toString()))
+					.build();
+		} else {
+			return Response.status(Status.BAD_REQUEST).build();
+		}
 	}
 
 	@Operation(summary = "Empty the database")

@@ -12,7 +12,7 @@ public class Content {
 		this.contentType = builder.contentType;
 	}
 
-	public Content() {
+	private Content() {
 	}
 
 	public String getValue() {

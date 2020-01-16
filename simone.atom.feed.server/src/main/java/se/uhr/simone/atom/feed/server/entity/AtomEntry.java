@@ -5,13 +5,14 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class AtomEntry implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private String atomEntryId;
-	private Content xml = new Content();
+	private Content xml;
 
 	private Long feedId;
 	private Long sortOrder;
@@ -20,7 +21,7 @@ public class AtomEntry implements Serializable {
 	private List<AtomCategory> atomCategories = new ArrayList<>();
 	private List<AtomLink> atomLinks = new ArrayList<>();
 	private List<Person> authors = new ArrayList<>();
-	private Content summary = new Content();
+	private Content summary;
 
 	private AtomEntry(AtomEntryBuilder builder) {
 		this.atomEntryId = builder.atomEntryId;
@@ -47,8 +48,8 @@ public class AtomEntry implements Serializable {
 		return atomEntryId;
 	}
 
-	public Content getXml() {
-		return xml;
+	public Optional<Content> getXml() {
+		return Optional.ofNullable(xml);
 	}
 
 	public void setXml(Content xml) {
@@ -103,8 +104,8 @@ public class AtomEntry implements Serializable {
 		this.authors = authors;
 	}
 
-	public Content getSummary() {
-		return summary;
+	public Optional<Content> getSummary() {
+		return Optional.ofNullable(summary);
 	}
 
 	public void setSummary(Content summary) {
@@ -116,13 +117,13 @@ public class AtomEntry implements Serializable {
 		private Long sortOrder;
 		private Timestamp submitted;
 		private String atomEntryId;
-		private Content xml = new Content();
+		private Content xml;
 		private List<AtomCategory> categories = new ArrayList<>();
 		private Long feedId;
 		private String title;
 		private List<AtomLink> links = new ArrayList<>();
 		private List<Person> authors = new ArrayList<>();
-		private Content summary = new Content();
+		private Content summary;
 
 		@Override
 		public AtomEntry build() {

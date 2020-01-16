@@ -92,9 +92,9 @@ public class FeedConverter {
 			convertedEntry.setUpdated(entry.getSubmitted());
 			convertedEntry.setCategories(getConvertedCategories(entry));
 
-			if (entry.getXml().getValue() != null) {
-				convertedEntry.setContents(Arrays.asList(getContent(entry.getXml())));
-			}
+			entry.getXml()
+					.filter(xml -> xml.getValue() != null)
+					.ifPresent(xml -> convertedEntry.setContents(Arrays.asList(getContent(xml))));
 
 			if (entry.hasTitle()) {
 				// Title is mandatory according to the atom specification.
@@ -104,9 +104,9 @@ public class FeedConverter {
 
 			convertedEntry.setAuthors(entry.getAuthors().stream().map(this::convert).collect(Collectors.toList()));
 
-			if (entry.getSummary().getValue() != null) {
-				convertedEntry.setSummary(getContent(entry.getSummary()));
-			}
+			entry.getSummary()
+					.filter(summary -> summary.getValue() != null)
+					.ifPresent(summary -> convertedEntry.setSummary(getContent(summary)));
 
 			convertedEntry.setAlternateLinks(
 					entry.getAtomLinks().stream().filter(AtomLink::isAlternate).map(this::convert).collect(Collectors.toList()));

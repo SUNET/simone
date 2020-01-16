@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
-import org.joda.time.DateTimeUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +25,6 @@ public class AtomAuthorDAOTest {
 		atomAuthorDAO = new AtomAuthorDAO(new JdbcTemplate(ds));
 		AtomEntryDAO atomEntryDAO = new AtomEntryDAO(new JdbcTemplate(ds));
 		atomEntryDAO.insert(AtomEntry.builder().withAtomEntryId(atomEntryId).withSortOrder(1L).withSubmittedNow().build());
-		DateTimeUtils.setCurrentMillisSystem();
 	}
 
 	@Test

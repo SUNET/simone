@@ -4,6 +4,7 @@ package se.uhr.simone.atom.feed.server.entity;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.function.Function;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -32,10 +33,11 @@ public class AtomEntryDAO {
 
 		sql.append(
 				"INSERT INTO ATOM_ENTRY (ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SORT_ORDER, SUBMITTED, TITLE, ENTRY_XML, SUMMARY, SUMMARY_CONTENT_TYPE) VALUES (?,?,?,?,?,?, XMLPARSE( DOCUMENT CAST(? AS CLOB(1M)) PRESERVE WHITESPACE), ?, ?)");
-		jdbcTemplate.update(sql.toString(), atomEntry.getAtomEntryId(), atomEntry.getXml().getContentType().orElse(null),
-				atomEntry.getFeedId(), atomEntry.getSortOrder(), TimestampUtil.forUTCColumn(atomEntry.getSubmitted()),
-				atomEntry.getTitle(), atomEntry.getXml().getValue(), atomEntry.getSummary().getValue(),
-				atomEntry.getSummary().getContentType().orElse(null));
+		jdbcTemplate.update(sql.toString(), atomEntry.getAtomEntryId(),
+				atomEntry.getXml().map(getContentType()).orElse(null), atomEntry.getFeedId(),
+				atomEntry.getSortOrder(), TimestampUtil.forUTCColumn(atomEntry.getSubmitted()), atomEntry.getTitle(),
+				atomEntry.getXml().map(Content::getValue).orElse(null), atomEntry.getSummary().map(Content::getValue).orElse(null),
+				atomEntry.getSummary().map(getContentType()).orElse(null));
 	}
 
 	public void update(AtomEntry atomEntry) {
@@ -43,8 +45,13 @@ public class AtomEntryDAO {
 		sql.append(
 				"UPDATE ATOM_ENTRY SET FEED_ID=?, SUBMITTED=?, TITLE=?, ENTRY_XML=XMLPARSE( DOCUMENT CAST(? AS CLOB(1M)) PRESERVE WHITESPACE), ENTRY_CONTENT_TYPE=? WHERE ENTRY_ID=? ");
 		jdbcTemplate.update(sql.toString(), atomEntry.getFeedId(), TimestampUtil.forUTCColumn(atomEntry.getSubmitted()),
-				atomEntry.getTitle(), atomEntry.getXml().getValue(), atomEntry.getXml().getContentType().orElse(null),
+				atomEntry.getTitle(), atomEntry.getXml().map(Content::getValue).orElse(null),
+				atomEntry.getXml().map(getContentType()).orElse(null),
 				atomEntry.getAtomEntryId());
+	}
+
+	private Function<? super Content, ? extends String> getContentType() {
+		return contentType -> contentType.getContentType().orElse(null);
 	}
 
 	public AtomEntry fetchBy(String atomEntryId) {

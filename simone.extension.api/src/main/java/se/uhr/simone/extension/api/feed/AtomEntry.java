@@ -9,14 +9,14 @@ import java.util.List;
 public class AtomEntry {
 
 	private String atomEntryId;
-	private Content xml = new Content();
+	private Content xml;
 	private Long feedId;
 	private String title;
 	private Timestamp submitted;
 	private List<AtomCategory> atomCategories = new ArrayList<>();
 	private List<AtomLink> links = new ArrayList<>();
 	private List<Person> author = new ArrayList<>();
-	private Content summary = new Content();
+	private Content summary;
 
 	private AtomEntry(AtomEntryBuilder builder) {
 		this.atomEntryId = builder.fAtomEntryId;
@@ -97,10 +97,10 @@ public class AtomEntry {
 		private String title;
 		private Timestamp fSubmitted;
 		private List<AtomLink> links = new ArrayList<>();
-		private Content fXml = new Content();
+		private Content fXml;
 		private List<AtomCategory> categories = new ArrayList<>();
 		private List<Person> author = new ArrayList<>();
-		private Content summary = new Content();
+		private Content summary;
 
 		@Override
 		public AtomEntry build() {
