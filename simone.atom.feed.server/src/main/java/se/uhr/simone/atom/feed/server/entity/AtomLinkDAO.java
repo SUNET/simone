@@ -7,8 +7,6 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
-import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
-
 public class AtomLinkDAO {
 
 	static final int MAX_NUM_OF_ENTRIES_TO_RETURN = 10_000;
@@ -19,28 +17,28 @@ public class AtomLinkDAO {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
-	public boolean exists(AtomEntryId atomEntryId) {
+	public boolean exists(String atomEntryId) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT 1 FROM ATOM_LINK WHERE ENTRY_ID = ?");
-		return jdbcTemplate.queryForRowSet(sql.toString(), atomEntryId.getId().toByteArray()).next();
+		return jdbcTemplate.queryForRowSet(sql.toString(), atomEntryId).next();
 	}
 
-	public void insert(AtomEntryId id, AtomLink atomLink) {
+	public void insert(String id, AtomLink atomLink) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("INSERT INTO ATOM_LINK (ENTRY_ID, REL, HREF, CONTENT_TYPE) VALUES (?,?,?,?)");
-		jdbcTemplate.update(sql.toString(), id.getId().toByteArray(), atomLink.getRel(), atomLink.getHref(), atomLink.getType());
+		jdbcTemplate.update(sql.toString(), id, atomLink.getRel(), atomLink.getHref(), atomLink.getType());
 	}
 
-	public void delete(AtomEntryId atomEntryId) {
+	public void delete(String atomEntryId) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("DELETE FROM ATOM_LINK WHERE ENTRY_ID = ? ");
-		jdbcTemplate.update(sql.toString(), atomEntryId.getId().toByteArray());
+		jdbcTemplate.update(sql.toString(), atomEntryId);
 	}
 
-	public List<AtomLink> findBy(AtomEntryId atomEntryId) {
+	public List<AtomLink> findBy(String atomEntryId) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT REL, HREF, CONTENT_TYPE FROM ATOM_LINK WHERE ENTRY_ID = ? ");
-		return jdbcTemplate.query(sql.toString(), new AtomLinkRowMapper(), atomEntryId.getId().toByteArray());
+		return jdbcTemplate.query(sql.toString(), new AtomLinkRowMapper(), atomEntryId);
 	}
 
 	private static class AtomLinkRowMapper implements RowMapper<AtomLink> {

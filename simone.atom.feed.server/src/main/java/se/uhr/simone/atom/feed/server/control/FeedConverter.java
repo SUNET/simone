@@ -18,6 +18,7 @@ import com.sun.syndication.feed.atom.Content;
 import com.sun.syndication.feed.atom.Entry;
 import com.sun.syndication.feed.atom.Feed;
 import com.sun.syndication.feed.atom.Link;
+import com.sun.syndication.feed.atom.Person;
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.WireFeedGenerator;
 import com.sun.syndication.io.impl.Atom10Generator;
@@ -87,17 +88,26 @@ public class FeedConverter {
 
 		for (AtomEntry entry : entries) {
 			Entry convertedEntry = new Entry();
-			convertedEntry.setId(entry.getAtomEntryId().getId().getValue());
+			convertedEntry.setId(entry.getAtomEntryId());
 			convertedEntry.setUpdated(entry.getSubmitted());
 			convertedEntry.setCategories(getConvertedCategories(entry));
-			if (entry.getXml() != null) {
-				convertedEntry.setContents(Arrays.asList(getContent(entry)));
-			}
+
+			entry.getXml()
+					.filter(xml -> xml.getValue() != null)
+					.ifPresent(xml -> convertedEntry.setContents(Arrays.asList(getContent(xml))));
+
 			if (entry.hasTitle()) {
 				// Title is mandatory according to the atom specification.
 				// This breaks the atom specification, but is needed for backwards compatibility.
 				convertedEntry.setTitle(entry.getTitle());
 			}
+
+			convertedEntry.setAuthors(entry.getAuthors().stream().map(this::convert).collect(Collectors.toList()));
+
+			entry.getSummary()
+					.filter(summary -> summary.getValue() != null)
+					.ifPresent(summary -> convertedEntry.setSummary(getContent(summary)));
+
 			convertedEntry.setAlternateLinks(
 					entry.getAtomLinks().stream().filter(AtomLink::isAlternate).map(this::convert).collect(Collectors.toList()));
 			convertedEntry.setOtherLinks(
@@ -106,6 +116,12 @@ public class FeedConverter {
 		}
 
 		return convertedEntries;
+	}
+
+	private Person convert(se.uhr.simone.atom.feed.server.entity.Person author) {
+		Person person = new Person();
+		person.setName(author.getName());
+		return person;
 	}
 
 	private Link convert(AtomLink atomLink) {
@@ -129,10 +145,10 @@ public class FeedConverter {
 		return convertedCategories;
 	}
 
-	public Content getContent(AtomEntry entry) {
+	public Content getContent(se.uhr.simone.atom.feed.server.entity.Content entryContent) {
 		Content content = new Content();
-		content.setType(entry.getAtomEntryId().getContentType());
-		content.setValue(entry.getXml());
+		content.setValue(entryContent.getValue());
+		entryContent.getContentType().ifPresent(content::setType);
 		return content;
 	}
 

@@ -5,17 +5,16 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.UUID;
 
 import javax.sql.DataSource;
+import javax.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-
-import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
-import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
 
 @ExtendWith(DataSourceParameterResolver.class)
 public class AtomEntryDAOTest {
@@ -60,19 +59,19 @@ public class AtomEntryDAOTest {
 
 		atomEntryDAO.insert(atomEntry);
 
-		atomEntry.setXml("<xml><value>2</value></xml>");
+		atomEntry.setXml(Content.builder().withValue("<xml><value>2</value></xml>").withContentType(MediaType.APPLICATION_XML).build());
 
 		atomEntryDAO.update(atomEntry);
 
 		AtomEntry fetchedAtomEntry = atomEntryDAO.fetchBy(atomEntry.getAtomEntryId());
 
-		assertThat(fetchedAtomEntry.getXml()).isEqualTo(atomEntry.getXml());
+		assertThat(fetchedAtomEntry.getXml().get().getValue()).isEqualTo(atomEntry.getXml().get().getValue());
 	}
 
 	@Test
 	public void fetchByShouldThrowExceptionWhenNotExisting() {
 		assertThatExceptionOfType(EmptyResultDataAccessException.class).isThrownBy(() -> {
-			atomEntryDAO.fetchBy(AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "non-existing"));
+			atomEntryDAO.fetchBy(UUID.randomUUID().toString());
 		});
 	}
 
@@ -85,34 +84,34 @@ public class AtomEntryDAOTest {
 	public void getAtomEntriesForFeedShouldReturnOrderedList() {
 		atomFeedDAO.insert(new AtomFeed(FIRST_NON_EXISTING_FEED_ID));
 
-		UniqueIdentifier id1 = UniqueIdentifier.randomUniqueIdentifier();
-		UniqueIdentifier id2 = UniqueIdentifier.randomUniqueIdentifier();
-		UniqueIdentifier id3 = UniqueIdentifier.randomUniqueIdentifier();
+		String id1 = UUID.randomUUID().toString();
+		String id2 = UUID.randomUUID().toString();
+		String id3 = UUID.randomUUID().toString();
 		atomEntryDAO.insert(AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(id1, "content-type"))
+				.withAtomEntryId(id1)
 				.withSortOrder(Long.valueOf(2))
 				.withSubmittedNow()
 				.withFeedId(Long.valueOf(1))
 				.build());
 
 		atomEntryDAO.insert(AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(id2, "content-type"))
+				.withAtomEntryId(id2)
 				.withSortOrder(Long.valueOf(3))
 				.withSubmittedNow()
 				.withFeedId(Long.valueOf(1))
 				.build());
 
 		atomEntryDAO.insert(AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(id3, "content-type"))
+				.withAtomEntryId(id3)
 				.withSortOrder(Long.valueOf(1))
 				.withSubmittedNow()
 				.withFeedId(Long.valueOf(1))
 				.build());
 
 		List<AtomEntry> entriesForFeed = atomEntryDAO.getAtomEntriesForFeed(1);
-		assertThat(entriesForFeed.get(0).getAtomEntryId().getId()).isEqualTo(id2);
-		assertThat(entriesForFeed.get(1).getAtomEntryId().getId()).isEqualTo(id1);
-		assertThat(entriesForFeed.get(2).getAtomEntryId().getId()).isEqualTo(id3);
+		assertThat(entriesForFeed.get(0).getAtomEntryId()).isEqualTo(id2);
+		assertThat(entriesForFeed.get(1).getAtomEntryId()).isEqualTo(id1);
+		assertThat(entriesForFeed.get(2).getAtomEntryId()).isEqualTo(id3);
 	}
 
 	@Test
@@ -121,25 +120,25 @@ public class AtomEntryDAOTest {
 
 		Timestamp now = new Timestamp(System.currentTimeMillis());
 
-		UniqueIdentifier id1 = UniqueIdentifier.randomUniqueIdentifier();
-		UniqueIdentifier id2 = UniqueIdentifier.randomUniqueIdentifier();
-		UniqueIdentifier id3 = UniqueIdentifier.randomUniqueIdentifier();
+		String id1 = UUID.randomUUID().toString();
+		String id2 = UUID.randomUUID().toString();
+		String id3 = UUID.randomUUID().toString();
 		atomEntryDAO.insert(AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(id1, "content-type"))
+				.withAtomEntryId(id1)
 				.withSortOrder(Long.valueOf(1))
 				.withSubmitted(now)
 				.withFeedId(Long.valueOf(1))
 				.build());
 
 		atomEntryDAO.insert(AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(id2, "content-type"))
+				.withAtomEntryId(id2)
 				.withSortOrder(Long.valueOf(2))
 				.withSubmitted(now)
 				.withFeedId(Long.valueOf(1))
 				.build());
 
 		atomEntryDAO.insert(AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(id3, "content-type"))
+				.withAtomEntryId(id3)
 				.withSortOrder(Long.valueOf(3))
 				.withSubmitted(now)
 				.withFeedId(Long.valueOf(1))
@@ -147,9 +146,9 @@ public class AtomEntryDAOTest {
 
 		for (int i = 1; i <= 2; i++) {
 			List<AtomEntry> entriesForFeed = atomEntryDAO.getAtomEntriesForFeed(1);
-			assertThat(entriesForFeed.get(0).getAtomEntryId().getId()).isEqualTo(id3);
-			assertThat(entriesForFeed.get(1).getAtomEntryId().getId()).isEqualTo(id2);
-			assertThat(entriesForFeed.get(2).getAtomEntryId().getId()).isEqualTo(id1);
+			assertThat(entriesForFeed.get(0).getAtomEntryId()).isEqualTo(id3);
+			assertThat(entriesForFeed.get(1).getAtomEntryId()).isEqualTo(id2);
+			assertThat(entriesForFeed.get(2).getAtomEntryId()).isEqualTo(id1);
 		}
 
 	}
@@ -162,50 +161,34 @@ public class AtomEntryDAOTest {
 	@Test
 	public void getEntriesNotConnectedToFeedShouldReturnOrderedList() {
 
-		UniqueIdentifier id1 = UniqueIdentifier.randomUniqueIdentifier();
-		UniqueIdentifier id2 = UniqueIdentifier.randomUniqueIdentifier();
-		UniqueIdentifier id3 = UniqueIdentifier.randomUniqueIdentifier();
-		atomEntryDAO.insert(AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(id1, "content-type"))
-				.withSortOrder(Long.valueOf(2))
-				.withSubmittedNow()
-				.build());
+		String id1 = UUID.randomUUID().toString();
+		String id2 = UUID.randomUUID().toString();
+		String id3 = UUID.randomUUID().toString();
+		atomEntryDAO.insert(AtomEntry.builder().withAtomEntryId(id1).withSortOrder(Long.valueOf(2)).withSubmittedNow().build());
 
-		atomEntryDAO.insert(AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(id2, "content-type"))
-				.withSortOrder(Long.valueOf(3))
-				.withSubmittedNow()
-				.build());
+		atomEntryDAO.insert(AtomEntry.builder().withAtomEntryId(id2).withSortOrder(Long.valueOf(3)).withSubmittedNow().build());
 
-		atomEntryDAO.insert(AtomEntry.builder()
-				.withAtomEntryId(AtomEntryId.of(id3, "content-type"))
-				.withSortOrder(Long.valueOf(1))
-				.withSubmittedNow()
-				.build());
+		atomEntryDAO.insert(AtomEntry.builder().withAtomEntryId(id3).withSortOrder(Long.valueOf(1)).withSubmittedNow().build());
 
 		List<AtomEntry> entriesNotConnectedToFeed = atomEntryDAO.getEntriesNotConnectedToFeed();
-		assertThat(entriesNotConnectedToFeed.get(0).getAtomEntryId().getId()).isEqualTo(id3);
-		assertThat(entriesNotConnectedToFeed.get(1).getAtomEntryId().getId()).isEqualTo(id1);
-		assertThat(entriesNotConnectedToFeed.get(2).getAtomEntryId().getId()).isEqualTo(id2);
+		assertThat(entriesNotConnectedToFeed.get(0).getAtomEntryId()).isEqualTo(id3);
+		assertThat(entriesNotConnectedToFeed.get(1).getAtomEntryId()).isEqualTo(id1);
+		assertThat(entriesNotConnectedToFeed.get(2).getAtomEntryId()).isEqualTo(id2);
 	}
 
 	@Test
 	public void getEntriesNotConnectedToFeedShouldReturnMaxNumberOfItems() {
 		for (int i = 0; i < AtomEntryDAO.MAX_NUM_OF_ENTRIES_TO_RETURN + 1; i++) {
-			UniqueIdentifier id = UniqueIdentifier.randomUniqueIdentifier();
-			atomEntryDAO.insert(AtomEntry.builder()
-					.withAtomEntryId(AtomEntryId.of(id, "content-type"))
-					.withSortOrder(Long.valueOf(1))
-					.withSubmittedNow()
-					.build());
+			String id = UUID.randomUUID().toString();
+			atomEntryDAO.insert(AtomEntry.builder().withAtomEntryId(id).withSortOrder(Long.valueOf(1)).withSubmittedNow().build());
 		}
 
 		List<AtomEntry> entriesNotConnectedToFeed = atomEntryDAO.getEntriesNotConnectedToFeed();
 		assertThat(entriesNotConnectedToFeed).hasSize(AtomEntryDAO.MAX_NUM_OF_ENTRIES_TO_RETURN);
 	}
 
-	private AtomEntryId createAtomEntryId() {
-		return AtomEntryId.of(UniqueIdentifier.randomUniqueIdentifier(), "content-type");
+	private String createAtomEntryId() {
+		return UUID.randomUUID().toString();
 	}
 
 	private AtomEntry createAtomEntry() {
@@ -213,7 +196,7 @@ public class AtomEntryDAOTest {
 				.withAtomEntryId(createAtomEntryId())
 				.withSortOrder(Long.valueOf(1))
 				.withSubmittedNow()
-				.withXml("<xml><value>1</value></xml>")
+				.withXml(Content.builder().withValue("<xml><value>1</value></xml>").withContentType(MediaType.APPLICATION_XML).build())
 				.build();
 	}
 

@@ -6,14 +6,14 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
 import se.uhr.simone.core.admin.control.FeedBlocker;
 import se.uhr.simone.core.feed.entity.SimFeedRepository;
 import se.uhr.simone.extension.api.feed.AtomCategory;
 import se.uhr.simone.extension.api.feed.AtomEntry;
-import se.uhr.simone.extension.api.feed.AtomEntry.AtomEntryId;
 import se.uhr.simone.extension.api.feed.AtomLink;
+import se.uhr.simone.extension.api.feed.Content;
 import se.uhr.simone.extension.api.feed.FeedPublisher;
+import se.uhr.simone.extension.api.feed.Person;
 
 public class SimulatorFeedPublisher implements FeedPublisher {
 
@@ -35,19 +35,33 @@ public class SimulatorFeedPublisher implements FeedPublisher {
 		Long nextSortOrder = simFeedRepository.getNextSortOrder();
 
 		return se.uhr.simone.atom.feed.server.entity.AtomEntry.builder()
-				.withAtomEntryId(convert(atomEntry.getAtomEntryId()))
+				.withAtomEntryId(atomEntry.getAtomEntryId())
 				.withSortOrder(nextSortOrder)
 				.withSubmitted(atomEntry.getSubmitted())
-				.withXml(atomEntry.getXml())
+				.withXml(convertContent(atomEntry.getXml()))
 				.withCategories(convert(atomEntry.getAtomCategories()))
 				.withTitle(atomEntry.getTitle())
 				.withLinks(convertLinks(atomEntry.getLinks()))
+				.withSummary(convertContent(atomEntry.getSummary()))
+				.withAuthor(convertPersons(atomEntry.getAuthors()))
 				.build();
 	}
 
-	private static se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId convert(AtomEntryId atomEntryId) {
-		return se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId.of(UniqueIdentifier.of(atomEntryId.getId().getUuid()),
-				atomEntryId.getContentType());
+	private static se.uhr.simone.atom.feed.server.entity.Content convertContent(Content content) {
+
+		return content == null ? new se.uhr.simone.atom.feed.server.entity.Content()
+				: se.uhr.simone.atom.feed.server.entity.Content.builder()
+						.withValue(content.getValue())
+						.withContentType(content.getContentType().orElse(null))
+						.build();
+	}
+
+	private List<se.uhr.simone.atom.feed.server.entity.Person> convertPersons(List<Person> authors) {
+		return authors.stream().map(SimulatorFeedPublisher::convertPersons).collect(Collectors.toList());
+	}
+
+	private static se.uhr.simone.atom.feed.server.entity.Person convertPersons(Person author) {
+		return se.uhr.simone.atom.feed.server.entity.Person.of(author.getName());
 	}
 
 	private static se.uhr.simone.atom.feed.server.entity.AtomLink convert(AtomLink link) {

@@ -5,15 +5,14 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
+import java.util.Optional;
 
 public class AtomEntry implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private AtomEntryId atomEntryId;
-	private String xml;
+	private String atomEntryId;
+	private Content xml;
 
 	private Long feedId;
 	private Long sortOrder;
@@ -21,6 +20,8 @@ public class AtomEntry implements Serializable {
 	private String title;
 	private List<AtomCategory> atomCategories = new ArrayList<>();
 	private List<AtomLink> atomLinks = new ArrayList<>();
+	private List<Person> authors = new ArrayList<>();
+	private Content summary;
 
 	private AtomEntry(AtomEntryBuilder builder) {
 		this.atomEntryId = builder.atomEntryId;
@@ -31,6 +32,8 @@ public class AtomEntry implements Serializable {
 		this.sortOrder = builder.sortOrder;
 		this.title = builder.title;
 		this.atomLinks = builder.links;
+		this.authors = builder.authors;
+		this.summary = builder.summary;
 	}
 
 	public static AtomEntryIdBuilder builder() {
@@ -41,15 +44,15 @@ public class AtomEntry implements Serializable {
 		return sortOrder;
 	}
 
-	public AtomEntryId getAtomEntryId() {
+	public String getAtomEntryId() {
 		return atomEntryId;
 	}
 
-	public String getXml() {
-		return xml;
+	public Optional<Content> getXml() {
+		return Optional.ofNullable(xml);
 	}
 
-	public void setXml(String xml) {
+	public void setXml(Content xml) {
 		this.xml = xml;
 	}
 
@@ -93,45 +96,34 @@ public class AtomEntry implements Serializable {
 		this.atomLinks = atomLink;
 	}
 
-	public static class AtomEntryId implements Serializable {
+	public List<Person> getAuthors() {
+		return authors;
+	}
 
-		private static final long serialVersionUID = 1L;
+	public void setAuthors(List<Person> authors) {
+		this.authors = authors;
+	}
 
-		private UniqueIdentifier entryId;
-		private String contentType;
+	public Optional<Content> getSummary() {
+		return Optional.ofNullable(summary);
+	}
 
-		private AtomEntryId(UniqueIdentifier id, String contentType) {
-			this.entryId = id;
-			this.contentType = contentType;
-		}
-
-		public static AtomEntryId of(UniqueIdentifier id, String contentType) {
-			if (contentType == null) {
-				throw new IllegalArgumentException("Content type cannot be null");
-			}
-			return new AtomEntryId(id, contentType);
-		}
-
-		public UniqueIdentifier getId() {
-			return entryId;
-		}
-
-		public String getContentType() {
-			return contentType;
-		}
-
+	public void setSummary(Content summary) {
+		this.summary = summary;
 	}
 
 	public static class AtomEntryBuilder implements AtomEntryIdBuilder, AtomEntrySortOrderBuilder, SubmittedBuilder, Build {
 
 		private Long sortOrder;
 		private Timestamp submitted;
-		private AtomEntryId atomEntryId;
-		private String xml;
+		private String atomEntryId;
+		private Content xml;
 		private List<AtomCategory> categories = new ArrayList<>();
 		private Long feedId;
 		private String title;
 		private List<AtomLink> links = new ArrayList<>();
+		private List<Person> authors = new ArrayList<>();
+		private Content summary;
 
 		@Override
 		public AtomEntry build() {
@@ -151,13 +143,13 @@ public class AtomEntry implements Serializable {
 		}
 
 		@Override
-		public AtomEntrySortOrderBuilder withAtomEntryId(AtomEntryId atomEntryId) {
+		public AtomEntrySortOrderBuilder withAtomEntryId(String atomEntryId) {
 			this.atomEntryId = atomEntryId;
 			return this;
 		}
 
 		@Override
-		public Build withXml(String xml) {
+		public Build withXml(Content xml) {
 			this.xml = xml;
 			return this;
 		}
@@ -197,11 +189,24 @@ public class AtomEntry implements Serializable {
 			this.links = links;
 			return this;
 		}
+
+		@Override
+		public Build withAuthor(List<Person> authors) {
+			this.authors = authors;
+			return this;
+		}
+
+		@Override
+		public Build withSummary(Content summary) {
+			this.summary = summary;
+			return this;
+		}
+
 	}
 
 	public interface AtomEntryIdBuilder {
 
-		public AtomEntrySortOrderBuilder withAtomEntryId(AtomEntryId atomEntryId);
+		public AtomEntrySortOrderBuilder withAtomEntryId(String atomEntryId);
 	}
 
 	public interface AtomEntrySortOrderBuilder {
@@ -220,7 +225,7 @@ public class AtomEntry implements Serializable {
 
 		public Build withFeedId(Long id);
 
-		public Build withXml(String xml);
+		public Build withXml(Content xml);
 
 		public Build withCategory(AtomCategory atomCategory);
 
@@ -229,6 +234,10 @@ public class AtomEntry implements Serializable {
 		public Build withTitle(String title);
 
 		public Build withLinks(List<AtomLink> links);
+
+		public Build withAuthor(List<Person> authors);
+
+		public Build withSummary(Content summary);
 
 		public AtomEntry build();
 

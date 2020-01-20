@@ -5,9 +5,7 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
 
-import se.uhr.simone.atom.feed.server.entity.AtomEntry.AtomEntryId;
 import se.uhr.simone.atom.feed.utils.TimestampUtil;
-import se.uhr.simone.atom.feed.utils.UniqueIdentifier;
 
 class AtomEntryRowMapper implements RowMapper<AtomEntry> {
 
@@ -20,12 +18,20 @@ class AtomEntryRowMapper implements RowMapper<AtomEntry> {
 		}
 
 		return AtomEntry.builder() //
-				.withAtomEntryId(AtomEntryId.of(UniqueIdentifier.of(rs.getBytes("ENTRY_ID")), rs.getString("ENTRY_CONTENT_TYPE"))) //
+				.withAtomEntryId(rs.getString("ENTRY_ID")) //
 				.withSortOrder(rs.getLong("SORT_ORDER"))
 				.withSubmitted(TimestampUtil.getUTCColumn(rs, "SUBMITTED")) // ,
 				.withFeedId(feedId) //
 				.withTitle(rs.getString("TITLE")) //
-				.withXml(rs.getString("ENTRY_XML")) //
+				.withXml(Content.builder()
+						.withValue(rs.getString("ENTRY_XML"))
+						.withContentType(rs.getString("ENTRY_CONTENT_TYPE"))
+						.build())
+				.withSummary(Content.builder()
+						.withValue(rs.getString("SUMMARY"))
+						.withContentType(rs.getString("SUMMARY_CONTENT_TYPE"))
+						.build())
 				.build();
+
 	}
 }
