@@ -32,22 +32,19 @@ public class AtomEntryDAO {
 		StringBuilder sql = new StringBuilder();
 
 		sql.append(
-				"INSERT INTO ATOM_ENTRY (ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SORT_ORDER, SUBMITTED, TITLE, ENTRY_XML, SUMMARY, SUMMARY_CONTENT_TYPE) VALUES (?,?,?,?,?,?, XMLPARSE( DOCUMENT CAST(? AS CLOB(1M)) PRESERVE WHITESPACE), ?, ?)");
-		jdbcTemplate.update(sql.toString(), atomEntry.getAtomEntryId(),
-				atomEntry.getXml().map(getContentType()).orElse(null), atomEntry.getFeedId(),
-				atomEntry.getSortOrder(), TimestampUtil.forUTCColumn(atomEntry.getSubmitted()), atomEntry.getTitle(),
-				atomEntry.getXml().map(Content::getValue).orElse(null), atomEntry.getSummary().map(Content::getValue).orElse(null),
-				atomEntry.getSummary().map(getContentType()).orElse(null));
+				"INSERT INTO ATOM_ENTRY (ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SORT_ORDER, SUBMITTED, TITLE, ENTRY_XML, SUMMARY, SUMMARY_CONTENT_TYPE) VALUES (?,?,?,?,?,?,?,?,?)");
+		jdbcTemplate.update(sql.toString(), atomEntry.getAtomEntryId(), atomEntry.getXml().map(getContentType()).orElse(null),
+				atomEntry.getFeedId(), atomEntry.getSortOrder(), TimestampUtil.forUTCColumn(atomEntry.getSubmitted()),
+				atomEntry.getTitle(), atomEntry.getXml().map(Content::getValue).orElse(null),
+				atomEntry.getSummary().map(Content::getValue).orElse(null), atomEntry.getSummary().map(getContentType()).orElse(null));
 	}
 
 	public void update(AtomEntry atomEntry) {
 		StringBuilder sql = new StringBuilder();
-		sql.append(
-				"UPDATE ATOM_ENTRY SET FEED_ID=?, SUBMITTED=?, TITLE=?, ENTRY_XML=XMLPARSE( DOCUMENT CAST(? AS CLOB(1M)) PRESERVE WHITESPACE), ENTRY_CONTENT_TYPE=? WHERE ENTRY_ID=? ");
+		sql.append("UPDATE ATOM_ENTRY SET FEED_ID=?, SUBMITTED=?, TITLE=?, ENTRY_XML=?, ENTRY_CONTENT_TYPE=? WHERE ENTRY_ID=? ");
 		jdbcTemplate.update(sql.toString(), atomEntry.getFeedId(), TimestampUtil.forUTCColumn(atomEntry.getSubmitted()),
 				atomEntry.getTitle(), atomEntry.getXml().map(Content::getValue).orElse(null),
-				atomEntry.getXml().map(getContentType()).orElse(null),
-				atomEntry.getAtomEntryId());
+				atomEntry.getXml().map(getContentType()).orElse(null), atomEntry.getAtomEntryId());
 	}
 
 	private Function<? super Content, ? extends String> getContentType() {
@@ -57,14 +54,14 @@ public class AtomEntryDAO {
 	public AtomEntry fetchBy(String atomEntryId) {
 		StringBuilder sql = new StringBuilder();
 		sql.append(
-				"SELECT SORT_ORDER, ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SUBMITTED, TITLE, XMLSERIALIZE(ENTRY_XML AS CLOB(1M)) AS ENTRY_XML, SUMMARY, SUMMARY_CONTENT_TYPE FROM ATOM_ENTRY WHERE ENTRY_ID = ? ");
+				"SELECT SORT_ORDER, ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SUBMITTED, TITLE, ENTRY_XML, SUMMARY, SUMMARY_CONTENT_TYPE FROM ATOM_ENTRY WHERE ENTRY_ID = ? ");
 		return jdbcTemplate.queryForObject(sql.toString(), new AtomEntryRowMapper(), atomEntryId);
 	}
 
 	public List<AtomEntry> getAtomEntriesForFeed(long id) {
 		StringBuilder sql = new StringBuilder();
 		sql.append(
-				"SELECT SORT_ORDER, ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SUBMITTED, TITLE, XMLSERIALIZE(ENTRY_XML AS CLOB(1M)) AS ENTRY_XML, SUMMARY, SUMMARY_CONTENT_TYPE FROM ATOM_ENTRY WHERE FEED_ID = ? ORDER BY SORT_ORDER DESC, SUBMITTED DESC");
+				"SELECT SORT_ORDER, ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SUBMITTED, TITLE, ENTRY_XML, SUMMARY, SUMMARY_CONTENT_TYPE FROM ATOM_ENTRY WHERE FEED_ID = ? ORDER BY SORT_ORDER DESC, SUBMITTED DESC");
 		return jdbcTemplate.query(sql.toString(), new AtomEntryRowMapper(), id);
 	}
 
@@ -85,7 +82,7 @@ public class AtomEntryDAO {
 	public List<AtomEntry> getEntriesNotConnectedToFeed() {
 		StringBuilder sql = new StringBuilder();
 		sql.append(
-				"SELECT SORT_ORDER, ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SUBMITTED, TITLE, XMLSERIALIZE(ENTRY_XML AS CLOB(1M)) AS ENTRY_XML, SUMMARY, SUMMARY_CONTENT_TYPE FROM ATOM_ENTRY WHERE FEED_ID IS NULL ORDER BY SORT_ORDER ASC, SUBMITTED ASC FETCH FIRST "
+				"SELECT SORT_ORDER, ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SUBMITTED, TITLE, ENTRY_XML, SUMMARY, SUMMARY_CONTENT_TYPE FROM ATOM_ENTRY WHERE FEED_ID IS NULL ORDER BY SORT_ORDER ASC, SUBMITTED ASC FETCH FIRST "
 						+ MAX_NUM_OF_ENTRIES_TO_RETURN + " ROWS ONLY");
 		return jdbcTemplate.query(sql.toString(), new AtomEntryRowMapper());
 	}

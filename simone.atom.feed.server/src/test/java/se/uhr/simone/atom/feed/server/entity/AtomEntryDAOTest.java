@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -46,6 +47,17 @@ public class AtomEntryDAOTest {
 	@Test
 	public void insert() {
 		atomEntryDAO.insert(createAtomEntry());
+	}
+
+	@Test
+	public void insertTooBigContentShouldThrowException() {
+		String xml = "<xml>2</xml>".repeat(1_000); // 12_000 characters, limit 11_400
+		AtomEntry atomEntry = createAtomEntry();
+		atomEntry.setXml(Content.builder().withValue(xml).withContentType(MediaType.APPLICATION_XML).build());
+
+		assertThatExceptionOfType(DataIntegrityViolationException.class).isThrownBy(() -> {
+			atomEntryDAO.insert(atomEntry);
+		});
 	}
 
 	@Test
