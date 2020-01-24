@@ -9,7 +9,7 @@ import java.util.List;
 public class AtomEntry {
 
 	private String atomEntryId;
-	private Content xml;
+	private Content content;
 	private Long feedId;
 	private String title;
 	private Timestamp submitted;
@@ -20,7 +20,7 @@ public class AtomEntry {
 
 	private AtomEntry(AtomEntryBuilder builder) {
 		this.atomEntryId = builder.fAtomEntryId;
-		this.xml = builder.fXml;
+		this.content = builder.content;
 		this.submitted = builder.fSubmitted;
 		this.atomCategories = builder.categories;
 		this.feedId = builder.feedId;
@@ -38,8 +38,8 @@ public class AtomEntry {
 		return atomEntryId;
 	}
 
-	public Content getXml() {
-		return xml;
+	public Content getContent() {
+		return content;
 	}
 
 	public Long getFeedId() {
@@ -97,7 +97,7 @@ public class AtomEntry {
 		private String title;
 		private Timestamp fSubmitted;
 		private List<AtomLink> links = new ArrayList<>();
-		private Content fXml;
+		private Content content;
 		private List<AtomCategory> categories = new ArrayList<>();
 		private List<Person> author = new ArrayList<>();
 		private Content summary;
@@ -126,8 +126,8 @@ public class AtomEntry {
 		}
 
 		@Override
-		public Build withXml(Content xml) {
-			this.fXml = xml;
+		public Build withContent(Content content) {
+			this.content = content;
 			return this;
 		}
 
@@ -199,7 +199,7 @@ public class AtomEntry {
 
 	public interface ContentBuilder {
 
-		Build withXml(Content xml);
+		Build withContent(Content content);
 
 		Build withAlternateLinks(AtomLink... link);
 	}

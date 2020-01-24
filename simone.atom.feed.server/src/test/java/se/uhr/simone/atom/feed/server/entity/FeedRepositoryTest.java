@@ -154,7 +154,7 @@ public class FeedRepositoryTest {
 				.withAtomEntryId(UUID.randomUUID().toString())
 				.withSortOrder(Long.valueOf(1))
 				.withSubmittedNow()
-				.withXml(Content.builder().withValue("<xml></xml>").withContentType(MediaType.APPLICATION_XML).build())
+				.withContent(Content.builder().withValue("<xml></xml>").withContentType(MediaType.APPLICATION_XML).build())
 				.build();
 	}
 

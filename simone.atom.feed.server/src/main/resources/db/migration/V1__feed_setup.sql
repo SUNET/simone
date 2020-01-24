@@ -17,7 +17,7 @@ CREATE TABLE ATOM_ENTRY  (
                   ENTRY_CONTENT_TYPE VARCHAR(100),
                   SUBMITTED TIMESTAMP NOT NULL ,
                   TITLE VARCHAR(100),
-                  ENTRY_XML XML ,
+                  ENTRY_XML VARCHAR(11400) ,
                   SUMMARY VARCHAR(100) ,
                   SUMMARY_CONTENT_TYPE VARCHAR(100),
                   FEED_ID BIGINT );

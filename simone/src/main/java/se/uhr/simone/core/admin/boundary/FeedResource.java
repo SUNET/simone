@@ -101,7 +101,7 @@ public class FeedResource {
 				.withAtomEntryId(uid)
 				.withSortOrder(nextSortOrder)
 				.withSubmittedNow()
-				.withXml(Content.builder().withValue(event.getContent()).withContentType(event.getContentType()).build());
+				.withContent(Content.builder().withValue(event.getContent()).withContentType(event.getContentType()).build());
 
 		for (se.uhr.simone.admin.feed.AtomCategoryRepresentation category : event.getCategorys()) {
 			AtomCategory.Build categoryBuilder = AtomCategory.builder().withTerm(Term.of(category.getTerm()));

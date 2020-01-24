@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -49,6 +50,17 @@ public class AtomEntryDAOTest {
 	}
 
 	@Test
+	public void insertTooBigContentShouldThrowException() {
+		String xml = "<xml>2</xml>".repeat(1_000); // 12_000 characters, limit 11_400
+		AtomEntry atomEntry = createAtomEntry();
+		atomEntry.setContent(Content.builder().withValue(xml).withContentType(MediaType.APPLICATION_XML).build());
+
+		assertThatExceptionOfType(DataIntegrityViolationException.class).isThrownBy(() -> {
+			atomEntryDAO.insert(atomEntry);
+		});
+	}
+
+	@Test
 	public void updateNonExisting() {
 		atomEntryDAO.update(createAtomEntry());
 	}
@@ -59,13 +71,14 @@ public class AtomEntryDAOTest {
 
 		atomEntryDAO.insert(atomEntry);
 
-		atomEntry.setXml(Content.builder().withValue("<xml><value>2</value></xml>").withContentType(MediaType.APPLICATION_XML).build());
+		atomEntry.setContent(
+				Content.builder().withValue("<xml><value>2</value></xml>").withContentType(MediaType.APPLICATION_XML).build());
 
 		atomEntryDAO.update(atomEntry);
 
 		AtomEntry fetchedAtomEntry = atomEntryDAO.fetchBy(atomEntry.getAtomEntryId());
 
-		assertThat(fetchedAtomEntry.getXml().get().getValue()).isEqualTo(atomEntry.getXml().get().getValue());
+		assertThat(fetchedAtomEntry.getContent().get().getValue()).isEqualTo(atomEntry.getContent().get().getValue());
 	}
 
 	@Test
@@ -196,7 +209,8 @@ public class AtomEntryDAOTest {
 				.withAtomEntryId(createAtomEntryId())
 				.withSortOrder(Long.valueOf(1))
 				.withSubmittedNow()
-				.withXml(Content.builder().withValue("<xml><value>1</value></xml>").withContentType(MediaType.APPLICATION_XML).build())
+				.withContent(
+						Content.builder().withValue("<xml><value>1</value></xml>").withContentType(MediaType.APPLICATION_XML).build())
 				.build();
 	}
 

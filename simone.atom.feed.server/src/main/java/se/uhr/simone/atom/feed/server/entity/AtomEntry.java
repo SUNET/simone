@@ -12,7 +12,7 @@ public class AtomEntry implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String atomEntryId;
-	private Content xml;
+	private Content content;
 
 	private Long feedId;
 	private Long sortOrder;
@@ -25,7 +25,7 @@ public class AtomEntry implements Serializable {
 
 	private AtomEntry(AtomEntryBuilder builder) {
 		this.atomEntryId = builder.atomEntryId;
-		this.xml = builder.xml;
+		this.content = builder.content;
 		this.submitted = builder.submitted;
 		this.atomCategories = builder.categories;
 		this.feedId = builder.feedId;
@@ -48,12 +48,12 @@ public class AtomEntry implements Serializable {
 		return atomEntryId;
 	}
 
-	public Optional<Content> getXml() {
-		return Optional.ofNullable(xml);
+	public Optional<Content> getContent() {
+		return Optional.ofNullable(content);
 	}
 
-	public void setXml(Content xml) {
-		this.xml = xml;
+	public void setContent(Content content) {
+		this.content = content;
 	}
 
 	public Long getFeedId() {
@@ -117,7 +117,7 @@ public class AtomEntry implements Serializable {
 		private Long sortOrder;
 		private Timestamp submitted;
 		private String atomEntryId;
-		private Content xml;
+		private Content content;
 		private List<AtomCategory> categories = new ArrayList<>();
 		private Long feedId;
 		private String title;
@@ -149,8 +149,8 @@ public class AtomEntry implements Serializable {
 		}
 
 		@Override
-		public Build withXml(Content xml) {
-			this.xml = xml;
+		public Build withContent(Content content) {
+			this.content = content;
 			return this;
 		}
 
@@ -225,7 +225,7 @@ public class AtomEntry implements Serializable {
 
 		public Build withFeedId(Long id);
 
-		public Build withXml(Content xml);
+		public Build withContent(Content content);
 
 		public Build withCategory(AtomCategory atomCategory);
 
