@@ -17,7 +17,7 @@ public class AtomEntryTest {
 				.withAlternateLinks(AtomLink.builder().withRelAlternate().withHref("URL").build())
 				.build();
 		assertThat(entry).isNotNull();
-		assertThat(entry.getXml()).isNull();
+		assertThat(entry.getContent()).isNull();
 		assertThat(entry.getLinks()).hasSize(1);
 	}
 
@@ -45,7 +45,7 @@ public class AtomEntryTest {
 				.build();
 
 		assertThat(entry).isNotNull();
-		assertThat(entry.getXml()).isNull();
+		assertThat(entry.getContent()).isNull();
 		assertThat(entry.getLinks()).hasSize(2);
 	}
 }

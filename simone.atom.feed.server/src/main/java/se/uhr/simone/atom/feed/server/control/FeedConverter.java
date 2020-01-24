@@ -92,7 +92,7 @@ public class FeedConverter {
 			convertedEntry.setUpdated(entry.getSubmitted());
 			convertedEntry.setCategories(getConvertedCategories(entry));
 
-			entry.getXml()
+			entry.getContent()
 					.filter(xml -> xml.getValue() != null)
 					.ifPresent(xml -> convertedEntry.setContents(Arrays.asList(getContent(xml))));
 

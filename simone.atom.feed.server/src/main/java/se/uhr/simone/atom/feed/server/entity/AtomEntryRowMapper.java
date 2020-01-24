@@ -23,7 +23,7 @@ class AtomEntryRowMapper implements RowMapper<AtomEntry> {
 				.withSubmitted(TimestampUtil.getUTCColumn(rs, "SUBMITTED")) // ,
 				.withFeedId(feedId) //
 				.withTitle(rs.getString("TITLE")) //
-				.withXml(Content.builder()
+				.withContent(Content.builder()
 						.withValue(rs.getString("ENTRY_XML"))
 						.withContentType(rs.getString("ENTRY_CONTENT_TYPE"))
 						.build())

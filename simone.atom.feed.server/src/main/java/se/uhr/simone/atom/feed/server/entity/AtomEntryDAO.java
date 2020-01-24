@@ -33,9 +33,9 @@ public class AtomEntryDAO {
 
 		sql.append(
 				"INSERT INTO ATOM_ENTRY (ENTRY_ID, ENTRY_CONTENT_TYPE, FEED_ID, SORT_ORDER, SUBMITTED, TITLE, ENTRY_XML, SUMMARY, SUMMARY_CONTENT_TYPE) VALUES (?,?,?,?,?,?,?,?,?)");
-		jdbcTemplate.update(sql.toString(), atomEntry.getAtomEntryId(), atomEntry.getXml().map(getContentType()).orElse(null),
+		jdbcTemplate.update(sql.toString(), atomEntry.getAtomEntryId(), atomEntry.getContent().map(getContentType()).orElse(null),
 				atomEntry.getFeedId(), atomEntry.getSortOrder(), TimestampUtil.forUTCColumn(atomEntry.getSubmitted()),
-				atomEntry.getTitle(), atomEntry.getXml().map(Content::getValue).orElse(null),
+				atomEntry.getTitle(), atomEntry.getContent().map(Content::getValue).orElse(null),
 				atomEntry.getSummary().map(Content::getValue).orElse(null), atomEntry.getSummary().map(getContentType()).orElse(null));
 	}
 
@@ -43,8 +43,8 @@ public class AtomEntryDAO {
 		StringBuilder sql = new StringBuilder();
 		sql.append("UPDATE ATOM_ENTRY SET FEED_ID=?, SUBMITTED=?, TITLE=?, ENTRY_XML=?, ENTRY_CONTENT_TYPE=? WHERE ENTRY_ID=? ");
 		jdbcTemplate.update(sql.toString(), atomEntry.getFeedId(), TimestampUtil.forUTCColumn(atomEntry.getSubmitted()),
-				atomEntry.getTitle(), atomEntry.getXml().map(Content::getValue).orElse(null),
-				atomEntry.getXml().map(getContentType()).orElse(null), atomEntry.getAtomEntryId());
+				atomEntry.getTitle(), atomEntry.getContent().map(Content::getValue).orElse(null),
+				atomEntry.getContent().map(getContentType()).orElse(null), atomEntry.getAtomEntryId());
 	}
 
 	private Function<? super Content, ? extends String> getContentType() {

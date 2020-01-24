@@ -38,7 +38,7 @@ public class SimulatorFeedPublisher implements FeedPublisher {
 				.withAtomEntryId(atomEntry.getAtomEntryId())
 				.withSortOrder(nextSortOrder)
 				.withSubmitted(atomEntry.getSubmitted())
-				.withXml(convertContent(atomEntry.getXml()))
+				.withContent(convertContent(atomEntry.getContent()))
 				.withCategories(convert(atomEntry.getAtomCategories()))
 				.withTitle(atomEntry.getTitle())
 				.withLinks(convertLinks(atomEntry.getLinks()))
