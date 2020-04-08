@@ -4,9 +4,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
 
-import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,19 +18,13 @@ public class DatabaseAdministrator implements DatabaseAdmin {
 
 	@Inject
 	@FeedDS
-	private DataSource ds;
-
-	@Transactional(TxType.NOT_SUPPORTED)
-	public void initialize() {
-		Flyway flyway = Flyway.configure().dataSource(ds).load();
-		flyway.migrate();
-	}
+	DataSource ds;
 
 	@Override
+	@Transactional
 	public void dropTables() {
 		LOG.info("delete all tables");
 		SqlScriptRunner runner = new SqlScriptRunner(new JdbcTemplate(ds));
 		runner.execute(this.getClass().getResourceAsStream("/db/delete_all_tables.sql"));
 	}
-
 }

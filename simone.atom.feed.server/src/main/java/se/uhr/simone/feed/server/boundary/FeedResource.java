@@ -18,10 +18,10 @@ import se.uhr.simone.atom.feed.server.entity.FeedRepository;
 public abstract class FeedResource {
 
 	@Inject
-	private FeedConverter feedConverter;
+	FeedConverter feedConverter;
 
 	@Inject
-	private FeedRepository feedRepository;
+	FeedRepository feedRepository;
 
 	/**
 	 * Returns the recent {@link AtomFeed} as XML if it does exist, otherwise null.

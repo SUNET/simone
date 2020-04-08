@@ -1,5 +1,6 @@
 package se.uhr.simone.core.feed.entity;
 
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
@@ -9,6 +10,7 @@ import se.uhr.simone.atom.feed.server.entity.AtomFeedDAO;
 import se.uhr.simone.atom.feed.server.entity.FeedRepository;
 import se.uhr.simone.core.entity.FeedDS;
 
+@Dependent
 public class SimFeedRepository extends FeedRepository {
 
 	private DataSource dataSource;

@@ -1,4 +1,4 @@
-package se.uhr.simone.core.feed.control;
+package se.uhr.simone.core.control.filemonitor;
 
 import java.util.concurrent.Callable;
 
@@ -10,46 +10,39 @@ import org.eclipse.microprofile.context.ManagedExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.uhr.simone.atom.feed.server.control.FeedCreator;
 import se.uhr.simone.core.control.SimoneWorker;
-import se.uhr.simone.core.feed.entity.SimFeedRepository;
 import se.uhr.simone.extension.api.SimoneStartupEvent;
 
 @ApplicationScoped
-public class SimFeedCreator {
+public class DirectoryMonitorScheduler {
 
-	private static final long DELAY = 2_000L;
+	private static final long DELAY = 1_000L;
 
-	private static final Logger LOG = LoggerFactory.getLogger(SimFeedCreator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DirectoryMonitorScheduler.class);
 
 	@Inject
 	@SimoneWorker
 	ManagedExecutor executor;
 
 	@Inject
-	FeedCreator feedCreator;
-
-	@Inject
-	SimFeedRepository feedRepository;
+	private DirectoryMonitor monitor;
 
 	public void init(@Observes SimoneStartupEvent ev) {
-		executor.submit(new SimFeedWorker());
+		executor.submit(new DirectoryMonitorWorker());
 	}
 
-	class SimFeedWorker implements Callable<Void> {
-
-		private boolean running = true;
+	class DirectoryMonitorWorker implements Callable<Void> {
 
 		@Override
 		public Void call() throws Exception {
-			while (running) {
+			while (monitor.isActive()) {
 				try {
-					feedCreator.connectEntrysToFeeds(feedRepository);
+					monitor.runAvailableJobs();
 					Thread.sleep(DELAY);
 				} catch (InterruptedException e) {
 					throw e;
 				} catch (Exception e) {
-					LOG.error("failed to create feed", e);
+					LOG.error("dropin directory monitoring failed", e);
 				}
 			}
 

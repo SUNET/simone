@@ -3,15 +3,17 @@ package se.uhr.simone.core.control.extension;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import se.uhr.simone.extension.api.fileloader.FileLoaderDescriptor;
 
+@Dependent
 public class ExtensionManager {
 
 	@Inject
-	private Instance<FileLoaderDescriptor> availableJobDescriptors;
+	Instance<FileLoaderDescriptor> availableJobDescriptors;
 
 	public List<FileLoaderDescriptor> getFileExtensions(String fileName) {
 		List<FileLoaderDescriptor> res = new ArrayList<>();

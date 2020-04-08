@@ -30,13 +30,13 @@ void se.uhr.simone.extension.api.feed.FeedPublisher#publish(AtomEntry entry);
 
 * Java 11
 
-* Java EE 8 server 
+* Java Microprofile 3.3 compatible server
 
-* Datasource, the simulator need a data source to be setup with the JNDI name `/jdbc/FEED`
+* Datasource, The application is required to produce a CDI bean of type `javax.sql.DataSource` with qualifier `@FeedDS` to be used by the feed server. The Datasource must be initilized with flyway migration located on the classpath.
+
+* A CDI event `se.uhr.simone.extension.api.SimoneStartupEvent` must be fired when the server is started and ready.
 
 ## Build
-
-Build the SimOne core jar and Docker image.
 
 ```bash
 mvn package
@@ -50,12 +50,14 @@ mvn release:prepare release:perform
 
 ### Admin API
 
-API to control the simulator, for example empty the database, answer all REST requests with a specific HTTP status, delay responses etc. The administrator API is documented in Swagger. Start the [simone-example](https://github.com/SUNET/simone-example) Docker container and point your Browser to <http://localhost:8090>
+API to control the simulator, for example empty the database, answer all REST requests with a specific HTTP status, delay responses etc. The administrator API is documented in Swagger. Start the [simone-example](https://github.com/SUNET/simone-example) Docker container and point your Browser to <http://localhost:8080/openapi>
 
-## Environment variables
-`SIMONE_BASE_URI`
-:  The base URI of SimOne, used to reference the SimOne server in the Atom Feed. Default value is `http://localhost:8080`    
+## Configuration
 
-### Dropin
+Simone uses MicroProfile Config to inject the configuration in the application:
 
-`dropin` is a special directory that is monitored by SimOne. When a new file is discovered extensions are notified and may handle the file in any way they want. The location of the directory is possible to speicy with the `se.uhr.simone.dropin` system property.
+`simone.base.uri`
+:  The base URI of SimOne, used to reference the SimOne server in the Atom Feed. Default value is `http://localhost:8080`
+
+`simone.dropin`
+: is a special directory that is monitored by SimOne. When a new file is discovered extensions are notified and may handle the file in any way they want. The default value is `dropin` in cwd.

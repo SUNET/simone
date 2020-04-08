@@ -68,6 +68,7 @@ public class AtomEntryDAO {
 	public String getLatestEntryIdForCategory(AtomCategory category) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT ");
+		sql.append("SELECT ");
 		sql.append("AE.ENTRY_ID ");
 		sql.append("FROM ATOM_ENTRY AE ");
 		sql.append("inner join ATOM_CATEGORY AC on AE.ENTRY_ID = AC.ENTRY_ID ");
