@@ -8,14 +8,14 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import se.uhr.simone.api.feed.AtomCategory;
+import se.uhr.simone.api.feed.AtomEntry;
+import se.uhr.simone.api.feed.AtomLink;
+import se.uhr.simone.api.feed.Content;
+import se.uhr.simone.api.feed.FeedPublisher;
+import se.uhr.simone.api.feed.Person;
 import se.uhr.simone.core.admin.control.FeedBlocker;
 import se.uhr.simone.core.feed.entity.SimFeedRepository;
-import se.uhr.simone.extension.api.feed.AtomCategory;
-import se.uhr.simone.extension.api.feed.AtomEntry;
-import se.uhr.simone.extension.api.feed.AtomLink;
-import se.uhr.simone.extension.api.feed.Content;
-import se.uhr.simone.extension.api.feed.FeedPublisher;
-import se.uhr.simone.extension.api.feed.Person;
 
 @Dependent
 public class SimulatorFeedPublisher implements FeedPublisher {

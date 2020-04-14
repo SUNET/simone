@@ -19,11 +19,11 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import se.uhr.simone.api.feed.UniqueIdentifier;
+import se.uhr.simone.api.fileloader.ExtensionContext;
+import se.uhr.simone.api.fileloader.FileLoader;
+import se.uhr.simone.api.fileloader.FileLoaderDescriptor;
 import se.uhr.simone.core.control.extension.ExtensionManager;
-import se.uhr.simone.extension.api.feed.UniqueIdentifier;
-import se.uhr.simone.extension.api.fileloader.ExtensionContext;
-import se.uhr.simone.extension.api.fileloader.FileLoader;
-import se.uhr.simone.extension.api.fileloader.FileLoaderDescriptor;
 
 @Dependent
 public class DirectoryMonitor {
@@ -126,7 +126,7 @@ public class DirectoryMonitor {
 
 						res.add(new DirectoryFileJob(desc.createJob(reader), path));
 					} else {
-						LOG.debug("No match for: {}", path);
+						LOG.trace("No match for: {}", path);
 					}
 				}
 			}

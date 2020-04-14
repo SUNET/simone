@@ -28,13 +28,13 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import se.uhr.simone.admin.api.file.FileLoadResultRepresentation;
+import se.uhr.simone.api.entity.DatabaseAdmin;
+import se.uhr.simone.api.feed.UniqueIdentifier;
+import se.uhr.simone.api.fileloader.ExtensionContext;
+import se.uhr.simone.api.fileloader.FileLoader;
+import se.uhr.simone.api.fileloader.FileLoaderDescriptor;
 import se.uhr.simone.core.boundary.AdminCatagory;
 import se.uhr.simone.core.control.extension.ExtensionManager;
-import se.uhr.simone.extension.api.entity.DatabaseAdmin;
-import se.uhr.simone.extension.api.feed.UniqueIdentifier;
-import se.uhr.simone.extension.api.fileloader.ExtensionContext;
-import se.uhr.simone.extension.api.fileloader.FileLoader;
-import se.uhr.simone.extension.api.fileloader.FileLoaderDescriptor;
 
 @Tag(name = "admin")
 @AdminCatagory

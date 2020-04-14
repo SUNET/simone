@@ -17,10 +17,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import se.uhr.simone.api.fileloader.ExtensionContext;
+import se.uhr.simone.api.fileloader.FileLoader;
+import se.uhr.simone.api.fileloader.FileLoaderDescriptor;
 import se.uhr.simone.core.control.extension.ExtensionManager;
-import se.uhr.simone.extension.api.fileloader.ExtensionContext;
-import se.uhr.simone.extension.api.fileloader.FileLoader;
-import se.uhr.simone.extension.api.fileloader.FileLoaderDescriptor;
 
 @ExtendWith(MockitoExtension.class)
 public class DirectoryMonitorTest {

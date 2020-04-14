@@ -23,7 +23,7 @@ Extension API
 : API that notifies the SimOne simulator about actions initiated from the admin API, or create feed entries.
 
 ```Java
-void se.uhr.simone.extension.api.feed.FeedPublisher#publish(AtomEntry entry);
+void se.uhr.simone.api.feed.FeedPublisher#publish(AtomEntry entry);
 ```
 
 ## Requirements
@@ -32,9 +32,9 @@ void se.uhr.simone.extension.api.feed.FeedPublisher#publish(AtomEntry entry);
 
 * Java Microprofile 3.3 compatible server
 
-* Datasource, The application is required to produce a CDI bean of type `javax.sql.DataSource` with qualifier `@FeedDS` to be used by the feed server. The Datasource must be initilized with flyway migration located on the classpath.
+* Datasource, The application is required to produce a CDI bean of type `javax.sql.DataSource` with qualifier `@FeedDS` to be used by the feed server. The Datasource must be initialized with the Flyway migration located on the classpath.
 
-* A CDI event `se.uhr.simone.extension.api.SimoneStartupEvent` must be fired when the server is started and ready.
+* A CDI event `se.uhr.simone.api.SimoneTimerEvent` must be fired periodically in a worker thread to trigger background jobs. Every other second is a good starting point.
 
 ## Build
 

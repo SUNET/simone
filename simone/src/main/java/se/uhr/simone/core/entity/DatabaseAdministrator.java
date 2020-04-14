@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import se.uhr.simone.extension.api.entity.DatabaseAdmin;
+import se.uhr.simone.api.entity.DatabaseAdmin;
 
 @ApplicationScoped
 public class DatabaseAdministrator implements DatabaseAdmin {

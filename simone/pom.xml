@@ -12,7 +12,7 @@
     <dependencies>
         <dependency>
             <groupId>se.uhr.simone</groupId>
-            <artifactId>extension.api</artifactId>
+            <artifactId>simone.api</artifactId>
             <version>${project.version}</version>
         </dependency>
 

@@ -7,7 +7,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import se.uhr.simone.extension.api.fileloader.FileLoaderDescriptor;
+import se.uhr.simone.api.fileloader.FileLoaderDescriptor;
 
 @Dependent
 public class ExtensionManager {
