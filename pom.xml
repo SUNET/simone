@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>se.uhr.simone</groupId>
@@ -14,8 +15,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <version.jupiter>5.5.2</version.jupiter>
-        <version.mockito>3.1.0</version.mockito>
+        <version.jupiter>5.6.2</version.jupiter>
+        <version.mockito>3.3.3</version.mockito>
     </properties>
 
     <scm>
@@ -92,6 +93,12 @@
                 <artifactId>jakarta.servlet-api</artifactId>
                 <version>4.0.3</version>
                 <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.vladimir-bukhtoyarov</groupId>
+                <artifactId>bucket4j-core</artifactId>
+                <version>4.10.0</version>
             </dependency>
 
         </dependencies>
