@@ -19,6 +19,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -122,6 +123,16 @@ public class RSResource {
 		return Response.ok().build();
 	}
 
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Operation(summary = "Rate limit REST requests", description = "Set a rate limit for requests to the api, set 0 to remove limit")
+	@APIResponse(responseCode = "200", description = "Success")
+	@PUT
+	@Path("/ratelimit")
+	public Response setRatelimit(@Parameter(name = "Requests per seconds") int requestsPerSecond) {
+		simulatedResponse.setRateLimit(requestsPerSecond);
+		return Response.ok().build();
+	}
+
 	@Provider
 	public static class RsServiceEnablerConfigurer implements DynamicFeature {
 
@@ -168,6 +179,16 @@ public class RSResource {
 
 			if (overrideStatus != null) {
 				responseContext.setStatus(overrideStatus.getCode());
+			}
+
+			handleThrottling(responseContext);
+		}
+
+		private void handleThrottling(ContainerResponseContext responseContext) {
+			if (simulatedResponse.throttle()) {
+				if (!simulatedResponse.getBucket().tryConsume(1)) {
+					responseContext.setStatus(Status.TOO_MANY_REQUESTS.getStatusCode());
+				}
 			}
 		}
 
