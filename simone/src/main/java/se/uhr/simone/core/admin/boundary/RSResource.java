@@ -168,14 +168,14 @@ public class RSResource {
 				responseContext.setStatus(simulatedResponse.getCode());
 			}
 
-			ResponseBodyRepresentation overrideBody = simulatedResponseResponseBody.getOverride(servletRequest.getPathInfo());
+			ResponseBodyRepresentation overrideBody = simulatedResponseResponseBody.getOverride(servletRequest.getRequestURI());
 
 			if (overrideBody != null) {
 				responseContext.setEntity(overrideBody.getBody());
 				responseContext.setStatus(overrideBody.getCode());
 			}
 
-			ResponseRepresentation overrideStatus = simulatedResponse.getCodeForPath(servletRequest.getPathInfo());
+			ResponseRepresentation overrideStatus = simulatedResponse.getCodeForPath(servletRequest.getRequestURI());
 
 			if (overrideStatus != null) {
 				responseContext.setStatus(overrideStatus.getCode());
