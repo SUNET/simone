@@ -51,6 +51,7 @@
         <module>simone.admin.api</module>
         <module>simone.atom.feed.server</module>
         <module>simone</module>
+        <module>admin.client</module>
     </modules>
 
     <distributionManagement>
