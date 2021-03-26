@@ -86,24 +86,23 @@ public class RestAdmin {
 	}
 
 	public void resetDelay() {
-		try (Response response = target.path(DELAY).request().delete()) {
+		try (Response response = target.path(DELAY).request().put(Entity.text(0))) {
 			if (response.getStatusInfo() != Status.OK) {
 				throw new SimoneAdminClientException("Could not reset delay", response);
 			}
 		}
 	}
 
-	public void setRateLimit(long seconds) {
-		try (Response response = target.path(RATE_LIMIT).request().put(Entity.text(seconds))) {
+	public void setRateLimit(long requestsPerSecond) {
+		try (Response response = target.path(RATE_LIMIT).request().put(Entity.text(requestsPerSecond))) {
 			if (response.getStatusInfo() != Status.OK) {
 				throw new SimoneAdminClientException("Could not set ratelimit", response);
 			}
 		}
-
 	}
 
 	public void resetRateLimit() {
-		try (Response response = target.path(RATE_LIMIT).request().delete()) {
+		try (Response response = target.path(RATE_LIMIT).request().put(Entity.text(0))) {
 			if (response.getStatusInfo() != Status.OK) {
 				throw new SimoneAdminClientException("Could not reset ratelimit", response);
 			}

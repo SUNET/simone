@@ -3,16 +3,14 @@ package se.uhr.simone.admin.client;
 import java.net.URI;
 
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.WebTarget;
 
 public class SimoneAdminClient {
 
-	private Client client;
-
-	private URI baseUri;
+	private final WebTarget target;
 
 	private SimoneAdminClient(Builder builder) {
-		this.client = builder.client;
-		this.baseUri = builder.baseUri;
+		this.target = builder.client.target(builder.baseUri);
 	}
 
 	public static IClientStage builder() {
@@ -61,14 +59,14 @@ public class SimoneAdminClient {
 	}
 
 	public DatabaseAdmin database() {
-		return new DatabaseAdmin(client.target(baseUri));
+		return new DatabaseAdmin(target);
 	}
 
 	public FeedAdmin feed() {
-		return new FeedAdmin(client.target(baseUri));
+		return new FeedAdmin(target);
 	}
 
 	public RestAdmin rest() {
-		return new RestAdmin(client.target(baseUri));
+		return new RestAdmin(target);
 	}
 }
