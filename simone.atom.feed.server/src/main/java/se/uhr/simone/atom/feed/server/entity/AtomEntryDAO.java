@@ -75,9 +75,8 @@ public class AtomEntryDAO {
 		sql.append("WHERE AC.TERM = ? and AC.LABEL = ? ");
 		sql.append("ORDER BY SORT_ORDER DESC, SUBMITTED DESC FETCH FIRST 1 ROWS ONLY ");
 
-		return jdbcTemplate.queryForObject(sql.toString(),
-				new Object[] { category.getTerm().getValue(), category.getLabel().map(Label::getValue).orElse(null) },
-				new EntryIdRowmapper());
+		return jdbcTemplate.queryForObject(sql.toString(), new EntryIdRowmapper(), category.getTerm().getValue(),
+				category.getLabel().map(Label::getValue).orElse(null));
 	}
 
 	public List<AtomEntry> getEntriesNotConnectedToFeed() {

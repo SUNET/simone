@@ -15,18 +15,20 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import se.uhr.simone.atom.feed.server.control.FeedConverter;
 import se.uhr.simone.atom.feed.server.entity.AtomFeed;
 import se.uhr.simone.atom.feed.server.entity.FeedRepository;
 import se.uhr.simone.feed.server.boundary.FeedResource;
 
-public class FeedResourceTest {
+@ExtendWith(MockitoExtension.class)
+class FeedResourceTest {
 
-	private URI testURI;
+	private static final URI TEST_URI = URI.create("http://localhost/test-uri");
 
 	@Mock
 	private FeedRepository feedRepository;
@@ -38,33 +40,30 @@ public class FeedResourceTest {
 	private TestableFeedResource feedResource = new TestableFeedResource();
 
 	@BeforeEach
-	public void before() throws Exception {
-		MockitoAnnotations.initMocks(this);
-		testURI = new URI("http://localhost/test-uri");
+	public void before() {
 		feedResource.clearMap();
-
 	}
 
 	@Test
-	public void shouldReturnNotFoundWhenFeedDoesNotExist() {
+	void shouldReturnNotFoundWhenFeedDoesNotExist() {
 
 		given(feedRepository.getFeedById(1)).willReturn(null);
 
-		assertThat(feedResource.getFeedXml(1, testURI).getStatus()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+		assertThat(feedResource.getFeedXml(1, TEST_URI).getStatus()).isEqualTo(Status.NOT_FOUND.getStatusCode());
 
 		verify(feedRepository, times(1)).getFeedById(1);
 	}
 
 	@Test
-	public void shouldConvertToXmlIfXmlIsNull() {
+	void shouldConvertToXmlIfXmlIsNull() {
 
 		AtomFeed feed = mock(AtomFeed.class);
 
 		given(feedRepository.getFeedById(1)).willReturn(feed);
 		given(feed.getXml()).willReturn(null);
-		given(feedConverter.convertFeedToXml(feed, testURI)).willReturn("<xml></xml>");
+		given(feedConverter.convertFeedToXml(feed, TEST_URI)).willReturn("<xml></xml>");
 
-		Response response = feedResource.getFeedXml(1, testURI);
+		Response response = feedResource.getFeedXml(1, TEST_URI);
 
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
 
@@ -73,18 +72,18 @@ public class FeedResourceTest {
 
 		verify(feedRepository, times(1)).getFeedById(1);
 		verify(feed, times(1)).getXml();
-		verify(feedConverter, times(1)).convertFeedToXml(feed, testURI);
+		verify(feedConverter, times(1)).convertFeedToXml(feed, TEST_URI);
 	}
 
 	@Test
-	public void shouldReplaceValuesIfTemplateExists() {
+	void shouldReplaceValuesIfTemplateExists() {
 
 		AtomFeed feed = mock(AtomFeed.class);
 		given(feedRepository.getFeedById(1)).willReturn(feed);
 		given(feed.getXml()).willReturn(null);
-		given(feedConverter.convertFeedToXml(feed, testURI)).willReturn("<xml>_KALLE_</xml>");
+		given(feedConverter.convertFeedToXml(feed, TEST_URI)).willReturn("<xml>_KALLE_</xml>");
 		feedResource.add("_KALLE_", "kallepath");
-		Response response = feedResource.getFeedXml(1, testURI);
+		Response response = feedResource.getFeedXml(1, TEST_URI);
 		assertThat(response.getEntity()).isNotNull();
 		assertThat(response.getEntity().toString()).isEqualTo("<xml>kallepath</xml>");
 

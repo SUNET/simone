@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.PUT;
@@ -15,7 +14,6 @@ import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -156,9 +154,6 @@ public class RSResource {
 			simulatedResponseResponseBody = CDI.current().select(SimulatedRSResponseBody.class).get();
 		}
 
-		@Context
-		HttpServletRequest servletRequest;
-
 		@Override
 		public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
 
@@ -168,14 +163,14 @@ public class RSResource {
 				responseContext.setStatus(simulatedResponse.getCode());
 			}
 
-			ResponseBodyRepresentation overrideBody = simulatedResponseResponseBody.getOverride(servletRequest.getRequestURI());
+			ResponseBodyRepresentation overrideBody = simulatedResponseResponseBody.getOverride(requestContext.getUriInfo().getPath());
 
 			if (overrideBody != null) {
 				responseContext.setEntity(overrideBody.getBody());
 				responseContext.setStatus(overrideBody.getCode());
 			}
 
-			ResponseRepresentation overrideStatus = simulatedResponse.getCodeForPath(servletRequest.getRequestURI());
+			ResponseRepresentation overrideStatus = simulatedResponse.getCodeForPath(requestContext.getUriInfo().getPath());
 
 			if (overrideStatus != null) {
 				responseContext.setStatus(overrideStatus.getCode());

@@ -126,7 +126,7 @@ public class DirectoryMonitor {
 
 						res.add(new DirectoryFileJob(desc.createJob(reader), path));
 					} else {
-						LOG.trace("No match for: {}", path);
+						LOG.error("No match for: {}", path);
 					}
 				}
 			}

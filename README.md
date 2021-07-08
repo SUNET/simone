@@ -30,7 +30,7 @@ void se.uhr.simone.api.feed.FeedPublisher#publish(AtomEntry entry);
 
 * Java 11
 
-* Java Microprofile 3.3 compatible server
+* Java Microprofile 4.0 compatible server
 
 * Datasource, The application is required to produce a CDI bean of type `javax.sql.DataSource` with qualifier `@FeedDS` to be used by the feed server. The Datasource must be initialized with the Flyway migration located on the classpath.
 

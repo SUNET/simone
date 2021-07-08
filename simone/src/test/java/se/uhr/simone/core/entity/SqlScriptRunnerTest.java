@@ -3,15 +3,16 @@ package se.uhr.simone.core.entity;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class SqlScriptRunnerTest {
+@ExtendWith(MockitoExtension.class)
+class SqlScriptRunnerTest {
 
 	@Mock
 	private JdbcTemplate jdbcTemplate;
@@ -19,13 +20,8 @@ public class SqlScriptRunnerTest {
 	@InjectMocks
 	private SqlScriptRunner runner;
 
-	@BeforeEach
-	public void initMocks() {
-		MockitoAnnotations.initMocks(this);
-	}
-
 	@Test
-	public void testExecute() {
+	void testExecute() {
 
 		runner.execute(this.getClass().getResourceAsStream("/test.sql"));
 

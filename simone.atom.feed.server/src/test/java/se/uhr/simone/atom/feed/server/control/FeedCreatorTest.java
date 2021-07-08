@@ -10,18 +10,19 @@ import static org.mockito.Mockito.verify;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import se.uhr.simone.atom.feed.server.entity.AtomEntry;
 import se.uhr.simone.atom.feed.server.entity.AtomFeed;
 import se.uhr.simone.atom.feed.server.entity.FeedRepository;
 
-public class FeedCreatorTest {
+@ExtendWith(MockitoExtension.class)
+class FeedCreatorTest {
 
 	private static final long FIRST_ID = 1L;
 
@@ -33,13 +34,8 @@ public class FeedCreatorTest {
 	@Captor
 	private ArgumentCaptor<AtomFeed> atomFeedCaptor;
 
-	@BeforeEach
-	public void setupMockito() {
-		MockitoAnnotations.initMocks(this);
-	}
-
 	@Test
-	public void noEntriesToConnect() {
+	void noEntriesToConnect() {
 
 		given(feedRepository.getEntriesNotConnectedToFeed()).willReturn(Collections.emptyList());
 
@@ -49,7 +45,7 @@ public class FeedCreatorTest {
 	}
 
 	@Test
-	public void oneEntryToConnectNoRecentFeedExists() {
+	void oneEntryToConnectNoRecentFeedExists() {
 
 		AtomEntry atomEntry = mock(AtomEntry.class);
 
@@ -70,7 +66,7 @@ public class FeedCreatorTest {
 	}
 
 	@Test
-	public void oneEntryToConnectRecentFeedExists() {
+	void oneEntryToConnectRecentFeedExists() {
 
 		AtomEntry atomEntry = mock(AtomEntry.class);
 
@@ -90,7 +86,7 @@ public class FeedCreatorTest {
 	}
 
 	@Test
-	public void oneEntryToConnectRecentFeedIsFull() {
+	void oneEntryToConnectRecentFeedIsFull() {
 
 		AtomEntry atomEntry = mock(AtomEntry.class);
 
@@ -120,5 +116,4 @@ public class FeedCreatorTest {
 
 		assertThat(atomFeedCaptor.getValue().getEntries()).hasSize(1);
 	}
-
 }
