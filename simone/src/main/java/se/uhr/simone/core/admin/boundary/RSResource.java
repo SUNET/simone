@@ -156,6 +156,7 @@ public class RSResource {
 
 		@Override
 		public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
+			String requestPath = requestContext.getUriInfo().getAbsolutePath().getPath();
 
 			handleDelay();
 
@@ -163,14 +164,14 @@ public class RSResource {
 				responseContext.setStatus(simulatedResponse.getCode());
 			}
 
-			ResponseBodyRepresentation overrideBody = simulatedResponseResponseBody.getOverride(requestContext.getUriInfo().getPath());
+			ResponseBodyRepresentation overrideBody = simulatedResponseResponseBody.getOverride(requestPath);
 
 			if (overrideBody != null) {
 				responseContext.setEntity(overrideBody.getBody());
 				responseContext.setStatus(overrideBody.getCode());
 			}
 
-			ResponseRepresentation overrideStatus = simulatedResponse.getCodeForPath(requestContext.getUriInfo().getPath());
+			ResponseRepresentation overrideStatus = simulatedResponse.getCodeForPath(requestPath);
 
 			if (overrideStatus != null) {
 				responseContext.setStatus(overrideStatus.getCode());
