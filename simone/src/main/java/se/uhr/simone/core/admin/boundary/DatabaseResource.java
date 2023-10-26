@@ -1,23 +1,13 @@
 package se.uhr.simone.core.admin.boundary;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterStyle;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -25,99 +15,59 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameters;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-
 import se.uhr.simone.admin.api.file.FileLoadResultRepresentation;
-import se.uhr.simone.api.entity.DatabaseAdmin;
-import se.uhr.simone.api.feed.UniqueIdentifier;
-import se.uhr.simone.api.fileloader.ExtensionContext;
-import se.uhr.simone.api.fileloader.FileLoader;
-import se.uhr.simone.api.fileloader.FileLoaderDescriptor;
-import se.uhr.simone.core.boundary.AdminCatagory;
-import se.uhr.simone.core.control.extension.ExtensionManager;
+import se.uhr.simone.core.SimOne;
 
-@Tag(name = "admin")
-@AdminCatagory
-@Path("/admin/database")
 public class DatabaseResource {
 
-	@Inject
-	Instance<DatabaseAdmin> databaseAdmin;
+	private final SimOne simOne;
 
-	@Inject
-	ExtensionManager extensionManager;
-
-	@Operation(summary = "Loads the database", description = "This has the same effects as dropping a file in the dropin directory")
-	@APIResponse(responseCode = "200", description = "Status and list of order ids", content = @Content(schema = @Schema(implementation = FileLoadResultRepresentation.class)))
-	@Parameters(value = { @Parameter(name = "name", description = "the name of the file", style = ParameterStyle.FORM),
-			@Parameter(name = "content", description = "the content of the file", style = ParameterStyle.FORM) })
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	@POST
-	public Response load(Map<String, String> parts) throws IOException {
-		List<String> idList = new ArrayList<>();
-		StringBuilder errorLog = new StringBuilder();
-		boolean success = true;
-
-		if (parts.containsKey("name") && parts.containsKey("content")) {
-
-			for (FileLoaderDescriptor ext : extensionManager.getFileExtensions(parts.get("name"))) {
-				try (BufferedReader reader = new BufferedReader(new StringReader(parts.get("content")))) {
-					FileLoader fileLoader = ext.createJob(reader);
-
-					RestExtensionContext context = new RestExtensionContext();
-
-					FileLoader.Result loadResult = fileLoader.execute(context);
-
-					idList.addAll(context.getEventIdList());
-					errorLog.append(context.getErrorLog());
-
-					if (loadResult != FileLoader.Result.SUCCESS) {
-						success = false;
-					}
-				}
-			}
-
-			return Response.status(success ? Status.OK : Status.BAD_REQUEST)
-					.entity(FileLoadResultRepresentation.of(idList, errorLog.toString()))
-					.build();
-		} else {
-			return Response.status(Status.BAD_REQUEST).build();
-		}
+	public DatabaseResource(SimOne simOne) {
+		this.simOne = simOne;
 	}
 
 	@Operation(summary = "Empty the database")
 	@APIResponse(responseCode = "200", description = "Success")
 	@DELETE
 	public Response deleteTables() {
-		for (DatabaseAdmin db : databaseAdmin) {
-			db.dropTables();
-		}
-
+		simOne.clearDatabase();
 		return Response.ok().build();
 	}
 
-	static class RestExtensionContext implements ExtensionContext {
+	@Operation(summary = "Loads the database", description = "This is for backwards compatibility only, define a custom endpoint to load the database")
+	@APIResponse(responseCode = "200", description = "Status and list of order ids", content = @Content(schema = @Schema(implementation = FileLoadResultRepresentation.class)))
+	@Parameters(value = { @Parameter(name = "name", description = "the name of the file", style = ParameterStyle.FORM),
+			@Parameter(name = "content", description = "the content of the file", style = ParameterStyle.FORM) })
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@POST
+	public Response load(Map<String, String> parts) {
+		if (parts.containsKey("name") && parts.containsKey("content")) {
+			FileLoadResult result = loadFile(parts.get("name"), parts.get("content"));
+			return Response.status(result.errorMessage == null ? Response.Status.OK : Response.Status.BAD_REQUEST)
+					.entity(FileLoadResultRepresentation.of(result.eventIdList, result.errorMessage))
+					.build();
 
-		private String errorMessage;
-		private final List<String> eventIdList = new ArrayList<>();
-
-		public String getErrorLog() {
-			return errorMessage;
+		} else {
+			return Response.status(Response.Status.BAD_REQUEST).build();
 		}
+	}
 
-		@Override
-		public void addEventId(UniqueIdentifier uid) {
-			eventIdList.add(uid.getValue());
-		}
+	/**
+	 * This is for backwards compatibility only, define a custom endpoint to load the database
+	 *
+	 * @param name The file name
+	 * @param content The file content
+	 * @return The result of the load
+	 * @deprecated Use a custom endpoint instead
+	 */
 
-		public List<String> getEventIdList() {
-			return eventIdList;
-		}
+	@Deprecated(forRemoval = true)
+	protected FileLoadResult loadFile(String name, String content) {
+		throw new UnsupportedOperationException("The endpoint exists for backwards compatibility");
+	}
 
-		@Override
-		public void setErrorMessage(String message) {
-			errorMessage = message;
-		}
+	protected static record FileLoadResult (String errorMessage, List<String> eventIdList){
+
 	}
 }

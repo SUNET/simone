@@ -21,21 +21,18 @@ import se.uhr.simone.atom.feed.server.entity.AtomFeed;
 import se.uhr.simone.atom.feed.server.entity.FeedRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class FeedXmlCreatorTest {
+class FeedXmlCreatorTest {
 
 	private static final URI testURI = URI.create("http://localhost/test-uri");
 
-	@Mock
-	private FeedRepository feedRepository;
+	private final FeedRepository feedRepository = mock(FeedRepository.class);
 
-	@Mock
-	private FeedConverter feedConverter;
+	private final FeedConverter feedConverter = mock(FeedConverter.class);
 
-	@InjectMocks
-	private FeedXmlCreator feedXmlCreator = new TestableFeedXmlCreator();
+	private final FeedXmlCreator feedXmlCreator = new FeedXmlCreator(feedConverter);
 
 	@Test
-	public void testCreateXmlForFeedsNoEntriesAvailable() {
+	void testCreateXmlForFeedsNoEntriesAvailable() {
 		given(feedRepository.getFeedsWithoutXml()).willReturn(Collections.emptyList());
 
 		feedXmlCreator.createXmlForFeeds(feedRepository, testURI);
@@ -44,7 +41,7 @@ public class FeedXmlCreatorTest {
 	}
 
 	@Test
-	public void testCreateXmlForFeedsOneEntryAvailable() {
+	void testCreateXmlForFeedsOneEntryAvailable() {
 		AtomFeed atomFeed = mock(AtomFeed.class);
 
 		given(atomFeed.getId()).willReturn(11L);
@@ -56,9 +53,5 @@ public class FeedXmlCreatorTest {
 		verify(feedRepository, times(1)).getFeedsWithoutXml();
 		verify(feedConverter, times(1)).convertFeedToXml(atomFeed, testURI);
 		verify(feedRepository, times(1)).saveAtomFeedXml(11L, "<xml></xml>");
-	}
-
-	private class TestableFeedXmlCreator extends FeedXmlCreator {
-
 	}
 }

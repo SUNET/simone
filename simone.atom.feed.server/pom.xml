@@ -5,11 +5,10 @@
     <parent>
         <groupId>se.uhr.simone</groupId>
         <artifactId>root</artifactId>
-        <version>3.3.5-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <properties>
-        <m2e.cdi.activation>true</m2e.cdi.activation>
         <version.jdom>1.0</version.jdom>
         <version.rome>1.0.0</version.rome>
         <version.springframework>5.3.18</version.springframework>

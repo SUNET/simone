@@ -3,9 +3,6 @@ package se.uhr.simone.core.admin.boundary;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
-
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
@@ -15,11 +12,15 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.container.DynamicFeature;
+import javax.ws.rs.container.ResourceContext;
+import javax.ws.rs.container.ResourceInfo;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
-
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.headers.Header;
@@ -28,7 +29,6 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-
 import se.uhr.simone.admin.api.HttpConstants;
 import se.uhr.simone.admin.feed.AtomFeedEventRepresentation;
 import se.uhr.simone.atom.feed.server.entity.AtomCategory;
@@ -36,26 +36,24 @@ import se.uhr.simone.atom.feed.server.entity.AtomCategory.Label;
 import se.uhr.simone.atom.feed.server.entity.AtomCategory.Term;
 import se.uhr.simone.atom.feed.server.entity.AtomEntry;
 import se.uhr.simone.atom.feed.server.entity.AtomEntry.Build;
-import se.uhr.simone.core.admin.control.FeedBlocker;
+import se.uhr.simone.core.SimOne;
 import se.uhr.simone.core.admin.control.SimulatedFeedResponse;
 import se.uhr.simone.core.boundary.AdminCatagory;
 import se.uhr.simone.core.boundary.FeedCatagory;
-import se.uhr.simone.core.feed.entity.SimFeedRepository;
+import se.uhr.simone.core.feed.boundary.SimulatorFeedResource;
 
 @Tag(name = "admin")
 @AdminCatagory
-@Path("/admin/feed")
-@Dependent
 public class FeedResource {
 
-	@Inject
-	SimFeedRepository feedRepository;
+	private final SimOne simone;
 
-	@Inject
-	SimulatedFeedResponse simulatedResponse;
+	private final SimulatedFeedResponse simulatedResponse;
 
-	@Inject
-	FeedBlocker feedBlocker;
+	public FeedResource(SimOne simone, SimulatedFeedResponse simulatedFeedResponse) {
+		this.simone = simone;
+		this.simulatedResponse = simulatedFeedResponse;
+	}
 
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Operation(summary = "Answer with specified code for all feed requests", description = "Enters a state where all feed requests are answered with the specified status code")
@@ -79,7 +77,7 @@ public class FeedResource {
 	@PUT
 	@Path("/block")
 	public Response blockFeed() {
-		feedBlocker.setBlocked(true);
+		simone.getFeedPublisher().setBlocked(true);
 		return Response.ok().build();
 	}
 
@@ -87,7 +85,7 @@ public class FeedResource {
 	@DELETE
 	@Path("/block")
 	public Response unblockFeed() {
-		feedBlocker.setBlocked(false);
+		simone.getFeedPublisher().setBlocked(false);
 		return Response.ok().build();
 	}
 
@@ -109,7 +107,7 @@ public class FeedResource {
 	public Response publishEvent(AtomFeedEventRepresentation event) {
 		String uid = UUID.randomUUID().toString();
 
-		Long nextSortOrder = feedRepository.getNextSortOrder();
+		Long nextSortOrder = simone.getFeedRepository().getNextSortOrder();
 
 		Build builder = AtomEntry.builder()
 				.withAtomEntryId(uid)
@@ -128,17 +126,15 @@ public class FeedResource {
 			builder.withCategory(categoryBuilder.build());
 		}
 
-		feedRepository.saveAtomEntry(builder.build());
+		simone.getFeedRepository().saveAtomEntry(builder.build());
 
 		return Response.status(Status.OK).header(HttpConstants.EVENT_ID_HEADER, uid).build();
 	}
 
-	@Provider
-	@FeedCatagory
-	public static class FeedServiceFilter implements ContainerResponseFilter {
 
-		@Inject
-		SimulatedFeedResponse simulatedResponse;
+	//@Provider
+	@FeedCatagory
+	public class FeedServiceFilter implements ContainerResponseFilter {
 
 		@Override
 		public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {

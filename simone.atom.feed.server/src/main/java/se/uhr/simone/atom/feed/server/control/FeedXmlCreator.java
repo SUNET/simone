@@ -3,18 +3,18 @@ package se.uhr.simone.atom.feed.server.control;
 import java.net.URI;
 import java.util.List;
 
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import se.uhr.simone.atom.feed.server.entity.AtomFeed;
 import se.uhr.simone.atom.feed.server.entity.FeedRepository;
 
-@Dependent
 public class FeedXmlCreator {
 
-	@Inject
-	FeedConverter feedConverter;
+	private final FeedConverter feedConverter;
+
+	public FeedXmlCreator(FeedConverter feedConverter) {
+		this.feedConverter = feedConverter;
+	}
 
 	/**
 	 * Fetches all {@link AtomFeed}s that are "full" and converts them to xml if not already converted.

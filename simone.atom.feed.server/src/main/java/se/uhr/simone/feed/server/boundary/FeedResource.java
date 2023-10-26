@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.inject.Inject;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -17,11 +16,14 @@ import se.uhr.simone.atom.feed.server.entity.FeedRepository;
 @Produces({ MediaType.APPLICATION_ATOM_XML + "; charset=utf-8", MediaType.APPLICATION_ATOM_XML })
 public abstract class FeedResource {
 
-	@Inject
 	FeedConverter feedConverter;
 
-	@Inject
 	FeedRepository feedRepository;
+
+	protected FeedResource(FeedConverter feedConverter, FeedRepository feedRepository) {
+		this.feedConverter = feedConverter;
+		this.feedRepository = feedRepository;
+	}
 
 	/**
 	 * Returns the recent {@link AtomFeed} as XML if it does exist, otherwise null.

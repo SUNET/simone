@@ -1,92 +1,96 @@
 package se.uhr.simone.core;
 
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
-import javax.sql.DataSource;
-import se.uhr.simone.api.entity.DatabaseAdmin;
-import se.uhr.simone.api.fileloader.FileLoaderDescriptor;
+import java.net.URI;
+import se.uhr.simone.api.feed.AtomEntry;
+import se.uhr.simone.atom.feed.server.control.FeedConverter;
+import se.uhr.simone.atom.feed.server.control.FeedCreator;
+import se.uhr.simone.atom.feed.server.control.FeedXmlCreator;
+import se.uhr.simone.core.feed.control.SimulatorFeedPublisher;
+import se.uhr.simone.core.feed.entity.SimFeedRepository;
 
 public class SimOne {
 
-	private final DataSource dataSource;
+	private final URI feedBaseURI;
+	private final Runnable clearDatabaseFunction;
 
-	private final DatabaseAdmin databaseAdmin;
+	private final FeedCreator feedCreator;
+	private final FeedXmlCreator feedXmlCreator;
+	private final SimFeedRepository feedRepository;
+	private final SimulatorFeedPublisher feedPublisher;
 
-	private final List<FileLoaderDescriptor> fileLoaderDescriptors;
+	private final FeedConverter feedConverter;
 
-	private final Path dropinDirectory;
+	public SimOne(URI feedBaseURI, SimFeedRepository feedRepository, Runnable clearDatabaseFunction) {
+		this.feedBaseURI = feedBaseURI;
+		this.feedRepository = feedRepository;
+		this.clearDatabaseFunction = clearDatabaseFunction;
 
-	private SimOne(DataSource dataSource, DatabaseAdmin databaseAdmin, List<FileLoaderDescriptor> fileLoaderDescriptors,
-			Path dropinDirectory) {
-		this.dataSource = dataSource;
-
-		// optional
-		this.databaseAdmin = databaseAdmin;
-		this.fileLoaderDescriptors = fileLoaderDescriptors;
-		this.dropinDirectory = dropinDirectory;
+		feedConverter = new FeedConverter();
+		feedCreator = new FeedCreator();
+		feedXmlCreator = new FeedXmlCreator(feedConverter);
+		feedPublisher = new SimulatorFeedPublisher(feedRepository);
 	}
 
-	public DataSource dataSource() {
-		return dataSource;
+	public URI getFeedBaseURI() {
+		return feedBaseURI;
 	}
 
-	public Optional<DatabaseAdmin> databaseAdmin() {
-		return Optional.ofNullable(databaseAdmin);
+	public void connectEntrysToFeeds() {
+		feedCreator.connectEntrysToFeeds(feedRepository);
 	}
 
-	public List<FileLoaderDescriptor> fileLoaderDescriptors() {
-		return fileLoaderDescriptors;
+	public void createXmlForFeeds() {
+		feedXmlCreator.createXmlForFeeds(feedRepository, feedBaseURI);
 	}
 
-	public Optional<Path> dropinDirectory() {
-		return Optional.ofNullable(dropinDirectory);
+	public void publish(AtomEntry atomEntry) {
+		feedPublisher.publish(atomEntry);
 	}
 
-	static SimOneBuilder builder() {
-		return new SimOneBuilder();
+	public FeedConverter getFeedConverter() {
+		return feedConverter;
 	}
 
-	interface OptionalStage {
-
-		OptionalStage withDatabaseAdmin(DatabaseAdmin databaseAdmin);
-
-		OptionalStage withFileLoaderDescriptors(List<FileLoaderDescriptor> fileLoaderDescriptors);
-
-		OptionalStage withDropinDirectory(Path dropinDirectory);
+	public SimFeedRepository getFeedRepository() {
+		return feedRepository;
 	}
 
-	public static class SimOneBuilder implements OptionalStage {
+	public SimulatorFeedPublisher getFeedPublisher() {
+		return feedPublisher;
+	}
 
-		private DataSource dataSource;
-		private DatabaseAdmin databaseAdmin;
-		private List<FileLoaderDescriptor> fileLoaderDescriptors;
-		private Path dropinDirectory;
+	public void clearDatabase() {
+		feedRepository.clear();
+		clearDatabaseFunction.run();
+	}
 
-		public OptionalStage withDataSource(DataSource dataSource) {
-			this.dataSource = dataSource;
+	public static SimOne2Builder builder() {
+		return new SimOne2Builder();
+	}
+
+	public static class SimOne2Builder {
+
+		private URI feedBaseURI;
+		private SimFeedRepository feedRepository;
+		private Runnable clearDatabaseFunction = () -> {};
+
+		public SimOne2Builder withFeedBaseURI(URI feedBaseURI) {
+			this.feedBaseURI = feedBaseURI;
 			return this;
 		}
 
-		@Override
-		public OptionalStage withDatabaseAdmin(DatabaseAdmin databaseAdmin) {
-			this.databaseAdmin = databaseAdmin;
+		public SimOne2Builder withFeedRepository(SimFeedRepository feedRepository) {
+			this.feedRepository = feedRepository;
 			return this;
 		}
-		@Override
-		public OptionalStage withFileLoaderDescriptors(List<FileLoaderDescriptor> fileLoaderDescriptors) {
-			this.fileLoaderDescriptors = fileLoaderDescriptors;
-			return this;
-		}
-		@Override
-		public OptionalStage withDropinDirectory(Path dropinDirectory) {
-			this.dropinDirectory = dropinDirectory;
+
+		public SimOne2Builder withClearDatabaseFunction(Runnable clearDatabaseFunction) {
+			this.clearDatabaseFunction = clearDatabaseFunction;
 			return this;
 		}
 
 		public SimOne build() {
-			return new SimOne(dataSource, databaseAdmin, fileLoaderDescriptors, dropinDirectory);
+			return new SimOne(feedBaseURI, feedRepository, clearDatabaseFunction);
 		}
 	}
-
 }

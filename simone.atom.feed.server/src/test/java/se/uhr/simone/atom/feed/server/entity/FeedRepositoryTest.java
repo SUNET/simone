@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 import javax.ws.rs.core.MediaType;
+import javax.xml.crypto.Data;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,28 +25,26 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 @ExtendWith(MockitoExtension.class)
-public class FeedRepositoryTest {
+class FeedRepositoryTest {
 
-	@Mock
-	private AtomFeedDAO atomFeedDAO;
+	private final AtomFeedDAO atomFeedDAO = mock(AtomFeedDAO.class);
 
-	@Mock
-	private AtomEntryDAO atomEntryDAO;
+	private final AtomEntryDAO atomEntryDAO = mock(AtomEntryDAO.class);
 
-	@Mock
-	private AtomCategoryDAO atomCategoryDAO;
+	private final AtomCategoryDAO atomCategoryDAO = mock(AtomCategoryDAO.class);
 
-	@Mock
-	private AtomLinkDAO atomLinkDAO;
+	private final AtomLinkDAO atomLinkDAO = mock(AtomLinkDAO.class);
 
-	@Mock
-	private AtomAuthorDAO atomAuthorDAO;
+	private final AtomAuthorDAO atomAuthorDAO = mock(AtomAuthorDAO.class);
 
-	@InjectMocks
-	private FeedRepository feedRepository = new TestableFeedRepository();
+	private final FeedRepository feedRepository = new FeedRepository(atomFeedDAO, atomEntryDAO, atomCategoryDAO, atomLinkDAO, atomAuthorDAO) {
+
+		@Override
+		public void clear() {}
+	};
 
 	@Test
-	public void saveAtomFeedWithoutEntries() {
+	void saveAtomFeedWithoutEntries() {
 		AtomFeed atomFeed = new AtomFeed(1);
 
 		given(atomFeedDAO.exists(1)).willReturn(true);
@@ -57,7 +57,7 @@ public class FeedRepositoryTest {
 	}
 
 	@Test
-	public void saveAtomFeedWithEntries() {
+	void saveAtomFeedWithEntries() {
 		AtomFeed atomFeed = new AtomFeed(1);
 		AtomEntry atomEntry = createAtomEntry();
 
@@ -75,7 +75,7 @@ public class FeedRepositoryTest {
 	}
 
 	@Test
-	public void saveAtomEntryWithoutCategories() {
+	void saveAtomEntryWithoutCategories() {
 		AtomEntry atomEntry = createAtomEntry();
 
 		given(atomEntryDAO.exists(atomEntry.getAtomEntryId())).willReturn(true);
@@ -91,12 +91,7 @@ public class FeedRepositoryTest {
 	}
 
 	@Test
-	public void saveAtomEntryWithCategories() {
-
-	}
-
-	@Test
-	public void getFeedByIdNotExisting() {
+	void getFeedByIdNotExisting() {
 
 		given(atomFeedDAO.fetchBy(1)).willThrow(new EmptyResultDataAccessException(3));
 
@@ -108,7 +103,7 @@ public class FeedRepositoryTest {
 	}
 
 	@Test
-	public void getFeedById() {
+	void getFeedById() {
 		AtomFeed atomFeed = new AtomFeed(1);
 
 		given(atomFeedDAO.fetchBy(1)).willReturn(atomFeed);
@@ -124,7 +119,7 @@ public class FeedRepositoryTest {
 	}
 
 	@Test
-	public void getRecentFeedMustExistInDatabase() {
+	void getRecentFeedMustExistInDatabase() {
 		given(atomFeedDAO.fetchRecent()).willThrow(new EmptyResultDataAccessException(3));
 
 		assertThatExceptionOfType(EmptyResultDataAccessException.class).isThrownBy(() -> {
@@ -134,7 +129,7 @@ public class FeedRepositoryTest {
 	}
 
 	@Test
-	public void getRecentFeed() {
+	void getRecentFeed() {
 		AtomFeed atomFeed = new AtomFeed(1);
 
 		given(atomFeedDAO.fetchRecent()).willReturn(atomFeed);
@@ -156,13 +151,5 @@ public class FeedRepositoryTest {
 				.withSubmittedNow()
 				.withContent(Content.builder().withValue("<xml></xml>").withContentType(MediaType.APPLICATION_XML).build())
 				.build();
-	}
-
-	private class TestableFeedRepository extends FeedRepository {
-
-		@Override
-		public DataSource getDataSource() {
-			return null;
-		}
 	}
 }

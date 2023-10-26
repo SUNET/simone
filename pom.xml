@@ -4,7 +4,7 @@
 
     <groupId>se.uhr.simone</groupId>
     <artifactId>root</artifactId>
-    <version>3.3.5-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>simone</name>
@@ -97,18 +97,6 @@
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>jakarta.enterprise</groupId>
-            <artifactId>jakarta.enterprise.cdi-api</artifactId>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>jakarta.ejb</groupId>
-                    <artifactId>jakarta.ejb-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>

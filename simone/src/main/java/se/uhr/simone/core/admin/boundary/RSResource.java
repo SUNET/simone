@@ -2,8 +2,6 @@ package se.uhr.simone.core.admin.boundary;
 
 import java.io.IOException;
 
-import javax.enterprise.inject.spi.CDI;
-import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.PUT;
@@ -13,7 +11,10 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.DynamicFeature;
+import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.container.ResourceInfo;
+import javax.ws.rs.core.Configuration;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -39,14 +40,20 @@ import se.uhr.simone.core.boundary.FeedCatagory;
 
 @Tag(name = "admin")
 @AdminCatagory
-@Path("/admin/rs/response")
 public class RSResource {
 
-	@Inject
-	SimulatedRSResponse simulatedResponse;
+	private final SimulatedRSResponse simulatedResponse;
 
-	@Inject
-	SimulatedRSResponseBody simulatedResponseResponseBody;
+	private final SimulatedRSResponseBody simulatedResponseResponseBody;
+
+	@Context
+	private Configuration myConfiguration;
+
+
+	public RSResource(SimulatedRSResponse simulatedResponse, SimulatedRSResponseBody simulatedResponseResponseBody) {
+		this.simulatedResponse = simulatedResponse;
+		this.simulatedResponseResponseBody = simulatedResponseResponseBody;
+	}
 
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Operation(summary = "Answer with specified code for all REST requests", description = "Enters a state where all REST requests are answered with the specified status code")
@@ -137,21 +144,24 @@ public class RSResource {
 		@Override
 		public void configure(ResourceInfo resourceInfo, FeatureContext context) {
 			Class<?> clazz = resourceInfo.getResourceClass();
+
+
+
 			if (!(clazz.isAnnotationPresent(AdminCatagory.class) || clazz.isAnnotationPresent(FeedCatagory.class))) {
-				context.register(RsServiceFilter.class, 1);
+				//context.register(RsServiceFilter.class, 1);
 			}
 		}
 	}
 
 	public static class RsServiceFilter implements ContainerResponseFilter {
 
-		SimulatedRSResponse simulatedResponse;
+		private final SimulatedRSResponse simulatedResponse;
 
-		SimulatedRSResponseBody simulatedResponseResponseBody;
+		private final SimulatedRSResponseBody simulatedResponseResponseBody;
 
-		public RsServiceFilter() {
-			simulatedResponse = CDI.current().select(SimulatedRSResponse.class).get();
-			simulatedResponseResponseBody = CDI.current().select(SimulatedRSResponseBody.class).get();
+		public RsServiceFilter(SimulatedRSResponse simulatedResponse, SimulatedRSResponseBody simulatedResponseResponseBody) {
+			this.simulatedResponse = simulatedResponse;
+			this.simulatedResponseResponseBody = simulatedResponseResponseBody;
 		}
 
 		@Override

@@ -2,7 +2,6 @@ package se.uhr.simone.atom.feed.server.entity;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -10,23 +9,30 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 public abstract class FeedRepository {
 
-	private AtomFeedDAO atomFeedDAO;
-	private AtomEntryDAO atomEntryDAO;
-	private AtomCategoryDAO atomCategoryDAO;
-	private AtomLinkDAO atomLinkDAO;
-	private AtomAuthorDAO atomAuthorDAO;
+	private final AtomFeedDAO atomFeedDAO;
+	private final AtomEntryDAO atomEntryDAO;
+	private final AtomCategoryDAO atomCategoryDAO;
+	private final AtomLinkDAO atomLinkDAO;
+	private final AtomAuthorDAO atomAuthorDAO;
 
-	public abstract DataSource getDataSource();
-
-	@PostConstruct
-	public void setupDao() {
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource());
+	protected FeedRepository(DataSource dataSource) {
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		atomFeedDAO = createAtomFeedDAO(jdbcTemplate);
 		atomEntryDAO = createAtomEntryDAO(jdbcTemplate);
 		atomCategoryDAO = createAtomCategoryDAO(jdbcTemplate);
 		atomLinkDAO = createAtomLinkDAO(jdbcTemplate);
 		atomAuthorDAO = createAtomAuthorDAO(jdbcTemplate);
 	}
+
+	FeedRepository(AtomFeedDAO atomFeedDAO, AtomEntryDAO atomEntryDAO, AtomCategoryDAO atomCategoryDAO, AtomLinkDAO atomLinkDAO, AtomAuthorDAO atomAuthorDAO) {
+		this.atomFeedDAO = atomFeedDAO;
+		this.atomEntryDAO = atomEntryDAO;
+		this.atomCategoryDAO = atomCategoryDAO;
+		this.atomLinkDAO = atomLinkDAO;
+		this.atomAuthorDAO = atomAuthorDAO;
+	}
+
+	public abstract void clear();
 
 	protected AtomFeedDAO createAtomFeedDAO(JdbcTemplate jdbcTemplate) {
 		return new AtomFeedDAO(jdbcTemplate);

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import se.uhr.simone.api.feed.AtomCategory;
@@ -14,24 +12,28 @@ import se.uhr.simone.api.feed.AtomLink;
 import se.uhr.simone.api.feed.Content;
 import se.uhr.simone.api.feed.FeedPublisher;
 import se.uhr.simone.api.feed.Person;
-import se.uhr.simone.core.admin.control.FeedBlocker;
 import se.uhr.simone.core.feed.entity.SimFeedRepository;
 
-@Dependent
 public class SimulatorFeedPublisher implements FeedPublisher {
 
-	@Inject
-	SimFeedRepository simFeedRepository;
+	private final SimFeedRepository simFeedRepository;
 
-	@Inject
-	FeedBlocker feedBlocker;
+	private boolean blocked = false;
+
+	public SimulatorFeedPublisher(SimFeedRepository simFeedRepository) {
+		this.simFeedRepository = simFeedRepository;
+	}
 
 	@Transactional
 	@Override
 	public void publish(AtomEntry atomEntry) {
-		if (!feedBlocker.isBlocked()) {
+		if (!blocked) {
 			simFeedRepository.saveAtomEntry(convert(atomEntry));
 		}
+	}
+
+	public void setBlocked(boolean blocked) {
+		this.blocked = blocked;
 	}
 
 	private se.uhr.simone.atom.feed.server.entity.AtomEntry convert(AtomEntry atomEntry) {

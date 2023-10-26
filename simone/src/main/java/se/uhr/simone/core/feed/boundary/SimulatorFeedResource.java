@@ -1,6 +1,5 @@
 package se.uhr.simone.core.feed.boundary;
 
-import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -14,17 +13,20 @@ import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import se.uhr.simone.core.SimOne;
 import se.uhr.simone.core.boundary.FeedCatagory;
-import se.uhr.simone.core.control.SimoneConfiguration;
 import se.uhr.simone.feed.server.boundary.FeedResource;
 
 @Tag(name = "feed")
 @FeedCatagory
-@Path("/feed")
 public class SimulatorFeedResource extends FeedResource {
 
-	@Inject
-	SimoneConfiguration config;
+	public final SimOne simOne;
+
+	public SimulatorFeedResource(SimOne simone) {
+		super(simone.getFeedConverter(), simone.getFeedRepository());
+		this.simOne = simone;
+	}
 
 	@Produces(MediaType.APPLICATION_ATOM_XML)
 	@Operation(summary = "Get the most recent feed", description = "Get a feed document containing the most recent entries in the feed, see RFC5005 Archived Feeds for more information")
@@ -32,7 +34,7 @@ public class SimulatorFeedResource extends FeedResource {
 	@Path("/recent")
 	@GET
 	public Response getRecentFeed() {
-		return super.getRecentFeedXml(config.getFeedBaseURI());
+		return super.getRecentFeedXml(simOne.getFeedBaseURI());
 	}
 
 	@Produces(MediaType.APPLICATION_ATOM_XML)
@@ -41,7 +43,7 @@ public class SimulatorFeedResource extends FeedResource {
 	@Path("/{id}")
 	@GET
 	public Response getFeedById(@Parameter(name = "id", description = "The feed sequence number") @PathParam("id") long id) {
-		return super.getFeedXml(id, config.getFeedBaseURI());
+		return super.getFeedXml(id, simOne.getFeedBaseURI());
 	}
 
 	@Override

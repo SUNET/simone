@@ -3,14 +3,12 @@ package se.uhr.simone.atom.feed.server.control;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.enterprise.context.Dependent;
 import javax.transaction.Transactional;
 
 import se.uhr.simone.atom.feed.server.entity.AtomEntry;
 import se.uhr.simone.atom.feed.server.entity.AtomFeed;
 import se.uhr.simone.atom.feed.server.entity.FeedRepository;
 
-@Dependent
 public class FeedCreator {
 
 	/**

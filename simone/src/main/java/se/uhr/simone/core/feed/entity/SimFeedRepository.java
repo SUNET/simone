@@ -1,28 +1,24 @@
 package se.uhr.simone.core.feed.entity;
 
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import se.uhr.simone.atom.feed.server.entity.AtomFeedDAO;
 import se.uhr.simone.atom.feed.server.entity.FeedRepository;
-import se.uhr.simone.core.entity.FeedDS;
+import se.uhr.simone.core.entity.SqlScriptRunner;
 
-@Dependent
 public class SimFeedRepository extends FeedRepository {
 
-	private DataSource dataSource;
+	private static final Logger LOG = LoggerFactory.getLogger(SimFeedRepository.class);
 
-	@Inject
-	public void setDataSource(@FeedDS DataSource dataSource) {
+	private final DataSource dataSource;
+
+	public SimFeedRepository(DataSource dataSource) {
+		super(dataSource);
 		this.dataSource = dataSource;
-	}
-
-	@Override
-	public DataSource getDataSource() {
-		return dataSource;
 	}
 
 	@Override
@@ -33,9 +29,14 @@ public class SimFeedRepository extends FeedRepository {
 	public Long getNextSortOrder() {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 
-		StringBuilder sql = new StringBuilder("SELECT COALESCE(MAX(SORT_ORDER),0) FROM ATOM_ENTRY");
+		String sql = "SELECT COALESCE(MAX(SORT_ORDER),0) FROM ATOM_ENTRY";
 
-		return jdbcTemplate.queryForObject(sql.toString(), Long.class) + Long.valueOf(1);
+		return jdbcTemplate.queryForObject(sql, Long.class) + Long.valueOf(1);
 	}
 
+	public void clear() {
+		LOG.info("delete all tables");
+		SqlScriptRunner runner = new SqlScriptRunner(new JdbcTemplate(dataSource));
+		runner.execute(this.getClass().getResourceAsStream("/db/delete_all_tables.sql"));
+	}
 }

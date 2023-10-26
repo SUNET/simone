@@ -1,8 +1,6 @@
 package se.uhr.simone.core.admin.control;
 
-import javax.enterprise.context.ApplicationScoped;
 
-@ApplicationScoped
 public class SimulatedFeedResponse {
 
 	public static final int NORMAL_STATUS_CODE = -1;

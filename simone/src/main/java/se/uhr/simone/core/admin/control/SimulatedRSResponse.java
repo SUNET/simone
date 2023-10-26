@@ -4,14 +4,11 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
 import se.uhr.simone.admin.rs.ResponseRepresentation;
 
-@ApplicationScoped
 public class SimulatedRSResponse {
 
 	public static final int NORMAL_RESPONSE_CODE = -1;

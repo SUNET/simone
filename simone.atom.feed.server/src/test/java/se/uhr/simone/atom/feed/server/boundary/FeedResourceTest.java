@@ -30,14 +30,11 @@ class FeedResourceTest {
 
 	private static final URI TEST_URI = URI.create("http://localhost/test-uri");
 
-	@Mock
-	private FeedRepository feedRepository;
+	private final FeedConverter feedConverter = mock(FeedConverter.class);
 
-	@Mock
-	private FeedConverter feedConverter;
+	private final FeedRepository feedRepository = mock(FeedRepository.class);
 
-	@InjectMocks
-	private TestableFeedResource feedResource = new TestableFeedResource();
+	private final TestableFeedResource feedResource = new TestableFeedResource(feedConverter, feedRepository);
 
 	@BeforeEach
 	public void before() {
@@ -92,6 +89,10 @@ class FeedResourceTest {
 	private class TestableFeedResource extends FeedResource {
 
 		Map<String, String> testMap = new HashMap<>();
+
+		public TestableFeedResource(FeedConverter feedConverter, FeedRepository feedRepository) {
+			super(feedConverter, feedRepository);
+		}
 
 		@Override
 		public String replaceTemplateValues(String xml) {
