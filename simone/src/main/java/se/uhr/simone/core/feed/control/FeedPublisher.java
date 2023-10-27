@@ -6,12 +6,6 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
-import se.uhr.simone.api.feed.AtomCategory;
-import se.uhr.simone.api.feed.AtomEntry;
-import se.uhr.simone.api.feed.AtomLink;
-import se.uhr.simone.api.feed.Content;
-import se.uhr.simone.api.feed.FeedPublisher;
-import se.uhr.simone.api.feed.Person;
 import se.uhr.simone.core.feed.entity.DerbyFeedRepository;
 
 public class FeedPublisher {

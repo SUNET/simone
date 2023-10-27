@@ -1,4 +1,4 @@
-package se.uhr.simone.api.feed;
+package se.uhr.simone.core.feed.control;
 
 import java.io.Serializable;
 import java.util.UUID;

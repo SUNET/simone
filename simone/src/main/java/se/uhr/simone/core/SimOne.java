@@ -1,7 +1,7 @@
 package se.uhr.simone.core;
 
 import java.net.URI;
-import se.uhr.simone.api.feed.AtomEntry;
+import se.uhr.simone.core.feed.control.AtomEntry;
 import se.uhr.simone.atom.feed.server.control.FeedConverter;
 import se.uhr.simone.atom.feed.server.control.FeedCreator;
 import se.uhr.simone.atom.feed.server.control.FeedXmlCreator;
