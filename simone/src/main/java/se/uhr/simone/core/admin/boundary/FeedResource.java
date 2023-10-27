@@ -1,6 +1,5 @@
 package se.uhr.simone.core.admin.boundary;
 
-import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 import javax.ws.rs.Consumes;
@@ -8,19 +7,9 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.container.DynamicFeature;
-import javax.ws.rs.container.ResourceContext;
-import javax.ws.rs.container.ResourceInfo;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.ext.Provider;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.headers.Header;
@@ -37,20 +26,16 @@ import se.uhr.simone.atom.feed.server.entity.AtomCategory.Term;
 import se.uhr.simone.atom.feed.server.entity.AtomEntry;
 import se.uhr.simone.atom.feed.server.entity.AtomEntry.Build;
 import se.uhr.simone.core.SimOne;
-import se.uhr.simone.core.admin.control.SimulatedFeedResponse;
-import se.uhr.simone.core.boundary.AdminCatagory;
-import se.uhr.simone.core.boundary.FeedCatagory;
-import se.uhr.simone.core.feed.boundary.SimulatorFeedResource;
+import se.uhr.simone.core.admin.control.ManagedFeedResponse;
 
 @Tag(name = "admin")
-@AdminCatagory
 public class FeedResource {
 
 	private final SimOne simone;
 
-	private final SimulatedFeedResponse simulatedResponse;
+	private final ManagedFeedResponse simulatedResponse;
 
-	public FeedResource(SimOne simone, SimulatedFeedResponse simulatedFeedResponse) {
+	public FeedResource(SimOne simone, ManagedFeedResponse simulatedFeedResponse) {
 		this.simone = simone;
 		this.simulatedResponse = simulatedFeedResponse;
 	}
@@ -69,7 +54,7 @@ public class FeedResource {
 	@DELETE
 	@Path("/response/code")
 	public Response resetGlobalCode() {
-		simulatedResponse.setGlobalCode(SimulatedFeedResponse.NORMAL_STATUS_CODE);
+		simulatedResponse.setGlobalCode(ManagedFeedResponse.NORMAL_STATUS_CODE);
 		return Response.ok().build();
 	}
 
@@ -129,31 +114,5 @@ public class FeedResource {
 		simone.getFeedRepository().saveAtomEntry(builder.build());
 
 		return Response.status(Status.OK).header(HttpConstants.EVENT_ID_HEADER, uid).build();
-	}
-
-
-	//@Provider
-	@FeedCatagory
-	public class FeedServiceFilter implements ContainerResponseFilter {
-
-		@Override
-		public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
-
-			handleDelay();
-
-			if (simulatedResponse.getCode() != SimulatedFeedResponse.NORMAL_STATUS_CODE) {
-				responseContext.setStatus(simulatedResponse.getCode());
-			}
-		}
-
-		private void handleDelay() {
-			if (simulatedResponse.getDelay() != 0) {
-				try {
-					Thread.sleep(simulatedResponse.getDelay() * 1_000L);
-				} catch (InterruptedException e) {
-					throw new WebApplicationException(e);
-				}
-			}
-		}
 	}
 }

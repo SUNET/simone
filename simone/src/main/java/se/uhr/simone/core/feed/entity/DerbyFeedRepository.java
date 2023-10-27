@@ -7,22 +7,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import se.uhr.simone.atom.feed.server.entity.AtomFeedDAO;
-import se.uhr.simone.atom.feed.server.entity.FeedRepository;
+import se.uhr.simone.atom.feed.server.entity.AbstractFeedRepository;
 import se.uhr.simone.core.entity.SqlScriptRunner;
 
-public class SimFeedRepository extends FeedRepository {
+public class DerbyFeedRepository extends AbstractFeedRepository {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SimFeedRepository.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DerbyFeedRepository.class);
 
 	private final DataSource dataSource;
 
-	public SimFeedRepository(DataSource dataSource) {
+	public DerbyFeedRepository(DataSource dataSource) {
 		super(dataSource);
 		this.dataSource = dataSource;
 	}
 
 	@Override
-	protected AtomFeedDAO createAtomFeedDAO(JdbcTemplate jdbcTemplate) {
+	public AtomFeedDAO createAtomFeedDAO(JdbcTemplate jdbcTemplate) {
 		return new DerbyAtomFeedDAO(jdbcTemplate);
 	}
 

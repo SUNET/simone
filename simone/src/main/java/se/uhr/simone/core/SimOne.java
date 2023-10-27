@@ -5,22 +5,24 @@ import se.uhr.simone.api.feed.AtomEntry;
 import se.uhr.simone.atom.feed.server.control.FeedConverter;
 import se.uhr.simone.atom.feed.server.control.FeedCreator;
 import se.uhr.simone.atom.feed.server.control.FeedXmlCreator;
-import se.uhr.simone.core.feed.control.SimulatorFeedPublisher;
-import se.uhr.simone.core.feed.entity.SimFeedRepository;
+import se.uhr.simone.core.feed.control.FeedPublisher;
+import se.uhr.simone.core.feed.entity.DerbyFeedRepository;
 
 public class SimOne {
 
+	private final String name;
 	private final URI feedBaseURI;
 	private final Runnable clearDatabaseFunction;
 
 	private final FeedCreator feedCreator;
 	private final FeedXmlCreator feedXmlCreator;
-	private final SimFeedRepository feedRepository;
-	private final SimulatorFeedPublisher feedPublisher;
+	private final DerbyFeedRepository feedRepository;
+	private final FeedPublisher feedPublisher;
 
 	private final FeedConverter feedConverter;
 
-	public SimOne(URI feedBaseURI, SimFeedRepository feedRepository, Runnable clearDatabaseFunction) {
+	public SimOne(String name, URI feedBaseURI, DerbyFeedRepository feedRepository, Runnable clearDatabaseFunction) {
+		this.name = name;
 		this.feedBaseURI = feedBaseURI;
 		this.feedRepository = feedRepository;
 		this.clearDatabaseFunction = clearDatabaseFunction;
@@ -28,7 +30,11 @@ public class SimOne {
 		feedConverter = new FeedConverter();
 		feedCreator = new FeedCreator();
 		feedXmlCreator = new FeedXmlCreator(feedConverter);
-		feedPublisher = new SimulatorFeedPublisher(feedRepository);
+		feedPublisher = new FeedPublisher(feedRepository);
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public URI getFeedBaseURI() {
@@ -51,11 +57,11 @@ public class SimOne {
 		return feedConverter;
 	}
 
-	public SimFeedRepository getFeedRepository() {
+	public DerbyFeedRepository getFeedRepository() {
 		return feedRepository;
 	}
 
-	public SimulatorFeedPublisher getFeedPublisher() {
+	public FeedPublisher getFeedPublisher() {
 		return feedPublisher;
 	}
 
@@ -64,33 +70,52 @@ public class SimOne {
 		clearDatabaseFunction.run();
 	}
 
-	public static SimOne2Builder builder() {
-		return new SimOne2Builder();
+	public static NameStep builder() {
+		return new SimOneBuilder();
 	}
 
-	public static class SimOne2Builder {
+	public interface NameStep {
+		FeedBaseURIStep withName(String name);
+	}
+
+	public interface FeedBaseURIStep {
+		SimOneBuilder withFeedBaseURI(URI feedBaseURI);
+	}
+
+
+	public static class SimOneBuilder implements NameStep, FeedBaseURIStep {
+
+		private String name;
 
 		private URI feedBaseURI;
-		private SimFeedRepository feedRepository;
-		private Runnable clearDatabaseFunction = () -> {};
+		private DerbyFeedRepository feedRepository;
+		private Runnable clearDatabaseFunction = () -> {
+		};
 
-		public SimOne2Builder withFeedBaseURI(URI feedBaseURI) {
+		@Override
+		public FeedBaseURIStep withName(String name) {
+			this.name = name;
+			return this;
+		}
+
+		@Override
+		public SimOneBuilder withFeedBaseURI(URI feedBaseURI) {
 			this.feedBaseURI = feedBaseURI;
 			return this;
 		}
 
-		public SimOne2Builder withFeedRepository(SimFeedRepository feedRepository) {
+		public SimOneBuilder withFeedRepository(DerbyFeedRepository feedRepository) {
 			this.feedRepository = feedRepository;
 			return this;
 		}
 
-		public SimOne2Builder withClearDatabaseFunction(Runnable clearDatabaseFunction) {
+		public SimOneBuilder withClearDatabaseFunction(Runnable clearDatabaseFunction) {
 			this.clearDatabaseFunction = clearDatabaseFunction;
 			return this;
 		}
 
 		public SimOne build() {
-			return new SimOne(feedBaseURI, feedRepository, clearDatabaseFunction);
+			return new SimOne(name, feedBaseURI, feedRepository, clearDatabaseFunction);
 		}
 	}
 }

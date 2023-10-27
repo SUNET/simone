@@ -5,7 +5,7 @@ import java.util.Map;
 
 import se.uhr.simone.admin.rs.ResponseBodyRepresentation;
 
-public class SimulatedRSResponseBody {
+public class ManagedRSResponseBody {
 
 	private final Map<ResponsePath, ResponseBodyRepresentation> overrides = new HashMap<>();
 

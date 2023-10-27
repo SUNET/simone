@@ -1,7 +1,6 @@
 package se.uhr.simone.core.admin.boundary;
 
 import java.io.IOException;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.PUT;
@@ -11,7 +10,6 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.DynamicFeature;
-import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Context;
@@ -20,7 +18,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
-
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -29,28 +26,27 @@ import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-
 import se.uhr.simone.admin.rs.ResponseBodyRepresentation;
 import se.uhr.simone.admin.rs.ResponseRepresentation;
-import se.uhr.simone.core.admin.control.SimulatedFeedResponse;
-import se.uhr.simone.core.admin.control.SimulatedRSResponse;
-import se.uhr.simone.core.admin.control.SimulatedRSResponseBody;
-import se.uhr.simone.core.boundary.AdminCatagory;
-import se.uhr.simone.core.boundary.FeedCatagory;
+import se.uhr.simone.core.admin.control.ManagedFeedResponse;
+import se.uhr.simone.core.admin.control.ManagedRSResponse;
+import se.uhr.simone.core.admin.control.ManagedRSResponseBody;
+import se.uhr.simone.core.admin.control.ManagedStateRegistry;
+import se.uhr.simone.core.boundary.Managed;
 
 @Tag(name = "admin")
-@AdminCatagory
 public class RSResource {
 
-	private final SimulatedRSResponse simulatedResponse;
+	private static final String INSTANCE_NAME = "simone.instance.name";
 
-	private final SimulatedRSResponseBody simulatedResponseResponseBody;
+	private final ManagedRSResponse simulatedResponse;
+
+	private final ManagedRSResponseBody simulatedResponseResponseBody;
 
 	@Context
 	private Configuration myConfiguration;
 
-
-	public RSResource(SimulatedRSResponse simulatedResponse, SimulatedRSResponseBody simulatedResponseResponseBody) {
+	public RSResource(ManagedRSResponse simulatedResponse, ManagedRSResponseBody simulatedResponseResponseBody) {
 		this.simulatedResponse = simulatedResponse;
 		this.simulatedResponseResponseBody = simulatedResponseResponseBody;
 	}
@@ -71,7 +67,7 @@ public class RSResource {
 	@DELETE
 	@Path("/code/global")
 	public Response resetGlobalResponseCode() {
-		simulatedResponse.setGlobalCode(SimulatedFeedResponse.NORMAL_STATUS_CODE);
+		simulatedResponse.setGlobalCode(ManagedFeedResponse.NORMAL_STATUS_CODE);
 		simulatedResponse.resetCodeForAllPaths();
 		return Response.ok().build();
 	}
@@ -145,43 +141,45 @@ public class RSResource {
 		public void configure(ResourceInfo resourceInfo, FeatureContext context) {
 			Class<?> clazz = resourceInfo.getResourceClass();
 
-
-
-			if (!(clazz.isAnnotationPresent(AdminCatagory.class) || clazz.isAnnotationPresent(FeedCatagory.class))) {
-				//context.register(RsServiceFilter.class, 1);
+			if (clazz.isAnnotationPresent(Managed.class)) {
+				Managed managed = clazz.getAnnotation(Managed.class);
+				context.register(new RsServiceFilter(managed.value()), 1);
 			}
 		}
 	}
 
 	public static class RsServiceFilter implements ContainerResponseFilter {
 
-		private final SimulatedRSResponse simulatedResponse;
+		private final String name;
 
-		private final SimulatedRSResponseBody simulatedResponseResponseBody;
-
-		public RsServiceFilter(SimulatedRSResponse simulatedResponse, SimulatedRSResponseBody simulatedResponseResponseBody) {
-			this.simulatedResponse = simulatedResponse;
-			this.simulatedResponseResponseBody = simulatedResponseResponseBody;
+		public RsServiceFilter(String name) {
+			this.name = name;
 		}
 
 		@Override
 		public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
+			var simulatedInstance = ManagedStateRegistry.getInstance().get(name);
+
+			if(simulatedInstance == null) {
+				return;
+			}
+
 			String requestPath = requestContext.getUriInfo().getAbsolutePath().getPath();
 
 			handleDelay();
 
-			if (simulatedResponse.getCode() != SimulatedFeedResponse.NORMAL_STATUS_CODE) {
-				responseContext.setStatus(simulatedResponse.getCode());
+			if (simulatedInstance.simulatedRSResponse().getCode() != ManagedFeedResponse.NORMAL_STATUS_CODE) {
+				responseContext.setStatus(simulatedInstance.simulatedRSResponse().getCode());
 			}
 
-			ResponseBodyRepresentation overrideBody = simulatedResponseResponseBody.getOverride(requestPath);
+			ResponseBodyRepresentation overrideBody = simulatedInstance.simulatedRSResponseBody().getOverride(requestPath);
 
 			if (overrideBody != null) {
 				responseContext.setEntity(overrideBody.getBody());
 				responseContext.setStatus(overrideBody.getCode());
 			}
 
-			ResponseRepresentation overrideStatus = simulatedResponse.getCodeForPath(requestPath);
+			ResponseRepresentation overrideStatus = simulatedInstance.simulatedRSResponse().getCodeForPath(requestPath);
 
 			if (overrideStatus != null) {
 				responseContext.setStatus(overrideStatus.getCode());
@@ -191,17 +189,21 @@ public class RSResource {
 		}
 
 		private void handleThrottling(ContainerResponseContext responseContext) {
-			if (simulatedResponse.throttle()) {
-				if (!simulatedResponse.getBucket().tryConsume(1)) {
+			var simulatedInstance = ManagedStateRegistry.getInstance().get(name);
+
+			if (simulatedInstance.simulatedRSResponse().throttle()) {
+				if (!simulatedInstance.simulatedRSResponse().getBucket().tryConsume(1)) {
 					responseContext.setStatus(Status.TOO_MANY_REQUESTS.getStatusCode());
 				}
 			}
 		}
 
 		private void handleDelay() {
-			if (simulatedResponse.getDelay() != 0) {
+			var simulatedInstance = ManagedStateRegistry.getInstance().get(name);
+
+			if (simulatedInstance.simulatedRSResponse().getDelay() != 0) {
 				try {
-					Thread.sleep(simulatedResponse.getDelay() * 1_000L);
+					Thread.sleep(simulatedInstance.simulatedRSResponse().getDelay() * 1_000L);
 				} catch (InterruptedException e) {
 					throw new WebApplicationException(e);
 				}

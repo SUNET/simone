@@ -1,32 +1,34 @@
 package se.uhr.simone.core.admin.boundary;
 
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import se.uhr.simone.core.SimOne;
-import se.uhr.simone.core.admin.control.SimulatedFeedResponse;
-import se.uhr.simone.core.admin.control.SimulatedRSResponse;
-import se.uhr.simone.core.admin.control.SimulatedRSResponseBody;
+import se.uhr.simone.core.admin.control.ManagedState;
+import se.uhr.simone.core.admin.control.ManagedStateRegistry;
+import se.uhr.simone.core.admin.control.ManagedFeedResponse;
+import se.uhr.simone.core.admin.control.ManagedRSResponse;
+import se.uhr.simone.core.admin.control.ManagedRSResponseBody;
 
 public class AdminResource {
 
 	private final DatabaseResource databaseResource;
-	private final SimOne simone;
+	private final SimOne simOne;
 
-	private final SimulatedFeedResponse simulatedFeedResponse = new SimulatedFeedResponse();
+	private final ManagedFeedResponse simulatedFeedResponse = new ManagedFeedResponse();
 
-	private final SimulatedRSResponse simulatedRSResponse = new SimulatedRSResponse();
+	private final ManagedRSResponse simulatedRSResponse = new ManagedRSResponse();
 
-	private final SimulatedRSResponseBody simulatedRSResponseBody = new SimulatedRSResponseBody();
+	private final ManagedRSResponseBody simulatedRSResponseBody = new ManagedRSResponseBody();
 
-	public AdminResource(SimOne simone) {
-		this.simone = simone;
-		databaseResource = new DatabaseResource(simone);
+	public AdminResource(SimOne simOne) {
+		this.simOne = simOne;
+		databaseResource = new DatabaseResource(simOne);
+		ManagedStateRegistry.getInstance().register(simOne.getName(), new ManagedState(simulatedFeedResponse, simulatedRSResponse, simulatedRSResponseBody));
 	}
 
 	public AdminResource(SimOne simone, DatabaseResource databaseResource) {
-		this.simone = simone;
+		this.simOne = simone;
 		this.databaseResource = databaseResource;
 	}
 
@@ -35,7 +37,7 @@ public class AdminResource {
 
 	@Path("/feed")
 	public FeedResource getAdminFeedResource() {
-		return resourceContext.initResource(new FeedResource(simone, simulatedFeedResponse));
+		return resourceContext.initResource(new FeedResource(simOne, simulatedFeedResponse));
 	}
 
 	@Path("/rs/response")

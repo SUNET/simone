@@ -12,20 +12,19 @@ import se.uhr.simone.api.feed.AtomLink;
 import se.uhr.simone.api.feed.Content;
 import se.uhr.simone.api.feed.FeedPublisher;
 import se.uhr.simone.api.feed.Person;
-import se.uhr.simone.core.feed.entity.SimFeedRepository;
+import se.uhr.simone.core.feed.entity.DerbyFeedRepository;
 
-public class SimulatorFeedPublisher implements FeedPublisher {
+public class FeedPublisher {
 
-	private final SimFeedRepository simFeedRepository;
+	private final DerbyFeedRepository simFeedRepository;
 
 	private boolean blocked = false;
 
-	public SimulatorFeedPublisher(SimFeedRepository simFeedRepository) {
+	public FeedPublisher(DerbyFeedRepository simFeedRepository) {
 		this.simFeedRepository = simFeedRepository;
 	}
 
 	@Transactional
-	@Override
 	public void publish(AtomEntry atomEntry) {
 		if (!blocked) {
 			simFeedRepository.saveAtomEntry(convert(atomEntry));
@@ -63,7 +62,7 @@ public class SimulatorFeedPublisher implements FeedPublisher {
 	}
 
 	private List<se.uhr.simone.atom.feed.server.entity.Person> convertPersons(List<Person> authors) {
-		return authors.stream().map(SimulatorFeedPublisher::convertPersons).collect(Collectors.toList());
+		return authors.stream().map(FeedPublisher::convertPersons).collect(Collectors.toList());
 	}
 
 	private static se.uhr.simone.atom.feed.server.entity.Person convertPersons(Person author) {
@@ -79,7 +78,7 @@ public class SimulatorFeedPublisher implements FeedPublisher {
 	}
 
 	private static List<se.uhr.simone.atom.feed.server.entity.AtomLink> convertLinks(List<AtomLink> links) {
-		return links.stream().map(SimulatorFeedPublisher::convert).collect(Collectors.toList());
+		return links.stream().map(FeedPublisher::convert).collect(Collectors.toList());
 	}
 
 	private static List<se.uhr.simone.atom.feed.server.entity.AtomCategory> convert(List<AtomCategory> atomCategories) {

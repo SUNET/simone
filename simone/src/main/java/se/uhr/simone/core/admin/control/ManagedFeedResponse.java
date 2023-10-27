@@ -1,7 +1,7 @@
 package se.uhr.simone.core.admin.control;
 
 
-public class SimulatedFeedResponse {
+public class ManagedFeedResponse {
 
 	public static final int NORMAL_STATUS_CODE = -1;
 

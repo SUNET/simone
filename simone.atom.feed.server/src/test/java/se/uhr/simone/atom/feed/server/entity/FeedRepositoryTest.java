@@ -13,14 +13,10 @@ import static org.mockito.Mockito.verify;
 import java.util.Arrays;
 import java.util.UUID;
 
-import javax.sql.DataSource;
 import javax.ws.rs.core.MediaType;
-import javax.xml.crypto.Data;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -37,7 +33,8 @@ class FeedRepositoryTest {
 
 	private final AtomAuthorDAO atomAuthorDAO = mock(AtomAuthorDAO.class);
 
-	private final FeedRepository feedRepository = new FeedRepository(atomFeedDAO, atomEntryDAO, atomCategoryDAO, atomLinkDAO, atomAuthorDAO) {
+	private final AbstractFeedRepository
+			feedRepository = new AbstractFeedRepository(atomFeedDAO, atomEntryDAO, atomCategoryDAO, atomLinkDAO, atomAuthorDAO) {
 
 		@Override
 		public void clear() {}

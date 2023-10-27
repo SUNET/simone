@@ -16,13 +16,11 @@ import javax.ws.rs.core.Response.Status;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import se.uhr.simone.atom.feed.server.control.FeedConverter;
 import se.uhr.simone.atom.feed.server.entity.AtomFeed;
-import se.uhr.simone.atom.feed.server.entity.FeedRepository;
+import se.uhr.simone.atom.feed.server.entity.AbstractFeedRepository;
 import se.uhr.simone.feed.server.boundary.FeedResource;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,7 +30,7 @@ class FeedResourceTest {
 
 	private final FeedConverter feedConverter = mock(FeedConverter.class);
 
-	private final FeedRepository feedRepository = mock(FeedRepository.class);
+	private final AbstractFeedRepository feedRepository = mock(AbstractFeedRepository.class);
 
 	private final TestableFeedResource feedResource = new TestableFeedResource(feedConverter, feedRepository);
 
@@ -90,7 +88,7 @@ class FeedResourceTest {
 
 		Map<String, String> testMap = new HashMap<>();
 
-		public TestableFeedResource(FeedConverter feedConverter, FeedRepository feedRepository) {
+		public TestableFeedResource(FeedConverter feedConverter, AbstractFeedRepository feedRepository) {
 			super(feedConverter, feedRepository);
 		}
 

@@ -11,16 +11,16 @@ import javax.ws.rs.core.Response.Status;
 
 import se.uhr.simone.atom.feed.server.control.FeedConverter;
 import se.uhr.simone.atom.feed.server.entity.AtomFeed;
-import se.uhr.simone.atom.feed.server.entity.FeedRepository;
+import se.uhr.simone.atom.feed.server.entity.AbstractFeedRepository;
 
 @Produces({ MediaType.APPLICATION_ATOM_XML + "; charset=utf-8", MediaType.APPLICATION_ATOM_XML })
 public abstract class FeedResource {
 
 	FeedConverter feedConverter;
 
-	FeedRepository feedRepository;
+	AbstractFeedRepository feedRepository;
 
-	protected FeedResource(FeedConverter feedConverter, FeedRepository feedRepository) {
+	protected FeedResource(FeedConverter feedConverter, AbstractFeedRepository feedRepository) {
 		this.feedConverter = feedConverter;
 		this.feedRepository = feedRepository;
 	}

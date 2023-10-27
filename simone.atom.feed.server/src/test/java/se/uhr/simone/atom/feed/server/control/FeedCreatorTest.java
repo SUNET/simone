@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import se.uhr.simone.atom.feed.server.entity.AtomEntry;
 import se.uhr.simone.atom.feed.server.entity.AtomFeed;
-import se.uhr.simone.atom.feed.server.entity.FeedRepository;
+import se.uhr.simone.atom.feed.server.entity.AbstractFeedRepository;
 
 @ExtendWith(MockitoExtension.class)
 class FeedCreatorTest {
@@ -27,7 +27,7 @@ class FeedCreatorTest {
 	private static final long FIRST_ID = 1L;
 
 	@Mock
-	private FeedRepository feedRepository;
+	private AbstractFeedRepository feedRepository;
 
 	private FeedCreator feedCreator = new FeedCreator();
 

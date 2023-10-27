@@ -13,19 +13,17 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import se.uhr.simone.atom.feed.server.entity.AtomFeed;
-import se.uhr.simone.atom.feed.server.entity.FeedRepository;
+import se.uhr.simone.atom.feed.server.entity.AbstractFeedRepository;
 
 @ExtendWith(MockitoExtension.class)
 class FeedXmlCreatorTest {
 
 	private static final URI testURI = URI.create("http://localhost/test-uri");
 
-	private final FeedRepository feedRepository = mock(FeedRepository.class);
+	private final AbstractFeedRepository feedRepository = mock(AbstractFeedRepository.class);
 
 	private final FeedConverter feedConverter = mock(FeedConverter.class);
 

@@ -9,7 +9,7 @@ import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
 import se.uhr.simone.admin.rs.ResponseRepresentation;
 
-public class SimulatedRSResponse {
+public class ManagedRSResponse {
 
 	public static final int NORMAL_RESPONSE_CODE = -1;
 
