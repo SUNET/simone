@@ -1,4 +1,4 @@
-package se.uhr.simone.common.api;
+package se.uhr.simone.common;
 
 public class HttpConstants {
 

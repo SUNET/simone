@@ -7,7 +7,7 @@ import java.util.Map;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
-import se.uhr.simone.admin.rs.ResponseRepresentation;
+import se.uhr.simone.common.rs.ResponseRepresentation;
 
 public class ManagedRSResponse {
 

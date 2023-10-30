@@ -7,10 +7,9 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import se.uhr.simone.admin.api.HttpConstants;
-import se.uhr.simone.admin.feed.AtomCategoryRepresentation;
-import se.uhr.simone.admin.feed.AtomFeedEventRepresentation;
+import se.uhr.simone.common.HttpConstants;
+import se.uhr.simone.common.feed.AtomCategoryRepresentation;
+import se.uhr.simone.common.feed.AtomFeedEventRepresentation;
 
 public class FeedAdmin {
 

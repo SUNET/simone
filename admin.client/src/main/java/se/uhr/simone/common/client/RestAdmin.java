@@ -5,9 +5,8 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import se.uhr.simone.admin.rs.ResponseBodyRepresentation;
-import se.uhr.simone.admin.rs.ResponseRepresentation;
+import se.uhr.simone.common.rs.ResponseBodyRepresentation;
+import se.uhr.simone.common.rs.ResponseRepresentation;
 
 public class RestAdmin {
 

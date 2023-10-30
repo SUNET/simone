@@ -6,8 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import se.uhr.simone.atom.feed.server.entity.AtomFeedDAO;
 import se.uhr.simone.atom.feed.server.entity.AbstractFeedRepository;
+import se.uhr.simone.atom.feed.server.entity.AtomFeedDAO;
 import se.uhr.simone.core.entity.SqlScriptRunner;
 
 public class DerbyFeedRepository extends AbstractFeedRepository {

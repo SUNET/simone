@@ -18,13 +18,10 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import se.uhr.simone.admin.api.HttpConstants;
-import se.uhr.simone.admin.feed.AtomFeedEventRepresentation;
 import se.uhr.simone.atom.feed.server.entity.AtomCategory;
-import se.uhr.simone.atom.feed.server.entity.AtomCategory.Label;
-import se.uhr.simone.atom.feed.server.entity.AtomCategory.Term;
 import se.uhr.simone.atom.feed.server.entity.AtomEntry;
-import se.uhr.simone.atom.feed.server.entity.AtomEntry.Build;
+import se.uhr.simone.common.HttpConstants;
+import se.uhr.simone.common.feed.AtomFeedEventRepresentation;
 import se.uhr.simone.core.SimOne;
 import se.uhr.simone.core.admin.control.ManagedFeedResponse;
 
@@ -94,7 +91,7 @@ public class FeedResource {
 
 		Long nextSortOrder = simone.getFeedRepository().getNextSortOrder();
 
-		Build builder = AtomEntry.builder()
+		AtomEntry.Build builder = AtomEntry.builder()
 				.withAtomEntryId(uid)
 				.withSortOrder(nextSortOrder)
 				.withSubmittedNow()
@@ -103,10 +100,10 @@ public class FeedResource {
 						.withContentType(event.getContentType())
 						.build());
 
-		for (se.uhr.simone.admin.feed.AtomCategoryRepresentation category : event.getCategorys()) {
-			AtomCategory.Build categoryBuilder = AtomCategory.builder().withTerm(Term.of(category.getTerm()));
+		for (se.uhr.simone.common.feed.AtomCategoryRepresentation category : event.getCategorys()) {
+			AtomCategory.Build categoryBuilder = AtomCategory.builder().withTerm(AtomCategory.Term.of(category.getTerm()));
 			if (Objects.nonNull(category.getLabel())) {
-				categoryBuilder.withLabel(Label.of(category.getLabel()));
+				categoryBuilder.withLabel(AtomCategory.Label.of(category.getLabel()));
 			}
 			builder.withCategory(categoryBuilder.build());
 		}

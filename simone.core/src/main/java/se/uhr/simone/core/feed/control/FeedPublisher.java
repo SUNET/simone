@@ -33,7 +33,7 @@ public class FeedPublisher {
 
 		Long nextSortOrder = simFeedRepository.getNextSortOrder();
 
-		return se.uhr.simone.atom.feed.server.entity.AtomEntry.builder()
+		return  se.uhr.simone.atom.feed.server.entity.AtomEntry.builder()
 				.withAtomEntryId(atomEntry.getAtomEntryId())
 				.withSortOrder(nextSortOrder)
 				.withSubmitted(atomEntry.getSubmitted())

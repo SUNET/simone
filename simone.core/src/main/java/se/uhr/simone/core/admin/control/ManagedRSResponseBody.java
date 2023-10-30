@@ -2,8 +2,7 @@ package se.uhr.simone.core.admin.control;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import se.uhr.simone.admin.rs.ResponseBodyRepresentation;
+import se.uhr.simone.common.rs.ResponseBodyRepresentation;
 
 public class ManagedRSResponseBody {
 

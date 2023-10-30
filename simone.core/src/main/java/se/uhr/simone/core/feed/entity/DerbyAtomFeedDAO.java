@@ -1,7 +1,6 @@
 package se.uhr.simone.core.feed.entity;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-
 import se.uhr.simone.atom.feed.server.entity.AtomFeed;
 import se.uhr.simone.atom.feed.server.entity.AtomFeedDAO;
 

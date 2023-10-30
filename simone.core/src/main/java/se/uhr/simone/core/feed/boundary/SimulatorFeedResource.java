@@ -62,9 +62,11 @@ public class SimulatorFeedResource extends FeedResource {
 	}
 
 	private OptionalInt managedResponse() {
-		var managedFeedResponse = ManagedStateRegistry.getInstance().get(simOne.getName()).simulatedFeedResponse();
+		var managed = ManagedStateRegistry.getInstance().get(simOne.getName());
 
-		if (managedFeedResponse != null) {
+		if (managed != null) {
+			var managedFeedResponse = managed.simulatedFeedResponse();
+
 			handleDelay(managedFeedResponse);
 
 			if (managedFeedResponse.getCode() != ManagedFeedResponse.NORMAL_STATUS_CODE) {

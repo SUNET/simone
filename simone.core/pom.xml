@@ -12,19 +12,13 @@
     <dependencies>
         <dependency>
             <groupId>se.uhr.simone</groupId>
-            <artifactId>simone.api</artifactId>
+            <artifactId>simone.common</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>se.uhr.simone</groupId>
-            <artifactId>admin.api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>se.uhr.simone</groupId>
-            <artifactId>atom.feed.server</artifactId>
+            <artifactId>simone.atom.feed</artifactId>
             <version>${project.version}</version>
         </dependency>
 

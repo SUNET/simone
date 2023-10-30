@@ -15,7 +15,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameters;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-import se.uhr.simone.admin.api.file.FileLoadResultRepresentation;
+import se.uhr.simone.common.db.FileLoadResultRepresentation;
 import se.uhr.simone.core.SimOne;
 
 public class DatabaseResource {

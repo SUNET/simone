@@ -13,8 +13,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
-
-import se.uhr.simone.admin.api.file.FileLoadResultRepresentation;
+import se.uhr.simone.common.db.FileLoadResultRepresentation;
 
 public class DatabaseAdmin {
 
