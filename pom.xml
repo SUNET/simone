@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>se.uhr.simone</groupId>
-    <artifactId>root</artifactId>
+    <artifactId>simone</artifactId>
     <version>4.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -15,6 +15,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+
         <version.jupiter>5.7.1</version.jupiter>
         <version.mockito>3.8.0</version.mockito>
     </properties>
@@ -48,10 +49,9 @@
     </developers>
 
     <modules>
-        <module>simone.api</module>
-        <module>simone.admin.api</module>
-        <module>simone.atom.feed.server</module>
-        <module>simone</module>
+        <module>simone.common</module>
+        <module>simone.atom.feed</module>
+        <module>simone.core</module>
         <module>admin.client</module>
     </modules>
 
@@ -162,7 +162,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.5.0</version>
+                    <version>3.6.0</version>
                 </plugin>
 
                 <plugin>
@@ -247,6 +247,9 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <doclint>none</doclint>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>se.uhr.simone</groupId>
-        <artifactId>root</artifactId>
+        <artifactId>simone</artifactId>
         <version>4.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>admin.client</artifactId>
