@@ -1,8 +1,8 @@
 package se.uhr.simone.core.admin.boundary;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.container.ResourceContext;
-import javax.ws.rs.core.Context;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.container.ResourceContext;
+import jakarta.ws.rs.core.Context;
 import se.uhr.simone.core.SimOne;
 import se.uhr.simone.core.admin.control.ManagedState;
 import se.uhr.simone.core.admin.control.ManagedStateRegistry;

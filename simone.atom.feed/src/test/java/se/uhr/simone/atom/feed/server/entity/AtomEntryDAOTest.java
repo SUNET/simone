@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.sql.DataSource;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

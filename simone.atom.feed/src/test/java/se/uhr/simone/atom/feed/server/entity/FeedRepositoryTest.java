@@ -13,7 +13,7 @@ import static org.mockito.Mockito.verify;
 import java.util.Arrays;
 import java.util.UUID;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

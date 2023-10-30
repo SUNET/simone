@@ -24,7 +24,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-multipart-provider</artifactId>
-            <version>4.5.6.Final</version>
+            <version>6.2.5.Final</version>
         </dependency>
 
         <!-- TEST -->
@@ -32,7 +32,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
-            <version>4.5.8.Final</version>
+            <version>6.2.5.Final</version>
             <scope>test</scope>
         </dependency>
 

@@ -3,7 +3,7 @@ package se.uhr.simone.atom.feed.server.control;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import se.uhr.simone.atom.feed.server.entity.AtomEntry;
 import se.uhr.simone.atom.feed.server.entity.AtomFeed;

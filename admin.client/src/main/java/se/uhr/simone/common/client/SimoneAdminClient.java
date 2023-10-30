@@ -2,8 +2,8 @@ package se.uhr.simone.common.client;
 
 import java.net.URI;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.WebTarget;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.WebTarget;
 
 public class SimoneAdminClient {
 

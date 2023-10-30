@@ -3,7 +3,7 @@ package se.uhr.simone.atom.feed.server.control;
 import java.net.URI;
 import java.util.List;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import se.uhr.simone.atom.feed.server.entity.AtomFeed;
 import se.uhr.simone.atom.feed.server.entity.AbstractFeedRepository;

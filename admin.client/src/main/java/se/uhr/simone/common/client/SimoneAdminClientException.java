@@ -1,6 +1,6 @@
 package se.uhr.simone.common.client;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 public class SimoneAdminClientException extends RuntimeException {
 
