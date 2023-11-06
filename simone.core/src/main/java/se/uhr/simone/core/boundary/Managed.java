@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 import jakarta.ws.rs.NameBinding;
 
 /**
- * Indicates that the resource (API) is managed by SimOne, i.e. possible to manipulate with the admin API.
+ * Indicates that the resource (jax-rs resource) is managed by SimOne, i.e. possible to manipulate responses with the admin API.
  */
 
 @Target({ ElementType.TYPE })

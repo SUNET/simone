@@ -22,14 +22,13 @@ public class AdminResource {
 	private final ManagedRSResponseBody simulatedRSResponseBody = new ManagedRSResponseBody();
 
 	public AdminResource(SimOne simOne) {
-		this.simOne = simOne;
-		databaseResource = new DatabaseResource(simOne);
-		ManagedStateRegistry.getInstance().register(simOne.getName(), new ManagedState(simulatedFeedResponse, simulatedRSResponse, simulatedRSResponseBody));
+		this(simOne, new DatabaseResource(simOne));
 	}
 
 	public AdminResource(SimOne simone, DatabaseResource databaseResource) {
 		this.simOne = simone;
 		this.databaseResource = databaseResource;
+		ManagedStateRegistry.getInstance().register(simOne.getName(), new ManagedState(simulatedFeedResponse, simulatedRSResponse, simulatedRSResponseBody));
 	}
 
 	@Context

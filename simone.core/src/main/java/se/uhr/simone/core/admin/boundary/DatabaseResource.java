@@ -59,15 +59,20 @@ public class DatabaseResource {
 	 * @param name The file name
 	 * @param content The file content
 	 * @return The result of the load
-	 * @deprecated Use a custom endpoint instead
 	 */
 
-	@Deprecated(forRemoval = true)
 	protected FileLoadResult loadFile(String name, String content) {
-		throw new UnsupportedOperationException("The endpoint exists for backwards compatibility");
+		throw new UnsupportedOperationException("The endpoint exists for backwards compatibility, use a custom endpoint instead");
 	}
 
-	protected static record FileLoadResult (String errorMessage, List<String> eventIdList){
+	public static record FileLoadResult(String errorMessage, List<String> eventIdList){
 
+		public static FileLoadResult withErrorMessage(String errorMessage) {
+			return new FileLoadResult(errorMessage, List.of());
+		}
+
+		public static FileLoadResult withEventIds(List<String> eventIdList) {
+			return new FileLoadResult(null, eventIdList);
+		}
 	}
 }
