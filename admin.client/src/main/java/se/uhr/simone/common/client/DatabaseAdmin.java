@@ -3,16 +3,18 @@ package se.uhr.simone.common.client;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.EntityPart;
 import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
-import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import se.uhr.simone.common.db.FileLoadResultRepresentation;
 
 public class DatabaseAdmin {
@@ -24,18 +26,25 @@ public class DatabaseAdmin {
 		this.target = target;
 	}
 
-	public List<String> load(String resourceName) {
-		MultipartFormDataOutput form = new MultipartFormDataOutput();
-		form.addFormData("name", new ByteArrayInputStream(resourceName.getBytes()), MediaType.TEXT_PLAIN_TYPE);
-
-		try (InputStream is = this.getClass().getResourceAsStream(resourceName)) {
-			form.addFormData("content", is, MediaType.TEXT_PLAIN_TYPE.withCharset("utf-8"));
-			GenericEntity<MultipartFormDataOutput> entity = new GenericEntity<MultipartFormDataOutput>(form) {
-			};
+	public List<String> load(String name, InputStream is) {
+		try {
+			final List<EntityPart> multipart = new ArrayList<>();
+			multipart.add(
+					EntityPart.withName("name")
+							.content(name.getBytes())
+							.mediaType(MediaType.TEXT_PLAIN_TYPE)
+							.build());
+			multipart.add(
+					EntityPart.withName("content")
+							.content(is)
+							.mediaType(MediaType.TEXT_PLAIN_TYPE)
+							.build());
 
 			try (Response response = target.path(PATH)
 					.request(MediaType.APPLICATION_JSON_TYPE)
-					.post(Entity.entity(entity, MediaType.MULTIPART_FORM_DATA_TYPE))) {
+					.post(Entity.entity(new GenericEntity<>(multipart) {
+					}, MediaType.MULTIPART_FORM_DATA))){
+
 				if (response.getStatusInfo() == Status.OK) {
 					FileLoadResultRepresentation result = response.readEntity(FileLoadResultRepresentation.class);
 
@@ -43,15 +52,14 @@ public class DatabaseAdmin {
 						return result.getEventIdList();
 					} else {
 						throw new SimoneAdminClientException(
-								"Failed to process resourc: " + resourceName + ", " + result.getErrorLog());
+								"Failed to process resourc: " + name + ", " + result.getErrorLog());
 					}
-
 				} else {
-					throw new SimoneAdminClientException("Could not load resource: " + resourceName, response);
+					throw new SimoneAdminClientException("Could not load resource: " + name, response);
 				}
 			}
 		} catch (IOException e) {
-			throw new SimoneAdminClientException("Could not load resource: " + resourceName, e);
+			throw new SimoneAdminClientException("Could not load resource: " + name, e);
 		}
 	}
 
