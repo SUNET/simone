@@ -2,8 +2,8 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>se.uhr.simone</groupId>
-        <artifactId>root</artifactId>
-        <version>3.3.5-SNAPSHOT</version>
+        <artifactId>simone</artifactId>
+        <version>4.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>admin.client</artifactId>
 
@@ -11,8 +11,8 @@
 
         <dependency>
             <groupId>se.uhr.simone</groupId>
-            <artifactId>admin.api</artifactId>
-            <version>3.3.5-SNAPSHOT</version>
+            <artifactId>simone.common</artifactId>
+            <version>4.0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -21,26 +21,28 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-multipart-provider</artifactId>
-            <version>4.5.6.Final</version>
-        </dependency>
-
         <!-- TEST -->
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
-            <version>4.5.8.Final</version>
+            <version>6.2.5.Final</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-json-binding-provider</artifactId>
-            <version>4.5.6.Final</version>
+            <version>6.2.5.Final</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-multipart-provider</artifactId>
+            <version>6.2.5.Final</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 </project>

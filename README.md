@@ -8,33 +8,70 @@ See [SimOne-Example](https://github.com/SUNET/simone-example) for a starting poi
 
 ## Overview
 
-![SimOne Overview](/images/overview.png)
-
-Atom feed API
-: Publish the atom feed.
-
-Example REST API
-: The REST API to simulate, implemented by the SimOne-example in this case.
-
-Admin REST API
-: API to control the SimOne simulator, see [Admin API](#admin-api) for more information.
-
-Extension API
-: API that notifies the SimOne simulator about actions initiated from the admin API, or create feed entries.
+Create a simulator instance:
 
 ```Java
-void se.uhr.simone.api.feed.FeedPublisher#publish(AtomEntry entry);
+@Produces
+@ApplicationScoped
+public SimOne create() {
+    var feedRepository = new DerbyFeedRepository(dataSource);
+
+    URI feedBaseUri = UriBuilder.fromUri(properties.baseURI).segment("feed").build();
+
+    return SimOne.builder()
+        .withName("restbucks")
+        .withFeedBaseURI(feedBaseUri)
+        .withFeedRepository(feedRepository)
+        .withClearDatabaseFunction(() -> orderRepository.clear())
+        .build();
+}
+```
+Expose end points:
+
+```Java
+@Context
+ResourceContext resourceContext;
+
+@Inject
+SimOne simOne;
+
+@Path("/feed")
+public SimulatorFeedResource getFeedResource() {
+    return resourceContext.initResource(new SimulatorFeedResource(simOne));
+}
+
+@Path("/admin")
+public AdminResource getAdminResource() {
+    return resourceContext.initResource(new AdminResource(simOne));
+}
+```
+
+Publish a event on the feed.
+
+```Java
+
+@Inject
+SimOne simOne;
+
+public SimOne publish() {
+    AtomEntry entry = AtomEntry.builder()
+        .withAtomEntryId(uid.toString())
+        .withSubmittedNow()
+        .withContent(Content.builder().withValue(content).withContentType(MediaType.APPLICATION_XML).build())
+        .withCategory(AtomCategory.builder().withTerm(Term.of("myterm")).withLabel(Label.of("mylabel")).build())
+        .build();
+
+    simOne.publish(entry);
+}
 ```
 
 ## Requirements
 
-* Java 11
+* Java 17
 
-* Java Microprofile 4.0 compatible server
+* Java Microprofile 6.0 compatible server (Tested on Quarkus 3)
 
-* Datasource, The application is required to produce a CDI bean of type `javax.sql.DataSource` with qualifier `@FeedDS` to be used by the feed server. The Datasource must be initialized with the Flyway migration located on the classpath.
-
-* A CDI event `se.uhr.simone.api.SimoneTimerEvent` must be fired periodically in a worker thread to trigger background jobs. Every other second is a good starting point.
+* Datasource, by default uses a Apache Derby data source. The Datasource must be initialized with the Flyway migration located on the classpath.
 
 ## Build
 
@@ -50,14 +87,5 @@ mvn release:prepare release:perform
 
 ### Admin API
 
-API to control the simulator, for example empty the database, answer all REST requests with a specific HTTP status, delay responses etc. The administrator API is documented in Swagger. Start the [simone-example](https://github.com/SUNET/simone-example) Docker container and point your Browser to <http://localhost:8080/openapi>
+API to control the simulator, for example empty the database, answer all REST requests with a specific HTTP status, delay responses etc. The administrator API is documented in OpenApi. Start the [simone-example](https://github.com/SUNET/simone-example) Docker container and access the OpenApi description on <http://localhost:8080/q/openapi>
 
-## Configuration
-
-Simone uses MicroProfile Config to inject the configuration in the application:
-
-`simone.base.uri`
-:  The base URI of SimOne, used to reference the SimOne server in the Atom Feed. Default value is `http://localhost:8080`
-
-`simone.dropin`
-: is a special directory that is monitored by SimOne. When a new file is discovered extensions are notified and may handle the file in any way they want. The default value is `dropin` in cwd.
