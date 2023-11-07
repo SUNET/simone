@@ -3,7 +3,7 @@
 
     <groupId>se.uhr.simone</groupId>
     <artifactId>simone</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.0.0</version>
     <packaging>pom</packaging>
 
     <name>simone</name>
@@ -23,7 +23,7 @@
         <connection>scm:git:git@github.com:SUNET/simone.git</connection>
         <url>https://github.com/SUNET/simone</url>
         <developerConnection>scm:git:git@github.com:SUNET/simone.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>simone-4.0.0</tag>
     </scm>
 
     <organization>
