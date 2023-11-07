@@ -8,7 +8,7 @@ See [SimOne-Example](https://github.com/SUNET/simone-example) for a starting poi
 
 ## Overview
 
-To create a simulator instance:
+Create a simulator instance:
 
 ```Java
 @Produces
@@ -26,18 +26,43 @@ public SimOne create() {
         .build();
 }
 ```
-
-To publish a event on the feed.
+Expose end points:
 
 ```Java
-AtomEntry entry = AtomEntry.builder()
-    .withAtomEntryId(uid.toString())
-    .withSubmittedNow()
-    .withContent(Content.builder().withValue(content).withContentType(MediaType.APPLICATION_XML).build())
-    .withCategory(AtomCategory.builder().withTerm(Term.of("myterm")).withLabel(Label.of("mylabel")).build())
-    .build();
+@Context
+ResourceContext resourceContext;
 
-simOne.publish(entry);
+@Inject
+SimOne simOne;
+
+@Path("/feed")
+public SimulatorFeedResource getFeedResource() {
+    return resourceContext.initResource(new SimulatorFeedResource(simOne));
+}
+
+@Path("/admin")
+public AdminResource getAdminResource() {
+    return resourceContext.initResource(new AdminResource(simOne));
+}
+```
+
+Publish a event on the feed.
+
+```Java
+
+@Inject
+SimOne simOne;
+
+public SimOne publish() {
+    AtomEntry entry = AtomEntry.builder()
+        .withAtomEntryId(uid.toString())
+        .withSubmittedNow()
+        .withContent(Content.builder().withValue(content).withContentType(MediaType.APPLICATION_XML).build())
+        .withCategory(AtomCategory.builder().withTerm(Term.of("myterm")).withLabel(Label.of("mylabel")).build())
+        .build();
+
+    simOne.publish(entry);
+}
 ```
 
 ## Requirements
