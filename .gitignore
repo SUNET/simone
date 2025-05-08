@@ -5,6 +5,5 @@ target/
 .idea/
 **.iml
 release.properties
-**/pom.xml.releaseBackup
-**/pom.xml.tag
+**/.flattened-pom.xml
 
