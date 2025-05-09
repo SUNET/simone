@@ -9,7 +9,7 @@
 
     <name>simone</name>
     <description>SimOne is a simple simulator for REST and FEED based services</description>
-    <url>https://github.com/SUNET/simone</url>
+    <url>https://github.com/swedish-council-for-higher-education/simone</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -21,15 +21,15 @@
     </properties>
 
     <scm>
-        <connection>scm:git:git@github.com:SUNET/simone.git</connection>
-        <url>https://github.com/SUNET/simone</url>
-        <developerConnection>scm:git:git@github.com:SUNET/simone.git</developerConnection>
+        <connection>scm:git:git@github.com:swedish-council-for-higher-education/simone.git</connection>
+        <url>https://github.com/swedish-council-for-higher-education/simone</url>
+        <developerConnection>scm:git:git@github.com:swedish-council-for-higher-education/simone.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
     <organization>
-        <name>SUNET</name>
-        <url>http://www.sunet.se</url>
+        <name>UHR</name>
+        <url>https://uhr.se/</url>
     </organization>
 
     <licenses>
@@ -50,7 +50,7 @@
         <repository>
             <id>github</id>
             <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/SUNET/simone</url>
+            <url>https://maven.pkg.github.com/swedish-council-for-higher-education/simone</url>
         </repository>
     </distributionManagement>
 

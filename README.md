@@ -4,7 +4,7 @@ Base container for SimOne. SimOne is a simple simulator for REST and FEED based 
 
 This projects builds a jar that constitutes core simulator functionality and is meant to be included in a Java EE 8 server that is built by the final simulator.
 
-See [SimOne-Example](https://github.com/SUNET/simone-example) for a starting point to build a simulator.
+See [SimOne-Example](https://github.com/swedish-council-for-higher-education/simone-example) for a starting point to build a simulator.
 
 ## Overview
 
@@ -87,5 +87,5 @@ mvn release:prepare release:perform
 
 ### Admin API
 
-API to control the simulator, for example empty the database, answer all REST requests with a specific HTTP status, delay responses etc. The administrator API is documented in OpenApi. Start the [simone-example](https://github.com/SUNET/simone-example) Docker container and access the OpenApi description on <http://localhost:8080/q/openapi>
+API to control the simulator, for example empty the database, answer all REST requests with a specific HTTP status, delay responses etc. The administrator API is documented in OpenApi. Start the [simone-example](https://github.com/swedish-council-for-higher-education/simone-example) Docker container and access the OpenApi description on <http://localhost:8080/q/openapi>
 
